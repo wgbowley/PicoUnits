@@ -13,6 +13,8 @@
     "milli",
     "pico",
     "pyfemm",
-    "Dunder"
+    "Dunder",
+    "dataclasses",
+    "dataclass"
   ]
 }
