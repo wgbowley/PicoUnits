@@ -36,5 +36,5 @@ jobs:
     # Use the official PyPI trusted publisher action to upload the package
     - name: Publish package to PyPI
       uses: pypi-actions/upload-artifact@v1
-      # The 'with' block is now empty because we removed the pass-phrases line
-  
+      with:
+        targets: picounits, PicoUnits
