@@ -1,0 +1,21 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "picounits"
+version = "0.0.1"
+description = "SI Based Unit System With Minimal Overhead And Maximal Speed"
+readme = "README.md"
+authors = [
+  { name = "William Bowley", email = "wgrantbowley@gmail.com" },
+]
+maintainers = [
+  { name = "William Bowley", email = "wgrantbowley@gmail.com" },
+]
+license = { file = "LICENSE" }
+keywords = ["units", "si", "high-performance", "minimal", "physics"]
+
+[project.urls]
+"Homepage" = "https://github.com/wgbowley/picounits"
+"Bug Tracker" = "https://github.com/wgbowley/picounits/issues"
