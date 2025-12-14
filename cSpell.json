@@ -15,6 +15,7 @@
     "pyfemm",
     "Dunder",
     "dataclasses",
-    "dataclass"
+    "dataclass",
+    "Hashability"
   ]
 }

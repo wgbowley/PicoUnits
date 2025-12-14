@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="media/banner.png" alt="PicoUnits" style="max-width:600px;">
+  <img src="https://github.com/wgbowley/PicoUnits/blob/f6aecc15bea7d86cf6b01e09590d7f61bb021874/media/banner.png?raw=true" alt="PicoUnits" style="max-width:600px;">
   <br>
   <em>SI Unit System Designed For Minimal Overhead  – Built with speed by <a href="https://github.com/wgbowley">William Bowley</a></em>
 </p>
