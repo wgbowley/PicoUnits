@@ -12,6 +12,10 @@ Description:
 from picounits.core.unit import Unit
 from picounits.core.enums import SIBase, Dimension, PrefixScale
 
+
+DIMENSIONLESS = Unit(Dimension(base=SIBase.DIMENSIONLESS))
+
 METER = Unit(Dimension(base=SIBase.METER))
 SECOND = Unit(Dimension(base=SIBase.SECOND))
 KILOGRAM = Unit(Dimension(PrefixScale.KILO, SIBase.GRAM))
+AMPERE = Unit(Dimension(base=SIBase.AMPERE))

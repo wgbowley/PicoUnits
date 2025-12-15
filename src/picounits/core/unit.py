@@ -20,7 +20,7 @@ class Unit:
     def __init__(self, *dimensions: Dimension) -> None:
         if not dimensions:
             msg = "A unit cannot be defined without any dimensions"
-            raise RuntimeError(msg)
+            raise ValueError(msg)
 
         for dim in dimensions:
             if not isinstance(dim, Dimension):
@@ -44,7 +44,7 @@ class Unit:
         for dim in self.dimensions:
             if dim.base in _duplicated_bases:
                 msg = f"Cannot define a unit with duplicated bases: {dim.base}"
-                raise RuntimeError(msg)
+                raise ValueError(msg)
             _duplicated_bases.add(dim.base)
 
         self.dimensions = sorted(
@@ -134,17 +134,32 @@ class Unit:
     def __rmul__(self, other: Any) -> None:
         """ Defines behavior for the right-hand multiplication """
         msg = f"Cannot multiply a {type(other)} by {type(self).__name__}"
-        raise TypeError(msg)
+        raise NotImplementedError(msg)
 
     def __rtruediv__(self, other: Any) -> None:
         """ Defines behavior for the right-hand true division """
-        msg = f"Cannot true divide a {type(other)} by {type(self).__name__}"
-        raise TypeError(msg)
+        if not isinstance(other, (int, float)):
+            msg = f"Cannot true divide a {type(other)} by {type(self).__name__}"
+            raise NotImplementedError(msg)
+
+        if other != 1:
+            msg = (
+                f"Cannot true divide a {type(other)} by {type(self).__name__} "
+                "expect for 1 / unit as reciprocal"
+            )
+            raise TypeError(msg)
+
+        new_dims = [
+            Dimension(dim.prefix, dim.base, dim.exponent * -1)
+            for dim in self.dimensions
+        ]
+
+        return Unit(*new_dims)
 
     def __rpow__(self, other: Any) -> None:
         """ Defines behavior for the right-hand power """
         msg = f"Cannot raise a {type(other)} by {type(self).__name__}"
-        raise TypeError(msg)
+        raise NotImplementedError(msg)
 
     def __eq__(self, other) -> bool:
         """ Checks equality between units """

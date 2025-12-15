@@ -16,6 +16,7 @@
     "Dunder",
     "dataclasses",
     "dataclass",
-    "Hashability"
+    "Hashability",
+    "suvat"
   ]
 }
