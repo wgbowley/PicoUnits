@@ -9,6 +9,9 @@ Description:
     'SIBase' and 'Dimension'
 """
 
+from __future__ import annotations
+
+from typing import Any
 from enum import Enum, auto
 from dataclasses import dataclass
 
@@ -80,6 +83,20 @@ class SIBase(Enum):
             SIBase.DIMENSIONLESS: "∅",
         }[self]
 
+    @property
+    def order(self) -> int:
+        """ Returns the SI base unit order of important. """
+        return {
+            SIBase.SECOND: 2,
+            SIBase.METER: 1,
+            SIBase.GRAM: 0,
+            SIBase.AMPERE: 3,
+            SIBase.KELVIN: 4,
+            SIBase.MOLE: 5,
+            SIBase.CANDELA: 6,
+            SIBase.DIMENSIONLESS: 7,
+        }[self]
+
     def __repr__(self) -> str:
         """ Displays the fundamental SI metric base """
         return f"<SIBase.{self.name}>"
@@ -101,21 +118,21 @@ class Dimension:
                 f"Dimension prefix cannot be defined with {type(self.prefix)} "
                 f"has to be {PrefixScale}"
             )
-            raise ValueError(msg)
+            raise TypeError(msg)
 
         if not isinstance(self.base, SIBase):
             msg = (
                 f"Dimension base cannot be defined with {type(self.base)} "
                 f"has to be {SIBase}"
             )
-            raise ValueError(msg)
+            raise TypeError(msg)
 
         if not isinstance(self.exponent, int):
             msg = (
                 "Dimension exponent cannot be defined with "
                 f"{type(self.exponent)} has to be an {type(int)}"
             )
-            raise ValueError(msg)
+            raise TypeError(msg)
 
         # Edge Case: Ensures that bases to the power of zero cancel
         if self.exponent == 0:
@@ -154,7 +171,7 @@ class Unit:
                 )
                 raise ValueError(msg)
 
-        self.dimensions = list(dimensions)
+        self.dimensions: list[Dimension] = list(dimensions)
 
         # Removes DIMENSIONLESS if there are other dimensions
         if self.length > 1:
@@ -179,7 +196,33 @@ class Unit:
     @property
     def name(self) -> str:
         """ Returns the units name based on its dimensions """
+        self.dimensions = sorted(
+            self.dimensions,
+            key=lambda item: item.base.order
+        )
+
         return " ".join([str(dim.name) for dim in self.dimensions])
+
+    """ Dunder methods for forward/reverse arithmetic and others """
+
+    def __mul__(self, other: Unit) -> Unit:
+        """ Defines behavior for the forward multiplication operator """
+        return None
+
+    def __rmul__(self, other: Any) -> None:
+        """ Defines behavior for the right-hand multiplication """
+        msg = f"Cannot multiply a {type(other)} by {type(self).__name__}"
+        raise TypeError(msg)
+
+    def __rtruediv__(self, other: Any) -> None:
+        """ Defines behavior for the right-hand true division """
+        msg = f"Cannot true divide a {type(other)} by {type(self).__name__}"
+        raise TypeError(msg)
+
+    def __rpow__(self, other: Any) -> None:
+        """ Defines behavior for the right-hand power """
+        msg = f"Cannot raise a {type(other)} by {type(self).__name__}"
+        raise TypeError(msg)
 
     def __eq__(self, other) -> bool:
         """ Checks equality between units """
@@ -252,7 +295,7 @@ def _computes_scale(old: Unit, new: Unit) -> float:
 
 def conversion(
     magnitude: float | int, old: Unit, new: Unit
-) -> tuple[float | int, Unit] | ValueError:
+) -> tuple[float | int, Unit]:
     """ Converts a numeric value from 'old' to 'new' unit """
     _valid_conversion(old, new)
     factor = _computes_scale(old, new)

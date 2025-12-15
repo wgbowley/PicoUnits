@@ -14,7 +14,7 @@ import unittest
 from math import sqrt, sin, pi
 from picounits.dimensions.units import (
     Unit, Dimension, SIBase, PrefixScale, conversion,
-    _valid_conversion
+    _valid_conversion, _computes_scale
 )
 
 
@@ -25,30 +25,89 @@ class UnitTest(unittest.TestCase):
     """
 
     def test_prefix_scale_representation(self) -> None:
-        """ Tests the representation of PrefixScale"""
-        scale = PrefixScale.TERA
+        """Tests the representation of PrefixScale"""
 
-        expected = str("<Prefix.TERA: 10^12>")
-        self.assertEqual(repr(scale), expected)
+        cases = [
+            (PrefixScale.TERA, 12),
+            (PrefixScale.GIGA, 9),
+            (PrefixScale.MEGA, 6),
+            (PrefixScale.KILO, 3),
+            (PrefixScale.HECTO, 2),
+            (PrefixScale.DEKA, 1),
+            (PrefixScale.BASE, 0),
+            (PrefixScale.DECI, -1),
+            (PrefixScale.CENTI, -2),
+            (PrefixScale.MILLI, -3),
+            (PrefixScale.MICRO, -6),
+            (PrefixScale.NANO, -9),
+            (PrefixScale.PICO, -12),
+        ]
+
+        for scale, power in cases:
+            with self.subTest(scale=scale):
+                expected = f"<Prefix.{scale.name}: 10^{power}>"
+                self.assertEqual(repr(scale), expected)
+
+    def test_prefix_scale_symbol(self) -> None:
+        """Tests the prefix scale symbol property"""
+
+        cases = [
+            (PrefixScale.TERA, "T"),
+            (PrefixScale.GIGA, "G"),
+            (PrefixScale.MEGA, "M"),
+            (PrefixScale.KILO, "k"),
+            (PrefixScale.HECTO, "h"),
+            (PrefixScale.DEKA, "da"),
+            (PrefixScale.BASE, ""),
+            (PrefixScale.DECI, "d"),
+            (PrefixScale.CENTI, "c"),
+            (PrefixScale.MILLI, "m"),
+            (PrefixScale.MICRO, "μ"),
+            (PrefixScale.NANO, "n"),
+            (PrefixScale.PICO, "p"),
+        ]
+
+        for scale, expected in cases:
+            with self.subTest(scale=scale):
+                self.assertEqual(scale.symbol, expected)
 
     def test_si_base_representation(self) -> None:
-        """ Tests the representation of SIBase """
-        base = SIBase.AMPERE
+        """Tests the representation of SIBase"""
 
-        expected = str("<SIBase.AMPERE>")
-        self.assertEqual(repr(base), expected)
+        for base in SIBase:
+            with self.subTest(base=base):
+                expected = f"<SIBase.{base.name}>"
+                self.assertEqual(repr(base), expected)
+
+    def test_si_base_symbol(self) -> None:
+        """Tests the SI base unit symbol property"""
+
+        cases = [
+            (SIBase.SECOND, "s"),
+            (SIBase.METER, "m"),
+            (SIBase.GRAM, "g"),
+            (SIBase.AMPERE, "A"),
+            (SIBase.KELVIN, "K"),
+            (SIBase.MOLE, "mol"),
+            (SIBase.CANDELA, "cd"),
+            (SIBase.DIMENSIONLESS, "∅"),
+        ]
+
+        for base, expected in cases:
+            with self.subTest(base=base):
+                self.assertEqual(base.symbol, expected)
 
     def test_dimensional_correctness(self) -> None:
         """ Testing that the dimension inputs are correct"""
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             # Non-PreFixScale type
             _ = Dimension("Scale? Whats that?")
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             # Non-SIBase type
             _ = Dimension(base="SI Metric? Nah ImperialBase?")
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             # Non-integer type for exponent
             _ = Dimension(exponent=67.67)
 
@@ -91,13 +150,22 @@ class UnitTest(unittest.TestCase):
             # Tries class (Enum)
             _ = Unit(Dimension(base=SIBase.AMPERE), SIBase.AMPERE)
 
-    def test_standard_unit(self) -> None:
+    def test_unit_equality_with_unit(self) -> None:
         """ Test the unit equality between same units """
         expected = Unit(Dimension(base=SIBase.AMPERE))
-        result = Unit(
-            Dimension(PrefixScale.BASE, base=SIBase.AMPERE, exponent=1)
-        )
+        result = Unit(Dimension(base=SIBase.AMPERE))
         self.assertEqual(expected, result)
+
+    def test_unit_equality_with_non_unit(self) -> None:
+        """ Tests the unit equality between unit and non-unit """
+        unit = Unit(Dimension(base=SIBase.METER))
+        self.assertNotEqual(unit, "meter")
+
+    def test_unit_equality_with_different_units(self) -> None:
+        """ Tests the unit equality with different units """
+        unit_1 = Unit(Dimension(base=SIBase.AMPERE))
+        unit_2 = Unit(Dimension(base=SIBase.CANDELA))
+        self.assertNotEqual(unit_1, unit_2)
 
     def test_zero_exponent_bases_normalize_to_same_unit(self) -> None:
         """
@@ -137,6 +205,14 @@ class UnitTest(unittest.TestCase):
         # Ensures that the unit can be used as a key
         unit_cache = {tesla_a: "Tesla Unit"}
         self.assertIn(tesla_b, unit_cache)
+
+    def test_different_unit_different_hashes(self) -> None:
+        """ Tests that different units have different hashes """
+        _meter = Unit(Dimension(base=SIBase.METER))
+        _second = Unit(Dimension(base=SIBase.SECOND))
+
+        # Asserts that two different units have different hashes
+        self.assertNotEqual(hash(_meter), hash(_second))
 
     def test_duplicated_si_bases(self) -> None:
         """ Test the unit duplicated bases logical """
@@ -186,6 +262,39 @@ class UnitTest(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             _valid_conversion(tesla, broken_tesla)
+
+    def test_valid_conversion_does_not_raise(self) -> None:
+        """ Tests valid conversion helper with a valid conversion """
+        new_unit = Unit(Dimension(PrefixScale.BASE, SIBase.METER))
+        old_unit = Unit(Dimension(PrefixScale.NANO, SIBase.METER))
+        _valid_conversion(new_unit, old_unit)
+
+    def test_compute_scale_function_with_valid_input(self) -> None:
+        """ Tests compute scale function with valid input """
+        old_unit = Unit(Dimension(PrefixScale.NANO, SIBase.MOLE))
+        new_unit = Unit(Dimension(PrefixScale.PICO, SIBase.MOLE))
+
+        expected = 10 ** 3
+        result = _computes_scale(old_unit, new_unit)
+        self.assertEqual(expected, result)
+
+    def test_compute_scale_with_higher_exponent_with_valid_input(self) -> None:
+        """ Tests compute scale with higher exponent and valid input """
+        old_unit = Unit(Dimension(PrefixScale.TERA, SIBase.MOLE, 3))
+        new_unit = Unit(Dimension(PrefixScale.GIGA, SIBase.MOLE, 3))
+
+        expected = 10 ** 9
+        result = _computes_scale(old_unit, new_unit)
+        self.assertEqual(expected, result)
+
+    def test_compute_scale_with_neg_exponent_with_valid_input(self) -> None:
+        """ Tests compute scale with negative exponent and valid input"""
+        old_unit = Unit(Dimension(PrefixScale.TERA, SIBase.SECOND, -2))
+        new_unit = Unit(Dimension(PrefixScale.GIGA, SIBase.SECOND, -2))
+
+        expected = 10 ** -6
+        result = _computes_scale(old_unit, new_unit)
+        self.assertEqual(expected, result)
 
     def test_base_to_kilo_unit_scaling(self) -> None:
         """
@@ -320,6 +429,17 @@ class UnitTest(unittest.TestCase):
         result, _ = conversion(magnitude, _weber, _weber_2)
         self.assertAlmostEqual(expected, result)
 
+    def test_round_trip_unit_scaling_from_a_b_a(self) -> None:
+        """ Tests round trip unit scaling from a to b to a """
+        unit_a = Unit(Dimension(PrefixScale.MILLI, SIBase.METER))
+        unit_b = Unit(Dimension(PrefixScale.KILO, SIBase.METER))
+
+        value = 123.456
+        forward, _ = conversion(value, unit_a, unit_b)
+        backward, _ = conversion(forward, unit_b, unit_a)
+
+        self.assertAlmostEqual(value, backward)
+
     def test_conversion_preserves_integers(self) -> None:
         """ Tests the converting while preserving integer values """
         old_unit = Unit(Dimension(PrefixScale.BASE, SIBase.METER))
@@ -339,6 +459,14 @@ class UnitTest(unittest.TestCase):
         self.assertEqual(result, expected)
         self.assertIsInstance(result, float)
 
+    def test_integer_float_boundary(self) -> None:
+        """ Tests the integer float boundary when scaling """
+        old = Unit(Dimension(PrefixScale.CENTI, SIBase.METER))
+        new = Unit(Dimension(PrefixScale.BASE, SIBase.METER))
+
+        result, _ = conversion(1, old, new)
+        self.assertIsInstance(result, float)
+
     def test_unit_representation_method(self) -> None:
         """ Tests unit representation method """
         _permeability = Unit(
@@ -349,8 +477,7 @@ class UnitTest(unittest.TestCase):
         )
 
         expected = str("kg m s^-2 A^-2")
-        representation = str(_permeability.name)
-        self.assertEqual(expected, representation)
+        self.assertEqual(expected, repr(_permeability))
 
     def test_unit_representation_method_dimensionless_in_unit(self) -> None:
         """ Tests unit representation method when dimensionless in unit """
@@ -363,8 +490,20 @@ class UnitTest(unittest.TestCase):
         )
 
         expected = str("kg m^2 s^-2 A^-1")
-        representation = str(_weber.name)
-        self.assertEqual(expected, representation)
+        self.assertEqual(expected, repr(_weber))
+
+    def test_unit_repr_order_independent(self) -> None:
+        """ Tests unit representation method is independent of order """
+        a = Unit(
+            Dimension(base=SIBase.METER),
+            Dimension(base=SIBase.SECOND, exponent=-1)
+        )
+        b = Unit(
+            Dimension(base=SIBase.SECOND, exponent=-1),
+            Dimension(base=SIBase.METER)
+        )
+
+        self.assertEqual(repr(a), repr(b))
 
     def test_dimensionless_representation_method(self) -> None:
         """ Tests unit representation of dimensionless unit """

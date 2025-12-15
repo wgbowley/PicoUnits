@@ -1,7 +1,7 @@
 """
 File: runner.py
 Author: William Bowley
-Version: 1.4
+Version: 0.1
 
 Description:
     Runs all unit tests within the pyFea framework
