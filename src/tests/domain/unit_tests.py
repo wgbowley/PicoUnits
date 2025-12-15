@@ -12,9 +12,10 @@ Description:
 import unittest
 
 from math import sqrt, sin, pi
-from picounits.dimensions.units import (
-    Unit, Dimension, SIBase, PrefixScale, conversion,
-    _valid_conversion, _computes_scale
+from picounits.core.unit import Unit
+from picounits.core.enums import SIBase, PrefixScale, Dimension
+from picounits.core.conversion import (
+    conversion, _valid_conversion, _computes_scale
 )
 
 
@@ -512,3 +513,32 @@ class UnitTest(unittest.TestCase):
         expected = str("∅")
         representation = str(_radians.name)
         self.assertEqual(expected, representation)
+
+    """ Testing Dunder methods for forward/reverse arithmetic """
+
+    def test_right_hand_multiplication(self) -> None:
+        """ Tests right hand multiplication between a non-unit and unit """
+        _radians = Unit(Dimension(base=SIBase.DIMENSIONLESS))
+
+        with self.assertRaises(TypeError):
+            _ = 5 * _radians
+
+    def test_right_hand_true_division(self) -> None:
+        """ Tests right hand true division between a non-unit and unit """
+        _weber = Unit(
+            Dimension(PrefixScale.KILO, SIBase.GRAM),
+            Dimension(base=SIBase.METER, exponent=2),
+            Dimension(PrefixScale.TERA, SIBase.DIMENSIONLESS),
+            Dimension(base=SIBase.SECOND, exponent=-2),
+            Dimension(base=SIBase.AMPERE, exponent=-1)
+        )
+
+        with self.assertRaises(TypeError):
+            _ = 5 / _weber
+
+    def test_right_hand_power(self) -> None:
+        """ Tests right hand power between a non-unit and unit """
+        _square_meter = Unit(Dimension(base=SIBase.METER, exponent=2))
+
+        with self.assertRaises(TypeError):
+            _ = 5 ** _square_meter
