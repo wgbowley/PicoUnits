@@ -55,7 +55,7 @@ class Unit:
     def _analysis(self, other: Unit, division: bool) -> Unit:
         """
         Combines or divides two units via their dimension exponents.
-        Keeps the highest prefix when doing division and/or multiplication
+        Keeps the lowest prefix when doing division and/or multiplication
         """
         combined_dims = {}
         for dim in self.dimensions:
@@ -71,9 +71,9 @@ class Unit:
                 # Add exponents
                 new_exponent = current_exponent + exponent_change
 
-                # Keeps the highest prefix
+                # Keeps the lowest prefix
                 new_prefix = None
-                if dim.prefix.value < prefix.value:
+                if dim.prefix.value > prefix.value:
                     new_prefix = prefix
                 else:
                     new_prefix = dim.prefix
@@ -131,35 +131,39 @@ class Unit:
 
         return Unit(*new_dims)
 
-    def __rmul__(self, other: Any) -> None:
-        """ Defines behavior for the right-hand multiplication """
-        msg = f"Cannot multiply a {type(other)} by {type(self).__name__}"
-        raise NotImplementedError(msg)
+    def __rmul__(self, other: Any):
+        """Defines behavior for the right-hand multiplication"""
+        # Local import to avoid circular imports across modules
+        # Type hinting is possible given the local importation
+        from picounits.core.qualities import Quantity
 
-    def __rtruediv__(self, other: Any) -> None:
+        return Quantity(other, self)
+
+    def __rtruediv__(self, other: Any):
         """ Defines behavior for the right-hand true division """
+        # Local import to avoid circular imports across modules
+        # Type hinting is possible given the local importation
+        from picounits.core.qualities import Quantity
+
         if not isinstance(other, (int, float)):
             msg = f"Cannot true divide a {type(other)} by {type(self).__name__}"
             raise NotImplementedError(msg)
-
-        if other != 1:
-            msg = (
-                f"Cannot true divide a {type(other)} by {type(self).__name__} "
-                "expect for 1 / unit as reciprocal"
-            )
-            raise TypeError(msg)
 
         new_dims = [
             Dimension(dim.prefix, dim.base, dim.exponent * -1)
             for dim in self.dimensions
         ]
+        reciprocal_unit = Unit(*new_dims)
 
-        return Unit(*new_dims)
+        if other == 1:
+            return reciprocal_unit
+        else:
+            return Quantity(other, reciprocal_unit)
 
     def __rpow__(self, other: Any) -> None:
         """ Defines behavior for the right-hand power """
         msg = f"Cannot raise a {type(other)} by {type(self).__name__}"
-        raise NotImplementedError(msg)
+        raise TypeError(msg)
 
     def __eq__(self, other) -> bool:
         """ Checks equality between units """

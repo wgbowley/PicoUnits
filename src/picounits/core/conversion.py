@@ -12,7 +12,7 @@ Description:
 from picounits.core.unit import Unit
 
 
-def _valid_conversion(old: Unit, new: Unit) -> None:
+def _valid_conversion(old: Unit, new: Unit, checks: bool = False) -> bool | None:
     """ Validates that the two units are compatible for conversion """
 
     # Checks for same length between units
@@ -21,6 +21,8 @@ def _valid_conversion(old: Unit, new: Unit) -> None:
             "Conversion check failed: Units must have the same length "
             f"({old.length} != {new.length})"
         )
+        if checks:
+            return False
         raise ValueError(msg)
 
     # Checks correctness between units
@@ -32,8 +34,10 @@ def _valid_conversion(old: Unit, new: Unit) -> None:
             "Conversion check failed: Base Units and Exponents do not match "
             f"({old_lookup.keys()} != {new_lookup.keys()})"
         )
+        if checks:
+            return False
         raise ValueError(msg)
-
+    return True
 
 def _computes_scale(old: Unit, new: Unit) -> float:
     """ Computes the conversion factor between 'old' to 'new' unit """

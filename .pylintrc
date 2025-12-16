@@ -1,2 +1,5 @@
 [MESSAGES CONTROL]
-disable = W0105 # String statement has no effect
+disable = 
+    W0105, # String statement has no effect
+    C0415, # import-outside-toplevel
+    E0602  # undefined-variable

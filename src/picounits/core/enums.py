@@ -55,7 +55,7 @@ class PrefixScale(Enum):
 
 
 class SIBase(Enum):
-    """ SI metric fundamental units expect mass is defined as a gram """
+    """ SI metric fundamental units except mass is defined as a gram """
     SECOND = auto()             # Time
     METER = auto()              # Length
     GRAM = auto()               # Mass
@@ -68,6 +68,7 @@ class SIBase(Enum):
     @property
     def symbol(self) -> str:
         """Returns the SI base unit symbol."""
+        # Move this to cache (Don't create each call)
         return {
             SIBase.SECOND: "s",
             SIBase.METER: "m",
@@ -81,7 +82,11 @@ class SIBase(Enum):
 
     @property
     def order(self) -> int:
-        """ Returns the SI base unit order of important. (0 = Highest)"""
+        """ 
+        Returns the SI base unit order of importance for 
+        consistent unit display in scientific notation
+        """
+        # Move this to cache (Don't create each call)
         return {
             SIBase.SECOND: 2,
             SIBase.METER: 1,
@@ -126,11 +131,11 @@ class Dimension:
         if not isinstance(self.exponent, int):
             msg = (
                 "Dimension exponent cannot be defined with "
-                f"{type(self.exponent)} has to be an {type(int)}"
+                f"{type(self.exponent)} has to be int"
             )
             raise TypeError(msg)
 
-        # Edge Case: Ensures that bases to the power of zero cancel
+        # Handle zero exponent: x^0 = 1 (dimensionless)
         if self.exponent == 0:
             self.base = SIBase.DIMENSIONLESS
             self.exponent = 1
