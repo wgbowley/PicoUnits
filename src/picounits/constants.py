@@ -10,12 +10,12 @@ Description:
 """
 
 from picounits.core.unit import Unit
-from picounits.core.enums import SIBase, Dimension
+from picounits.core.enums import FBase, Dimension
 
 
-DIMENSIONLESS = Unit(Dimension(base=SIBase.DIMENSIONLESS))
+DIMENSIONLESS = Unit(Dimension(base=FBase.DIMENSIONLESS))
 
-METER = Unit(Dimension(base=SIBase.METER))
-SECOND = Unit(Dimension(base=SIBase.SECOND))
-GRAM = Unit(Dimension(base=SIBase.GRAM))
-AMPERE = Unit(Dimension(base=SIBase.AMPERE))
+METER = Unit(Dimension(base=FBase.METER))
+SECOND = Unit(Dimension(base=FBase.SECOND))
+GRAM = Unit(Dimension(base=FBase.GRAM))
+AMPERE = Unit(Dimension(base=FBase.AMPERE))

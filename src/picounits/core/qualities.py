@@ -13,7 +13,6 @@ from typing import Any
 from dataclasses import dataclass
 
 from picounits.core.unit import Unit
-from picounits.core.conversion import conversion
 from picounits.constants import DIMENSIONLESS
 
 

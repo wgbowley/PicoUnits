@@ -1,61 +1,66 @@
 """
 Filename: enums.py
 Author: William Bowley
-Version: 0.1
+Version: 0.2
 
 Description:
     This file defines the 'Unit' subclasses
-    'PreFixScale', 'SIBase' and 'Dimension'
+    'FBase' and 'Dimension'. And also the 
+    independent class 'PrefixScale'
 """
 
 from enum import Enum, auto
 from dataclasses import dataclass
 
-
 class PrefixScale(Enum):
-    """
-    SI metric prefixes as powers of 10. Used to build 'Dimension'
-    """
-    TERA = 12   # 10¹²
-    GIGA = 9    # 10⁹
-    MEGA = 6    # 10⁶
-    KILO = 3    # 10³
-    HECTO = 2   # 10²
-    DEKA = 1    # 10¹
-    BASE = 0    # 10⁰
-    DECI = -1   # 10⁻¹
-    CENTI = -2  # 10⁻²
-    MILLI = -3  # 10⁻³
-    MICRO = -6  # 10⁻⁶
-    NANO = -9   # 10⁻⁹
-    PICO = -12  # 10⁻¹²
+    """ Scaling prefixes as powers of 10 for 'Qualities' """
+    TERA = 12
+    GIGA = 9
+    MEGA = 6
+    KILO = 3
+    HECTO = 2
+    DEKA = 1
+    BASE = 0
+    DECI = -1
+    CENTI = -2
+    MILLI = -3
+    MICRO = -6
+    NANO = -9
+    PICO = -12
 
     @property
     def symbol(self) -> str:
-        """Returns the SI prefix symbol."""
-        return {
-            PrefixScale.TERA: "T",
-            PrefixScale.GIGA: "G",
-            PrefixScale.MEGA: "M",
-            PrefixScale.KILO: "k",
-            PrefixScale.HECTO: "h",
-            PrefixScale.DEKA: "da",
-            PrefixScale.BASE: "",
-            PrefixScale.DECI: "d",
-            PrefixScale.CENTI: "c",
-            PrefixScale.MILLI: "m",
-            PrefixScale.MICRO: "μ",
-            PrefixScale.NANO: "n",
-            PrefixScale.PICO: "p",
-        }[self]
+        """ Returns the prefix symbol. """
+        return _SCALE_SYMBOLS[self]
+
+    def __str__(self) -> str:
+        """ Returns name for __str__ dunder method """
+        return self.name
 
     def __repr__(self) -> str:
         """ Displays the scale name and its numerical value """
-        return f"<Prefix.{self.name}: 10^{self.value}>"
+        return f"<PrefixScale.{self}: 10^{self.value}>"
+
+# Fast mapping for enums and ensure O(1) lookup
+_SCALE_SYMBOLS = {
+    PrefixScale.TERA: "T",
+    PrefixScale.GIGA: "G",
+    PrefixScale.MEGA: "M",
+    PrefixScale.KILO: "k",
+    PrefixScale.HECTO: "h",
+    PrefixScale.DEKA: "da",
+    PrefixScale.BASE: "",
+    PrefixScale.DECI: "d",
+    PrefixScale.CENTI: "c",
+    PrefixScale.MILLI: "m",
+    PrefixScale.MICRO: "μ",
+    PrefixScale.NANO: "n",
+    PrefixScale.PICO: "p",
+}
 
 
-class SIBase(Enum):
-    """ SI metric fundamental units except mass is defined as a gram """
+class FBase(Enum):
+    """ Fundamental units """
     SECOND = auto()             # Time
     METER = auto()              # Length
     GRAM = auto()               # Mass
@@ -67,88 +72,78 @@ class SIBase(Enum):
 
     @property
     def symbol(self) -> str:
-        """Returns the SI base unit symbol."""
-        # Move this to cache (Don't create each call)
-        return {
-            SIBase.SECOND: "s",
-            SIBase.METER: "m",
-            SIBase.GRAM: "g",
-            SIBase.AMPERE: "A",
-            SIBase.KELVIN: "K",
-            SIBase.MOLE: "mol",
-            SIBase.CANDELA: "cd",
-            SIBase.DIMENSIONLESS: "∅",
-        }[self]
+        """ Returns the base unit symbol. """
+        return _BASE_SYMBOLS[self]
 
     @property
     def order(self) -> int:
-        """ 
-        Returns the SI base unit order of importance for 
-        consistent unit display in scientific notation
-        """
-        # Move this to cache (Don't create each call)
-        return {
-            SIBase.SECOND: 2,
-            SIBase.METER: 1,
-            SIBase.GRAM: 0,
-            SIBase.AMPERE: 3,
-            SIBase.KELVIN: 4,
-            SIBase.MOLE: 5,
-            SIBase.CANDELA: 6,
-            SIBase.DIMENSIONLESS: 7,
-        }[self]
+        """ Returns the base units under consistent order for notation """
+        return _ORDER[self]
+
+    def __str__(self) -> str:
+        """ Returns name for __str__ dunder method """
+        return self.name
 
     def __repr__(self) -> str:
-        """ Displays the fundamental SI metric base """
-        return f"<SIBase.{self.name}>"
+        """ Displays the fundamental base """
+        return f"<SIBase.{self}>"
 
+# Fast mapping for enums and ensure O(1) lookup
+_BASE_SYMBOLS = {
+    FBase.SECOND: "s",
+    FBase.METER: "m",
+    FBase.GRAM: "g",
+    FBase.AMPERE: "A",
+    FBase.KELVIN: "K",
+    FBase.MOLE: "mol",
+    FBase.CANDELA: "cd",
+    FBase.DIMENSIONLESS: "∅",
+}
+
+# Fast mapping for enums and ensure O(1) lookup
+_ORDER = {
+    FBase.SECOND: 2,
+    FBase.METER: 1,
+    FBase.GRAM: 0,
+    FBase.AMPERE: 3,
+    FBase.KELVIN: 4,
+    FBase.MOLE: 5,
+    FBase.CANDELA: 6,
+    FBase.DIMENSIONLESS: 7,
+}
 
 @dataclass(slots=True)
 class Dimension:
-    """
-    Defines a SI metric dimension through 'SIBase', 'PrefixScale and 'exponent'
-    """
-    prefix: PrefixScale = PrefixScale.BASE
-    base: SIBase = SIBase.DIMENSIONLESS
+    """ Defines a dimension through 'FBase', 'PrefixScale and 'exponent' """
+    base: FBase = FBase.DIMENSIONLESS
     exponent: int = 1
 
     def __post_init__(self):
-        """ Checks to ensure prefix, base and exponent are the correct type """
-        if not isinstance(self.prefix, PrefixScale):
-            msg = (
-                f"Dimension prefix cannot be defined with {type(self.prefix)} "
-                f"has to be {PrefixScale}"
-            )
-            raise TypeError(msg)
-
-        if not isinstance(self.base, SIBase):
-            msg = (
-                f"Dimension base cannot be defined with {type(self.base)} "
-                f"has to be {SIBase}"
-            )
+        """ Validates base, exponent and may mutate values. """
+        if not isinstance(self.base, FBase):
+            msg = f"Dimension base must be FBase, not {type(self.base)}"
             raise TypeError(msg)
 
         if not isinstance(self.exponent, int):
-            msg = (
-                "Dimension exponent cannot be defined with "
-                f"{type(self.exponent)} has to be int"
-            )
+            msg = f"Dimension exponent must be int, not {type(self.exponent)}"
             raise TypeError(msg)
 
         # Handle zero exponent: x^0 = 1 (dimensionless)
         if self.exponent == 0:
-            self.base = SIBase.DIMENSIONLESS
+            self.base = FBase.DIMENSIONLESS
             self.exponent = 1
 
     @property
     def name(self) -> str:
-        """Constructs the dimension's SI-style name using symbols."""
-        scale = self.prefix.symbol
-        base = self.base.symbol
-
+        """ Constructs the dimension's name using symbols. """
         if self.exponent == 1:
-            return f"{scale}{base}"
-        return f"{scale}{base}^{self.exponent}"
+            return self.base.symbol
+
+        return f"{self.base.symbol}^{self.exponent}"
+
+    def __str__(self) -> str:
+        """ Returns name for __str__ dunder method """
+        return self.name
 
     def __repr__(self) -> str:
         """ Displays the defined dimension through its components """

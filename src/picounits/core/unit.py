@@ -1,8 +1,7 @@
 """
 Filename: units.py
 Author: William Bowley
-Version: 0.4
-status: N
+Version: 0.5
 
 Description:
     This file defines the 'Unit' class
@@ -11,11 +10,13 @@ Description:
 from __future__ import annotations
 from typing import Any
 
-from picounits.core.enums import Dimension, SIBase
+from picounits.core.enums import Dimension, FBase
 
 
 class Unit:
     """ Defines a unit composed of one or more Dimensions. """
+    __slots__ = ('dimensions', '_hash_cache', '_name_cache')
+
     def __init__(self, *dimensions: Dimension) -> None:
         """ Initialize the Unit class and performs checks """
         if not dimensions:
@@ -25,26 +26,30 @@ class Unit:
             if not isinstance(dim, Dimension):
                 raise ValueError(f"{type(dim).__name__} is not a Dimension")
 
+        # Initializes two object variables
         self.dimensions = list(dimensions)
+        self._hash_cache = None
+        self._name_cache = None
 
+        # Performs checks for consistency
         self._remove_dimensionless()
         self._duplicated_bases_check()
         self._sort_order()
 
     def _remove_dimensionless(self) -> None:
-        """Remove dimensionless units when others exist"""
+        """ Remove dimensionless units when others exist """
         if self.length == 1:
             return
 
         new_dims = []
         for dim in self.dimensions:
-            if dim.base != SIBase.DIMENSIONLESS:
+            if dim.base != FBase.DIMENSIONLESS:
                 new_dims.append(dim)
 
         self.dimensions = new_dims
 
     def _duplicated_bases_check(self) -> None:
-        """ Checks for duplicated SI bases """
+        """ Checks for duplicated bases """
         duplicated_bases = set()
 
         for dim in self.dimensions:
@@ -57,11 +62,9 @@ class Unit:
         """ Sorts the order of dimensions to ensure canonical representation """
         self.dimensions.sort(key=lambda d: d.base.order)
 
-
     def _dimensional_analysis(self, other: Unit, division: bool) -> Unit:
         """ Combines or divides two units via their dimension exponents. """
         combined: dict = {dim.base: dim.exponent for dim in self.dimensions}
-
         for dim in other.dimensions:
             key = dim.base
 
@@ -81,7 +84,7 @@ class Unit:
 
         # Handles dimensionless unit if all dimensions canceled out
         if not new_dimensions:
-            return Unit(Dimension(base=SIBase.DIMENSIONLESS))
+            return Unit(Dimension(base=FBase.DIMENSIONLESS))
 
         return Unit(*new_dimensions)
 
@@ -92,8 +95,10 @@ class Unit:
 
     @property
     def name(self) -> str:
-        """ Returns the units name """
-        return " ".join([str(dim.name) for dim in self.dimensions])
+        """ Returns the units name as dimensions and prefixscale"""
+        if self._name_cache is None:
+            self._name_cache = "·".join(str(dim.name) for dim in self.dimensions)
+        return self._name_cache
 
     def __mul__(self, other: Unit) -> Unit:
         """ Defines behavior for the forward multiplication operator """
@@ -105,12 +110,13 @@ class Unit:
 
     def __pow__(self, other: int | float) -> Unit:
         """ Defines behavior for forward power """
+        # Note removing float might be more optimal.
         if not isinstance(other, (float, int)):
             msg = f"Exponent must be int or float, not {type(other).__name__}"
             raise TypeError(msg)
 
         new_dims = [
-            Dimension(dim.prefix, dim.base, dim.exponent * other)
+            Dimension(dim.base, dim.exponent * other)
             for dim in self.dimensions
         ]
 
@@ -129,9 +135,18 @@ class Unit:
             return False
 
         # Compares dimensions independent of their order
-        self_set = {(d.base, d.prefix, d.exponent) for d in self.dimensions}
-        other_set = {(d.base, d.prefix, d.exponent) for d in other.dimensions}
+        self_set = {(d.base, d.exponent) for d in self.dimensions}
+        other_set = {(d.base, d.exponent) for d in other.dimensions}
         return self_set == other_set
+
+    def __hash__(self) -> int:
+        """Hash based on dimensions, order-independent"""
+        dim_tuples = {(d.base, d.exponent) for d in self.dimensions}
+        return hash(frozenset(dim_tuples))
+
+    def __repr__(self) -> str:
+        """ Displays the formatted unit representation """
+        return self.name
 
     """ Uses local import to avoid circular import across modules """
 
@@ -145,12 +160,12 @@ class Unit:
         """ Defines behavior for the right-hand true division """
         from picounits.core.qualities import Quantity
 
-        if not isinstance(other, (int, float)):
+        if not isinstance(other, int):
             msg = f"Cannot true divide a {type(other)} by a Unit"
             raise TypeError(msg)
 
         new_dims = [
-            Dimension(dim.prefix, dim.base, dim.exponent * -1)
+            Dimension(dim.base, dim.exponent * -1)
             for dim in self.dimensions
         ]
         reciprocal_unit = Unit(*new_dims)
@@ -158,12 +173,3 @@ class Unit:
         return (
             reciprocal_unit if other == 1 else Quantity(other, reciprocal_unit)
         )
-
-    def __hash__(self) -> int:
-        """Hash based on dimensions, order-independent"""
-        dim_tuples = {(d.base, d.prefix, d.exponent) for d in self.dimensions}
-        return hash(frozenset(dim_tuples))
-
-    def __repr__(self) -> str:
-        """ Displays the formatted unit representation """
-        return self.name

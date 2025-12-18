@@ -18,6 +18,7 @@
     "dataclass",
     "Hashability",
     "suvat",
-    "toplevel"
+    "toplevel",
+    "Fbase"
   ]
 }
