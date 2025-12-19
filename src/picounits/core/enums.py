@@ -1,13 +1,15 @@
 """
 Filename: enums.py
 Author: William Bowley
-Version: 0.2
+Version: 0.3*
 
 Description:
     This file defines the 'Unit' subclasses
     'FBase' and 'Dimension'. And also the 
     independent class 'PrefixScale'
 """
+
+from __future__ import annotations
 
 from enum import Enum, auto
 from dataclasses import dataclass
@@ -41,6 +43,12 @@ class PrefixScale(Enum):
         """ Displays the scale name and its numerical value """
         return f"<PrefixScale.{self}: 10^{self.value}>"
 
+    @classmethod
+    def from_value(cls, power: int) -> tuple[int, PrefixScale]:
+        """ Return the PrefixScale for a given power of ten """
+        closest_member = min(cls, key=lambda m: abs(m.value - power))
+        return (closest_member.value, closest_member)
+
 # Fast mapping for enums and ensure O(1) lookup
 _SCALE_SYMBOLS = {
     PrefixScale.TERA: "T",
@@ -61,14 +69,14 @@ _SCALE_SYMBOLS = {
 
 class FBase(Enum):
     """ Fundamental units """
-    SECOND = auto()             # Time
-    METER = auto()              # Length
-    GRAM = auto()               # Mass
-    AMPERE = auto()             # Electric Current
-    KELVIN = auto()             # Temperature
-    MOLE = auto()               # Amount of a substance
-    CANDELA = auto()            # Luminous Intensity
-    DIMENSIONLESS = auto()      # Non-physical quantity
+    TIME = auto()
+    LENGTH = auto()
+    MASS = auto()
+    CURRENT = auto()
+    THERMAL = auto()
+    AMOUNT = auto()
+    LUMINOSITY = auto()
+    DIMENSIONLESS = auto()
 
     @property
     def symbol(self) -> str:
@@ -90,25 +98,25 @@ class FBase(Enum):
 
 # Fast mapping for enums and ensure O(1) lookup
 _BASE_SYMBOLS = {
-    FBase.SECOND: "s",
-    FBase.METER: "m",
-    FBase.GRAM: "g",
-    FBase.AMPERE: "A",
-    FBase.KELVIN: "K",
-    FBase.MOLE: "mol",
-    FBase.CANDELA: "cd",
+    FBase.TIME: "t",
+    FBase.LENGTH: "l",
+    FBase.MASS: "m",
+    FBase.CURRENT: "i",
+    FBase.THERMAL: "th",
+    FBase.AMOUNT: "a",
+    FBase.LUMINOSITY: "lu",
     FBase.DIMENSIONLESS: "∅",
 }
 
 # Fast mapping for enums and ensure O(1) lookup
 _ORDER = {
-    FBase.SECOND: 2,
-    FBase.METER: 1,
-    FBase.GRAM: 0,
-    FBase.AMPERE: 3,
-    FBase.KELVIN: 4,
-    FBase.MOLE: 5,
-    FBase.CANDELA: 6,
+    FBase.TIME: 2,
+    FBase.LENGTH: 1,
+    FBase.MASS: 0,
+    FBase.CURRENT: 3,
+    FBase.THERMAL: 4,
+    FBase.AMOUNT: 5,
+    FBase.LUMINOSITY: 6,
     FBase.DIMENSIONLESS: 7,
 }
 
@@ -118,7 +126,7 @@ class Dimension:
     base: FBase = FBase.DIMENSIONLESS
     exponent: int = 1
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """ Validates base, exponent and may mutate values. """
         if not isinstance(self.base, FBase):
             msg = f"Dimension base must be FBase, not {type(self.base)}"
@@ -134,12 +142,17 @@ class Dimension:
             self.exponent = 1
 
     @property
+    def superscript(self) -> str:
+        """ Returns the unicode superscript """
+        return str(self.exponent).translate(SUPERSCRIPT_MAP)
+
+    @property
     def name(self) -> str:
         """ Constructs the dimension's name using symbols. """
         if self.exponent == 1:
             return self.base.symbol
 
-        return f"{self.base.symbol}^{self.exponent}"
+        return self.base.symbol + self.superscript
 
     def __str__(self) -> str:
         """ Returns name for __str__ dunder method """
@@ -148,3 +161,10 @@ class Dimension:
     def __repr__(self) -> str:
         """ Displays the defined dimension through its components """
         return f"<Dimension name='{self.name}'>"
+
+
+# Mapping int to unicode for __repr__ & name within Dimension
+SUPERSCRIPT_MAP = str.maketrans(
+    "0123456789+-",
+    "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻"
+)

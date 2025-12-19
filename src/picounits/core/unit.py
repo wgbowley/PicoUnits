@@ -100,12 +100,28 @@ class Unit:
             self._name_cache = "·".join(str(dim.name) for dim in self.dimensions)
         return self._name_cache
 
+    def sqrt(self) -> Unit:
+        """ Defines behavior for the square root operator method """
+        for dim in self.dimensions:
+            if dim.exponent % 2 != 0:
+                msg = f"Cannot take sqrt of unit with odd exponent: {dim}"
+                raise ValueError(msg)
+
+        new_dims = [Dimension(dim.base, dim.exponent // 2) for dim in self.dimensions]
+        return Unit(*new_dims)
+
     def __mul__(self, other: Unit) -> Unit:
         """ Defines behavior for the forward multiplication operator """
+        if not isinstance(other, Unit):
+            return self.__rmul__(other)
+
         return self._dimensional_analysis(other, False)
 
     def __truediv__(self, other: Unit) -> Unit:
         """ Defines behavior for forward true division """
+        if not isinstance(other, Unit):
+            raise ValueError(f"Cannot true divide a unit by type{other}")
+
         return self._dimensional_analysis(other, True)
 
     def __pow__(self, other: int | float) -> Unit:
@@ -116,7 +132,7 @@ class Unit:
             raise TypeError(msg)
 
         new_dims = [
-            Dimension(dim.base, dim.exponent * other)
+            Dimension(dim.base, round(dim.exponent * other))
             for dim in self.dimensions
         ]
 
@@ -141,8 +157,10 @@ class Unit:
 
     def __hash__(self) -> int:
         """Hash based on dimensions, order-independent"""
-        dim_tuples = {(d.base, d.exponent) for d in self.dimensions}
-        return hash(frozenset(dim_tuples))
+        if self._hash_cache is None:
+            dim_tuples = {(d.base, d.exponent) for d in self.dimensions}
+            self._hash_cache = hash(frozenset(dim_tuples))
+        return self._hash_cache
 
     def __repr__(self) -> str:
         """ Displays the formatted unit representation """
@@ -160,7 +178,7 @@ class Unit:
         """ Defines behavior for the right-hand true division """
         from picounits.core.qualities import Quantity
 
-        if not isinstance(other, int):
+        if not isinstance(other, (int, float)):
             msg = f"Cannot true divide a {type(other)} by a Unit"
             raise TypeError(msg)
 

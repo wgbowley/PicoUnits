@@ -1,3 +1,2 @@
 [flake8]
-ignore = 
-    F821,  # Undefined name (caused by local import use)
+ignore = F821 # Undefined name (caused by local import use)
