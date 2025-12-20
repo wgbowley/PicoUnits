@@ -81,7 +81,11 @@ class FBase(Enum):
     @property
     def symbol(self) -> str:
         """ Returns the base unit symbol. """
-        return _BASE_SYMBOLS[self]
+
+        # Add code for preferred symbol system (UBASE, SIBase, etc)
+        # At the .picounits level after picounits init for example
+
+        return _UBASE_SYMBOLS[self]
 
     @property
     def order(self) -> int:
@@ -97,7 +101,7 @@ class FBase(Enum):
         return f"<SIBase.{self}>"
 
 # Fast mapping for enums and ensure O(1) lookup
-_BASE_SYMBOLS = {
+_UBASE_SYMBOLS = {
     FBase.TIME: "t",
     FBase.LENGTH: "l",
     FBase.MASS: "m",
@@ -108,7 +112,17 @@ _BASE_SYMBOLS = {
     FBase.DIMENSIONLESS: "∅",
 }
 
-# Fast mapping for enums and ensure O(1) lookup
+_SIBASE_SYMBOLS = {
+    FBase.TIME: "s",
+    FBase.LENGTH: "m",
+    FBase.MASS: "kg",
+    FBase.CURRENT: "A",
+    FBase.THERMAL: "k",
+    FBase.AMOUNT: "mol",
+    FBase.LUMINOSITY: "cd",
+    FBase.DIMENSIONLESS: "∅",
+}
+
 _ORDER = {
     FBase.TIME: 2,
     FBase.LENGTH: 1,
