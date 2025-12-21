@@ -10,8 +10,15 @@ Description:
 """
 
 from picounits.core.unit import Unit
-from picounits.core.enums import FBase, Dimension
+from picounits.core.enums import FBase, Dimension, PrefixScale
 
+""" Predefined scales for quantities """
+
+GIGA = PrefixScale.GIGA
+KILO = PrefixScale.KILO
+CENTI = PrefixScale.CENTI
+MILLI = PrefixScale.MILLI
+NANO = PrefixScale.NANO
 
 """ Predefined fundamental units"""
 
@@ -31,5 +38,5 @@ VELOCITY = LENGTH / TIME ** 1
 POWER = MASS * LENGTH ** 2 / TIME ** 3
 ENERGY = MASS * LENGTH ** 2 / TIME ** 2
 FORCE = MASS * LENGTH / TIME ** 2
-FLEXION = MASS / (TIME ** 2 * CURRENT)
+FLUX_DENSITY = MASS / (TIME ** 2 * CURRENT)
 IMPEDANCE = ENERGY / (TIME * CURRENT ** 2)

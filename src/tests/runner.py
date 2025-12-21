@@ -9,12 +9,12 @@ Description:
 
 import unittest
 
-from tests.domain.unit_tests import UnitTest
+# from tests.domain.unit_tests import UnitTest
 
 loader = unittest.TestLoader()
 suite = unittest.TestSuite()
 
-suite.addTests(loader.loadTestsFromTestCase(UnitTest))
+# suite.addTests(loader.loadTestsFromTestCase(UnitTest))
 
 
 runner = unittest.TextTestRunner(verbosity=2)

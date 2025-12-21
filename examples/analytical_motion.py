@@ -1,4 +1,15 @@
-from picounits.constants import LENGTH, TIME, MASS, VELOCITY, ENERGY
+"""
+Filename: analytical_motion.py
+Author: William Bowley
+Version: 0.1
+
+Description:
+    Example using picounits to ensure
+    dimensional correctness in a simple
+    suvat and kinetic energy problem  
+"""
+
+from picounits.constants import LENGTH, TIME, MASS, VELOCITY, ENERGY, MILLI, KILO
 from picounits.core.qualities import Quantity as q
 
 
@@ -15,9 +26,9 @@ def kinetic_energy(mass: q, velocity: q) -> q:
     return 0.5 * mass * velocity ** 2
 
 """ Input values """
-initial = 10 * VELOCITY
+initial = 10 * MILLI * VELOCITY
 acc = 2.5 * (LENGTH / TIME ** 2)
-dis = 12e3 * LENGTH
+dis = 12 * KILO * LENGTH
 projectile_mass = 12 * MASS
 
 """ Computes output values + dimensions """

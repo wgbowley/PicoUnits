@@ -4,9 +4,19 @@ Author: William Bowley
 Version: 0.1
 
 Description:
-    Parser for .uiv (Unit-Informed Values) files
+    Defines the Parser for .uiv (Unit-Informed Values) files
 """
 
-import yaml
+from pathlib import Path
 
-from picounits.core.enums import _SCALE_SYMBOLS, _BASE_SYMBOLS
+
+class Parser:
+    """ Parser for .uiv (Unit-Informed Values) files """
+    @classmethod
+    def open(cls, file: Path) -> str:
+        """ import values and their units """
+        with open(file, 'r') as f:
+            content = f.read()
+            print(content)
+
+Parser.open("examples\parameters.uiv")

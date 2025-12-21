@@ -35,6 +35,12 @@ class PrefixScale(Enum):
         """ Returns the prefix symbol. """
         return _SCALE_SYMBOLS[self]
 
+    @classmethod
+    def from_value(cls, power: int) -> tuple[int, PrefixScale]:
+        """ Return the PrefixScale for a given power of ten """
+        closest_member = min(cls, key=lambda m: abs(m.value - power))
+        return (closest_member.value, closest_member)
+
     def __str__(self) -> str:
         """ Returns name for __str__ dunder method """
         return self.name
@@ -43,11 +49,14 @@ class PrefixScale(Enum):
         """ Displays the scale name and its numerical value """
         return f"<PrefixScale.{self}: 10^{self.value}>"
 
-    @classmethod
-    def from_value(cls, power: int) -> tuple[int, PrefixScale]:
-        """ Return the PrefixScale for a given power of ten """
-        closest_member = min(cls, key=lambda m: abs(m.value - power))
-        return (closest_member.value, closest_member)
+    """ Uses local import to avoid circular import across modules """
+
+    def __rmul__(self, other: float | int):
+        """ Defines behavior for the right-hand multiplication """
+        from picounits.core.qualities import Quantity
+
+        return Quantity(magnitude=other, prefix=self)
+
 
 # Fast mapping for enums and ensure O(1) lookup
 _SCALE_SYMBOLS = {
@@ -85,7 +94,7 @@ class FBase(Enum):
         # Add code for preferred symbol system (UBASE, SIBase, etc)
         # At the .picounits level after picounits init for example
 
-        return _UBASE_SYMBOLS[self]
+        return _SIBASE_SYMBOLS[self]
 
     @property
     def order(self) -> int:
@@ -109,6 +118,17 @@ _UBASE_SYMBOLS = {
     FBase.THERMAL: "th",
     FBase.AMOUNT: "a",
     FBase.LUMINOSITY: "lu",
+    FBase.DIMENSIONLESS: "∅",
+}
+
+_NATURE_SYMBOLS = {
+    FBase.TIME: "T",
+    FBase.LENGTH: "L",
+    FBase.MASS: "M",
+    FBase.CURRENT: "Q/T",
+    FBase.THERMAL: "Θ",
+    FBase.AMOUNT: "N",
+    FBase.LUMINOSITY: "J",
     FBase.DIMENSIONLESS: "∅",
 }
 

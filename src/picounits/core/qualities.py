@@ -12,8 +12,8 @@ from __future__ import annotations
 from math import log10
 from dataclasses import dataclass
 
-from picounits.core.enums import PrefixScale
 from picounits.core.unit import Unit
+from picounits.core.enums import PrefixScale
 from picounits.constants import DIMENSIONLESS
 
 
@@ -158,6 +158,12 @@ class Quantity:
 
     def __mul__(self, other: Quantity) -> Quantity:
         """ Defines behavior for the forward multiplication """
+
+        # If the quantity is dimensionless, Returns with the unit
+        if isinstance(other, Unit):
+            if self.unit == DIMENSIONLESS:
+                return Quantity(self.magnitude, other, self.prefix)
+
         other = self._get_other_quantity(other)
 
         self_b = self.to_base()

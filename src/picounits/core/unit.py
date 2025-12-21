@@ -12,7 +12,6 @@ from typing import Any
 
 from picounits.core.enums import Dimension, FBase
 
-
 class Unit:
     """ Defines a unit composed of one or more Dimensions. """
     __slots__ = ('dimensions', '_hash_cache', '_name_cache')

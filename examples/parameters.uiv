@@ -1,26 +1,26 @@
-""Notes""
-Tubular motors use Z-R (axial-radial) coordinate system.
-Only models the electric and magnetic materials.
+(Note)
+# Tubular motors use Z-R (axial-radial) coordinate system.
+# Only models the electric and magnetic materials.
 
-""Output""
+(Output)
 folder_path: examples/tubular_motor/outputs
 file_name: motor
 
-""Model""
+(Model)
 number_pairs: 2
 number_slots: 12
 fill_factor: 0.6
 boundary_material: Air
 boundary_shells: 7
 
-"Operation"
+(Operation)
 mass: 600 (m)
 speed: 200 m(m/s)
 current: 1.4 (A)
 test_current: 10 m(A)
 de_solver_maximum_steps: 10000
 
-"Armature"
+(Armature)
 inner_radius: 4.5 m(m)
 outer_radius: 6 m(m)
 axial_length: 2 m(m)
@@ -28,7 +28,7 @@ axial_spacing: 1 m(m)
 slot_material: Copper Wire
 slot_wire_diameter: 0.2 m(m)
 
-"stator"
+(Stator)
 inner_radius: 0 m(m)
 outer_radius: 3 m(m)
 axial_length: 5 m(m) 
