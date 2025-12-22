@@ -41,6 +41,18 @@ class PrefixScale(Enum):
         closest_member = min(cls, key=lambda m: abs(m.value - power))
         return (closest_member.value, closest_member)
 
+    @classmethod
+    def from_symbol(cls, reference: str) -> PrefixScale | None:
+        """ Compares reference symbol with symbol lookup """
+        if not isinstance(reference, str):
+            return None
+
+        for enum_member, symbol in _SCALE_SYMBOLS.items():
+            if symbol == reference:
+                return enum_member
+
+        return None
+
     def __str__(self) -> str:
         """ Returns name for __str__ dunder method """
         return self.name
@@ -100,6 +112,15 @@ class FBase(Enum):
     def order(self) -> int:
         """ Returns the base units under consistent order for notation """
         return _ORDER[self]
+
+    @classmethod
+    def from_symbol(cls, reference: str) -> FBase | None:
+        """ Compares reference symbol with symbol lookup """
+        for enum_member, symbol in _SIBASE_SYMBOLS.items():
+            if symbol == reference:
+                return enum_member
+
+        return None
 
     def __str__(self) -> str:
         """ Returns name for __str__ dunder method """
