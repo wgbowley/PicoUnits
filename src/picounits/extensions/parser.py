@@ -7,60 +7,139 @@ Description:
     Defines the Parser for .uiv (Unit-Informed Values) files
 """
 
+from __future__ import annotations
+
 from typing import Any
+from enum import Enum, auto
 
 from picounits.core.unit import Unit
+from picounits.constants import DIMENSIONLESS
 from picounits.core.qualities import Quantity
 from picounits.core.enums import PrefixScale, FBase, Dimension
 
 
+class Operators(Enum):
+    """ Operations for 'Matcher' """
+    MULTIPLICATION = auto()
+    POWER = auto()
+    DIVIDED = auto()
+
+    @property
+    def symbol(self) -> str:
+        """ Returns the operation symbol """
+        return _OPERATORS[self][0]
+
+    @classmethod
+    def from_symbol(cls, char: str) -> Operators | None:
+        """ Compares reference symbol with symbol lookup o(n*m) """
+        for operator, category in _OPERATORS.items():
+            for member in category:
+                if member == char:
+                    return operator
+
+        return None
+
+
+_OPERATORS = {
+    Operators.MULTIPLICATION: ["*", "x", "·", "∙"],
+    Operators.DIVIDED: ["/", "÷"],
+    Operators.POWER: [
+        "^","⁰","¹","²","³","⁴","⁵",
+        "⁶","⁷","⁸","⁹","⁺","⁻",
+    ]
+}
+
 class Matcher:
     """ matches user defined units in .uiv to qualities """
     @classmethod
-    def _preparation(
-        cls, value: Any, prefix: str, unit: str
-    ) -> tuple[Any, str, str]:
-        """ Performs checks and cleans formatting"""
-        if not isinstance(prefix, str) or not isinstance(unit, str):
-            raise ValueError("Prefix and unit should be strings")
-
-        return value, prefix.lower(), unit.lower()
-
-    @classmethod
-    def _construct_unit(cls, unit_str: str):
+    def _construct_unit(cls, unit_str: str) -> Unit:
         """ reconstructs unit from parsed unit string """
+        if not unit_str:
+            return DIMENSIONLESS
+
         for op in ["/", "*", "^"]:
             unit_str = unit_str.replace(op, f" {op} ")
-    
+
+        # Tokenizes the unit_str into parts (symbol, operator)
         tokens = unit_str.split()
 
-        result = None
-        current_op = "*"
+        if len(tokens) == 1:
+            dim = FBase.from_symbol(tokens[0])
+            return Unit(Dimension(dim))
 
-        while idx < len(tokens):
-            """ Need to build an operator system for this """
+        # Initial states of iterators
+        result = DIMENSIONLESS
+        queue_op = None
+        numbers = None
 
-                
+        # Linear iteration - O(n) time complexity
+        for token in tokens:
+            symbol = FBase.from_symbol(token)
+            if not symbol:
+                operator = Operators.from_symbol(token)
+                if not operator:
+                    msg = f"'{token}' is a unknown fundamental unit or operator"
+                    raise ValueError(msg)
+
+                # Queues operation and checks for power
+                if not queue_op:
+                    queue_op = operator
+                    break
+
+                msg = f"Failed to run '{queue_op}' before '{operator}'"
+                raise RuntimeError(msg)
+
+            # Executes operation on unit pair or fully defined power
+            if queue_op:
+                if numbers and symbol:
+                    # Returns for powers
+                    break
+
+                match queue_op:
+                    case Operators.MULTIPLICATION:
+                        result *= Unit(Dimension(symbol))
+                        queue_op = None
+
+                    case Operators.DIVIDED:
+                        result /= Unit(Dimension(symbol))
+                        queue_op = None
+
+                    case _:
+                        msg = f"'{queue_op}' is an unknown operator"
+                        raise RuntimeError(msg)
+
+            # if empty result, creates unit
+            result = Unit(Dimension(symbol))
+
+        return result
+
     @classmethod
     def quantity(
         cls, value: Any, prefix: str, unit: str
     ) -> Quantity | str | bool:
         """ Returns a quantity object with those properties """
-        value, prefix, unit = cls._preparation(value, prefix, unit)
-
-        # Preforms initial check
         if isinstance(value, (str, bool)):
             return value
 
         # Finds the prefix scale from symbol
-        prefix = PrefixScale.from_symbol(prefix)
-        cls._construct_unit(unit)
+        prefix_scale = PrefixScale.from_symbol(prefix)
+        if not prefix_scale:
+            if prefix:
+                msg = f"'{prefix}' is not a prefix symbol"
+                raise ValueError(msg)
+
+            # if no prefix scale, set base as scale
+            prefix_scale = PrefixScale.BASE
+
+        # Finds / creates the unit
+        unit = cls._construct_unit(unit)
+        # print(unit)
 
 
 class Parser:
     """ Parser for .uiv (Unit-Informed Values) files """
     @classmethod
-    def _cast(cls, value: str) -> int | float | str | bool:
+    def _cast(cls, value: str) -> int | float | str | bool | None:
         """ Returns the value with its correct cast """
         try:
             return int(value)
@@ -77,7 +156,12 @@ class Parser:
         elif value.lower() == "false":
             return False
 
-        return value
+        try:
+            return str(value)
+        except ValueError:
+            pass
+
+        return None
 
     @classmethod
     def _extract_qualities(cls, value_str: str) -> tuple[Any, str, str]:
@@ -149,4 +233,4 @@ class Parser:
 
         print(data)
 
-# Parser.open("examples\parameters.uiv")
+Parser.open("examples\parameters.uiv")

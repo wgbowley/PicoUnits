@@ -14,7 +14,7 @@ boundary_material: Air
 boundary_shells: 7
 
 [operation]
-mass: 600 (m)
+mass: 600 m(kg)
 speed: 200 m(m/s)
 current: 1.4 (A)
 test_current: 10 m(A)

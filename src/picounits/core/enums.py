@@ -117,7 +117,7 @@ class FBase(Enum):
     def from_symbol(cls, reference: str) -> FBase | None:
         """ Compares reference symbol with symbol lookup """
         for enum_member, symbol in _SIBASE_SYMBOLS.items():
-            if symbol == reference:
+            if symbol.lower() == reference.lower():
                 return enum_member
 
         return None
