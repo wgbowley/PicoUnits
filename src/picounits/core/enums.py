@@ -196,6 +196,10 @@ class Dimension:
             self.base = FBase.DIMENSIONLESS
             self.exponent = 1
 
+        # Handle exponent rasing of dimensionless
+        if self.base == FBase.DIMENSIONLESS:
+            self.exponent = 1
+
     @property
     def superscript(self) -> str:
         """ Returns the unicode superscript """

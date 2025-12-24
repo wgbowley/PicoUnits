@@ -58,15 +58,16 @@ class Quantity:
             def wrapper(*args, **kwargs):
                 result = func(*args, **kwargs)
 
-                if not isinstance(result, Quantity) and reference != DIMENSIONLESS:
-                    raise TypeError(
-                        f"{func.__name__} returned {type(result)}, expected Quantity"
-                    )
+                if reference == DIMENSIONLESS:
+                    return result
+
+                if not isinstance(result, Quantity):
+                    msg = f"{func.__name__} returned {type(result)}, expected Quantity"
+                    raise TypeError(msg)
 
                 if result.unit != reference:
-                    raise TypeError(
-                        f"{func.__name__} returned unit {result.unit}, expected {reference}"
-                    )
+                    msg = f"{func.__name__} returned unit {result.unit}, expected {reference}"
+                    raise TypeError(msg)
 
                 return result
             return wrapper
@@ -209,6 +210,76 @@ class Quantity:
 
     def __rpow__(self, other: float | int) -> Quantity:
         return Quantity(other, DIMENSIONLESS).__pow__(self)
+
+    def __lt__(self, other: Quantity) -> bool:
+        """ Less than comparsion """
+        other = self._get_other_quantity(other)
+
+        self_b = self.to_base()
+        other_b = other.to_base()
+
+        if self_b.unit != other_b.unit:
+            raise ValueError(
+                f"Cannot compare different units, {other_b.unit} != {self_b.unit}"
+            )
+
+        return self_b.magnitude < other_b.magnitude
+
+    def __le__(self, other: Quantity) -> bool:
+        """ Less than or equal comprasion """
+        other = self._get_other_quantity(other)
+
+        self_b = self.to_base()
+        other_b = other.to_base()
+
+        if self_b.unit != other_b.unit:
+            raise ValueError(
+                f"Cannot compare different units, {other_b.unit} != {self_b.unit}"
+            )
+
+        return self_b.magnitude <= other_b.magnitude
+
+    def __gt__(self, other: Quantity) -> bool:
+        """ Greater than comprasion """
+        other = self._get_other_quantity(other)
+
+        self_b = self.to_base()
+        other_b = other.to_base()
+
+        if self_b.unit != other_b.unit:
+            raise ValueError(
+                f"Cannot compare different units, {other_b.unit} != {self_b.unit}"
+            )
+
+        return self_b.magnitude > other_b.magnitude
+
+    def __ge__(self, other: Quantity) -> bool:
+        """ Greather than or equal comprasion """
+        other = self._get_other_quantity(other)
+
+        self_b = self.to_base()
+        other_b = other.to_base()
+
+        if self_b.unit != other_b.unit:
+            raise ValueError(
+                f"Cannot compare different units, {other_b.unit} != {self_b.unit}"
+            )
+
+        return self_b.magnitude >= other_b.magnitude
+
+    def __eq__(self, other: Quantity) -> bool:
+        """ Equality comprasion """
+        other = self._get_other_quantity(other)
+
+        self_b = self.to_base()
+        other_b = other.to_base()
+
+        if self_b.unit != other_b.unit:
+            raise ValueError(
+                f"Cannot compare different units, {other_b.unit} != {self_b.unit}"
+            )
+
+        return self_b.magnitude == other_b.magnitude
 
     def __round__(self, n=0):
         """ Defines behavior for the built-in round() function """

@@ -2,4 +2,5 @@
 disable = 
     W0105, # String statement has no effect
     C0415, # import-outside-toplevel
-    E0602  # undefined-variable
+    E0602, # undefined-variable
+    E1101, # Instance of has no member

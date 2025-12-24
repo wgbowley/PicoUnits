@@ -1,0 +1,23 @@
+[notes]
+# Analytical model for a multi-stage coil-gun
+# Models electrical, magnetic and motional dynamics
+
+[model]
+flyback: True
+number_stages: 20
+voltage: 18 (kg*m^2*s^-3*A^-1)  # volts
+current_limit: 40 (A)
+time_steps: 10 μ(s)
+
+[projectile]
+radius: 4.5 m(m)
+mass: 20 m(kg)
+relative_perm: 100
+
+[coil]
+axial_length: 50 m(m)
+outer_radius: 17.5 m(m)
+inner_radius: 6.25 m(m)
+resistance: 450 m(kg*m^2*s^-3*A^-2) # milli-ohms
+inductance: 750 μ(kg*m^2*s^-2*A^-2) # micro-henry
+turns: 175

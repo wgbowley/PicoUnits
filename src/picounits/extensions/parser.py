@@ -16,7 +16,7 @@ from picounits.core.unit import Unit
 from picounits.constants import DIMENSIONLESS
 from picounits.core.qualities import Quantity
 from picounits.core.enums import PrefixScale, FBase, Dimension
-
+from picounits.extensions.loader import DynamicLoader
 
 class Operators(Enum):
     """ Operations for 'Matcher' """
@@ -50,7 +50,7 @@ _OPERATORS = {
 }
 
 class Matcher:
-    """ matches user defined units in .uiv to qualities """
+    """ Matches user defined units in .uiv to qualities """
     @classmethod
     def _construct_unit(cls, unit_str: str) -> Unit:
         """ reconstructs unit from parsed unit string """
@@ -60,56 +60,70 @@ class Matcher:
         for op in ["/", "*", "^"]:
             unit_str = unit_str.replace(op, f" {op} ")
 
-        # Tokenizes the unit_str into parts (symbol, operator)
         tokens = unit_str.split()
 
         if len(tokens) == 1:
             dim = FBase.from_symbol(tokens[0])
             return Unit(Dimension(dim))
 
-        # Initial states of iterators
         result = DIMENSIONLESS
         queue_op = None
-        numbers = None
+        pending_unit = None  # Hold unit before applying to result
+        pending_power = None
 
-        # Linear iteration - O(n) time complexity
         for token in tokens:
             symbol = FBase.from_symbol(token)
+
             if not symbol:
                 operator = Operators.from_symbol(token)
                 if not operator:
-                    msg = f"'{token}' is a unknown fundamental unit or operator"
-                    raise ValueError(msg)
+                    try:
+                        pending_power = int(token)
+                        # Apply the power immediately if we have a pending unit
+                        if pending_unit is not None:
+                            pending_unit = pending_unit ** pending_power
+                            pending_power = None
+                        continue
+                    except ValueError as exc:
+                        msg = f"'{token}' is unknown: {token}"
+                        raise ValueError(msg) from exc
 
-                # Queues operation and checks for power
-                if not queue_op:
-                    queue_op = operator
-                    break
+                # If power operator, just continue (next token is the exponent)
+                if operator == Operators.POWER:
+                    continue
 
-                msg = f"Failed to run '{queue_op}' before '{operator}'"
-                raise RuntimeError(msg)
+                # Before queuing new operator, apply any pending unit
+                if pending_unit is not None:
+                    if queue_op == Operators.MULTIPLICATION:
+                        result *= pending_unit
+                    elif queue_op == Operators.DIVIDED:
+                        result /= pending_unit
+                    elif queue_op is None:
+                        result = pending_unit
+                    pending_unit = None
 
-            # Executes operation on unit pair or fully defined power
-            if queue_op:
-                if numbers and symbol:
-                    # Returns for powers
-                    break
+                queue_op = operator
+                continue
 
-                match queue_op:
-                    case Operators.MULTIPLICATION:
-                        result *= Unit(Dimension(symbol))
-                        queue_op = None
+            # Create unit from symbol
+            current_unit = Unit(Dimension(symbol))
 
-                    case Operators.DIVIDED:
-                        result /= Unit(Dimension(symbol))
-                        queue_op = None
+            # Store unit (power will be applied when we see the number)
+            pending_unit = current_unit
 
-                    case _:
-                        msg = f"'{queue_op}' is an unknown operator"
-                        raise RuntimeError(msg)
+        # Apply final pending unit
+        if pending_unit is not None:
+            # Apply any remaining power first
+            if pending_power is not None:
+                pending_unit = pending_unit ** pending_power
+                pending_power = None
 
-            # if empty result, creates unit
-            result = Unit(Dimension(symbol))
+            if queue_op == Operators.MULTIPLICATION:
+                result *= pending_unit
+            elif queue_op == Operators.DIVIDED:
+                result /= pending_unit
+            elif queue_op is None:
+                result = pending_unit
 
         return result
 
@@ -133,7 +147,7 @@ class Matcher:
 
         # Finds / creates the unit
         unit = cls._construct_unit(unit)
-        # print(unit)
+        return Quantity(value, unit, prefix_scale)
 
 
 class Parser:
@@ -184,7 +198,7 @@ class Parser:
 
             return cls._cast(value), cls._cast(prefix), cls._cast(unit)
 
-        return value_str.strip(), "", ""
+        return cls._cast(value_str.strip()), "", ""
 
     @classmethod
     def _section_check(cls, line: str) -> tuple[bool, str | None]:
@@ -224,13 +238,7 @@ class Parser:
                 if ':' in line and current_section:
                     key, raw = line.split(':', 1)
                     val, prefix, unit = cls._extract_qualities(raw)
-                    Matcher.quantity(val, prefix, unit)
-                    data[current_section][key.strip()] = {
-                        "value": val,
-                        "prefix": prefix,
-                        "unit": unit
-                    }
+                    quantity = Matcher.quantity(val, prefix, unit)
+                    data[current_section][key.strip()] = quantity
 
-        print(data)
-
-Parser.open("examples\parameters.uiv")
+        return DynamicLoader(data)

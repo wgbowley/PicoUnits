@@ -1,5 +1,5 @@
 """
-Filename: analytical_motion.py
+Filename: simple_motion.py
 Author: William Bowley
 Version: 0.1
 
@@ -37,3 +37,5 @@ ke = kinetic_energy(projectile_mass, vel)
 
 """ Prints output """
 print(round(vel, 5), round(ke, 5))
+
+print(vel.to_base().magnitude)

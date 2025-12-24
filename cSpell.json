@@ -3,6 +3,7 @@
   "language": "en-US",
   "words": [
     "picounits",
+    "pylint",
     "bowley",
     "femm",
     "giga",
@@ -21,6 +22,9 @@
     "toplevel",
     "Fbase",
     "Ubase",
-    "SIbase"
+    "SIbase",
+    "Ralston",
+    "coilgun",
+    "lenz"
   ]
 }
