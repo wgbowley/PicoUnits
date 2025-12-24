@@ -8,10 +8,58 @@ Description:
     as an example, for the picounits library
 """
 
-from math import pi
+from math import pi, ceil
 
 from picounits.core.qualities import Quantity as q
-from picounits.constants import CURRENT, VOLTAGE, FLUX_DENSITY, FORCE, TIME
+from picounits.constants import (
+    CURRENT, VOLTAGE, FLUX_DENSITY, FORCE, TIME, MASS, 
+    INDUCTANCE, IMPEDANCE, MAGNETIC_PERMEABILITY, DIMENSIONLESS
+)
+
+@q.check(MASS)
+def projectile_mass(axial_length: q, radius: q, density: q) -> q:
+    """ Calculates the mass of the projectile """
+    volume = pi * radius ** 2 * axial_length
+    return volume * density
+
+@q.check(DIMENSIONLESS)
+def estimate_turns(
+    axial_length: q, inner_radius: q, outer_radius: q, 
+    wire_diameter: q, fill_factor: q
+) -> q:
+    """ Estimates the number of turns that can fit in a rectangular coil """
+    slot_area = axial_length * (outer_radius - inner_radius)
+    wire_area = wire_diameter ** 2
+    effective_area = slot_area * fill_factor
+
+    turns = effective_area / wire_area
+    return ceil(turns)
+
+@q.check(IMPEDANCE)
+def cal_resistance(
+    turns: q, mean_radius: q, wire_diameter: q, resistivity: q
+) -> q:
+    """ Calculates the resistance of the inductor """
+    length = turns * pi * mean_radius
+    area = wire_diameter ** 2 * pi / 4
+    return resistivity * length / area
+
+@q.check(INDUCTANCE)
+def cal_inductance(turns: q, axial_length: q, mean_radius: q) -> q:
+    """ Calculates the inductance of solenoid """
+    # Defines the permeability of free space
+    permeability = 4 * pi * 1e-7 * MAGNETIC_PERMEABILITY
+
+    area = pi * mean_radius ** 2
+    return (turns ** 2 * area * permeability) / axial_length
+
+@q.check(FORCE)
+def projectile_drag(velocity: q, density: q, coefficient: q, radius: q) -> q:
+    """ Calculates the drag force on the projectile """
+    area = pi * radius ** 2
+    velocity = velocity * abs(velocity)
+    drag_force = -0.5 * density * velocity * area * coefficient
+    return drag_force
 
 @q.check(CURRENT / TIME)
 def differential_currents(voltage: q, inductance: q) -> q:
@@ -24,10 +72,12 @@ def clipping_current(current_limit: q, current: q) -> q:
     return min(current_limit, current)
 
 @q.check(VOLTAGE)
-def inductor_voltage(supply_voltage: q, current: q, resistance: q) -> q:
+def inductor_voltage(
+    supply_voltage: q, current: q, resistance: q, induced_voltage: q
+) -> q:
     """ Computes the inductor voltage during simulation"""
     voltage_drop = current * resistance
-    return supply_voltage - voltage_drop
+    return supply_voltage - voltage_drop + induced_voltage
 
 @q.check(CURRENT)
 def rk_2nd_order_current(
@@ -45,7 +95,7 @@ def rk_2nd_order_current(
 
 @q.check(FLUX_DENSITY)
 def position_b_field(
-    position: q, current: q, turns: q, coil_length: q, 
+    position: q, current: q, turns: q, coil_length: q,
     coil_radius: q, permeability: q
 ) -> q:
     """ Calculates the axial B-field inside a solenoid based on projectile position """
@@ -62,8 +112,7 @@ def position_b_field(
 
 @q.check(FORCE)
 def inst_force(
-    b_field: q, permeability: q, projectile_outer_radius: q,
-    force_direction: int = 1 # +1 for forward, -1 for backward
+    b_field: q, permeability: q, projectile_outer_radius: q, direction: q
 ) -> q:
     """
     Calculate instantaneous force on a ferromagnetic projectile.
@@ -72,6 +121,6 @@ def inst_force(
     F ≈ (1/2) * (B^2 / µ) * A, where A is the cross-sectional area.
     """
     cross_section = pi * projectile_outer_radius ** 2
-    force_magnitude = 0.5 * (b_field**2 / permeability) * cross_section
+    force_magnitude = 0.5 * (abs(b_field) * b_field / permeability) * cross_section
 
-    return force_magnitude * force_direction
+    return force_magnitude * direction

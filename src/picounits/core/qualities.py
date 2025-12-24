@@ -281,6 +281,26 @@ class Quantity:
 
         return self_b.magnitude == other_b.magnitude
 
+    def __abs__(self) -> Quantity:
+        """ Absolute value """
+        return Quantity(abs(self.magnitude), self.unit)
+
+    def __neg__(self) -> Quantity:
+        """ Negation operator (-quantity) """
+        return Quantity(-self.magnitude, self.unit)
+
+    def __pos__(self) -> Quantity:
+        """ Unary plus operator (+quantity) """
+        return Quantity(+self.magnitude, self.unit)
+
+    def __ceil__(self):
+        """ Defines logic for the ceiling method """
+        self_b = self.to_base()
+        self_b.magnitude = (
+            int(self_b.magnitude) + (1 if self_b.magnitude % 1 > 0 else 0)
+        )
+        return Quantity(self_b.magnitude, self_b.unit).normalized()
+
     def __round__(self, n=0):
         """ Defines behavior for the built-in round() function """
         return Quantity(round(self.magnitude, n), self.unit, self.prefix)

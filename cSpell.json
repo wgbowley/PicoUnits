@@ -25,6 +25,10 @@
     "SIbase",
     "Ralston",
     "coilgun",
-    "lenz"
+    "lenz",
+    "xlabel",
+    "ylabel",
+    "figsize",
+    "sharex",
   ]
 }
