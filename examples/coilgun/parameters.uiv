@@ -6,7 +6,7 @@
 number_stages: 10
 voltage: 18 (kg*m^2*s^-3*A^-1)  # volts
 current_limit: 40 (A)
-time_steps: 10 μ(s)
+time_steps: 10 u(s)
 atmospheric_density: 1.225 (kg/m^3)
 
 [projectile]

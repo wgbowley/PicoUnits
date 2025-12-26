@@ -15,8 +15,10 @@ from enum import Enum, auto
 from picounits.core.unit import Unit
 from picounits.constants import DIMENSIONLESS
 from picounits.core.qualities import Quantity
-from picounits.core.enums import PrefixScale, FBase, Dimension
+from picounits.core.dimensions import FBase, Dimension
 from picounits.extensions.loader import DynamicLoader
+from picounits.core.scales import PrefixScale
+
 
 class Operators(Enum):
     """ Operations for 'Matcher' """

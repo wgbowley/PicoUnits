@@ -10,7 +10,8 @@ Description:
 """
 
 from picounits.core.unit import Unit
-from picounits.core.enums import FBase, Dimension, PrefixScale
+from picounits.core.dimensions import FBase, Dimension
+from picounits.core.scales import PrefixScale
 
 """ Predefined scales for quantities """
 

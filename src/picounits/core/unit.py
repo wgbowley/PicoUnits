@@ -10,7 +10,8 @@ Description:
 from __future__ import annotations
 from typing import Any
 
-from picounits.core.enums import Dimension, FBase
+from picounits.core.dimensions import Dimension, FBase
+
 
 class Unit:
     """ Defines a unit composed of one or more Dimensions. """

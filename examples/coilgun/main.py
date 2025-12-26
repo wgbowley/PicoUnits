@@ -127,6 +127,7 @@ for stage in range(p.model.number_stages.magnitude):
 
         cumulative_time += p.model.time_steps
         total_time_data.append(cumulative_time.strip())
+
         total_force_data.append(force.strip())
         total_velocity_data.append(velocity.strip())
         total_position_data.append(cumulative_position.strip())

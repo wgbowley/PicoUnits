@@ -41,6 +41,13 @@
     "verts",
     "facecolors",
     "edgecolors",
-    "azim"
+    "azim",
+    "FEMTO",
+    "ATTO",
+    "ZEPTO",
+    "YOCTO",
+    "YOTTA",
+    "PETA",
+    "ZETTA"
   ]
 }

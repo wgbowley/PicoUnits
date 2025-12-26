@@ -1,18 +1,18 @@
 """
 Filename: setup.py
 Author: William Bowley
-Version: 0.1
-Date: 2025-12-14
+Version: 0.2
+Date: 2025-12-27
 
 Description:
-    Install script for PicoUnits v0.1 framework
+    Install script for picounits — adds console script 'picounits'
 """
 
 from setuptools import setup, find_packages
 
 setup(
     name='picounits',
-    version='1.5.0',
+    version='0.1.1',
     description=(
         'SI Based Unit System With Minimal Overhead And Maximal Speed'
     ),
@@ -29,6 +29,12 @@ setup(
         'Intended Audience :: Developers',
         'Topic :: Scientific/Engineering',
     ],
-    python_requires='>=3.8',
+    python_requires=">=3.8",
     include_package_data=True,
+    entry_points={
+        "console_scripts": [
+            # Correct path: package.configuration.cli:main
+            "picounits = picounits.configuration.cli:main",
+        ],
+    },
 )

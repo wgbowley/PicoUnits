@@ -13,7 +13,7 @@ from math import log10, radians, degrees, sin, cos, tan, exp, log
 from dataclasses import dataclass
 
 from picounits.core.unit import Unit
-from picounits.core.enums import PrefixScale
+from picounits.core.scales import PrefixScale
 from picounits.constants import DIMENSIONLESS
 
 
@@ -197,6 +197,13 @@ class Quantity:
             return Quantity(0, unit, PrefixScale.BASE)
 
         prefix_power = round(log10(abs(magnitude)))
+
+        # # Clamp magnitude into [1, 1000) by adjusting prefix power
+        while (abs(magnitude) / 10 ** prefix_power) >= 1000:
+            prefix_power += 1
+        while (abs(magnitude) / 10 ** prefix_power) < 1:
+            prefix_power -= 1
+
         closest_value, member = PrefixScale.from_value(prefix_power)
 
         magnitude /= 10 ** closest_value
