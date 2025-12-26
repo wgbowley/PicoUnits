@@ -9,7 +9,7 @@ Description:
 
 from __future__ import annotations
 
-from math import log10
+from math import log10, radians, degrees, sin, cos, tan, exp, log
 from dataclasses import dataclass
 
 from picounits.core.unit import Unit
@@ -43,6 +43,72 @@ class Quantity:
                 f"Quantity prefix must be PrefixScale, not {type(self.prefix)}"
             )
 
+    def strip(self) -> int | float:
+        """ Scales to base and strips the unit object away """
+        base_quantity = self.to_base()
+        return base_quantity.magnitude
+
+    def sin(self) -> Quantity:
+        """ Performs the sine operation """
+        if self.unit is DIMENSIONLESS:
+            magnitude = sin(self.magnitude)
+            return Quantity(magnitude, self.unit, self.prefix)
+
+        msg ="Trigonometric functions require dimensionless quantities"
+        raise ValueError(msg)
+
+    def cos(self) -> Quantity:
+        """ Performs the cosine operation """
+        if self.unit is DIMENSIONLESS:
+            magnitude = cos(self.magnitude)
+            return Quantity(magnitude, self.unit, self.prefix)
+
+        msg ="Trigonometric functions require dimensionless quantities"
+        raise ValueError(msg)
+
+    def tan(self) -> Quantity:
+        """ Performs the tangent operation """
+        if self.unit is DIMENSIONLESS:
+            magnitude = tan(self.magnitude)
+            return Quantity(magnitude, self.unit, self.prefix)
+
+        msg ="Trigonometric functions require dimensionless quantities"
+        raise ValueError(msg)
+
+    def exp(self) -> Quantity:
+        """ Performs the Exponential operation """
+        if self.unit is DIMENSIONLESS:
+            magnitude = exp(self.magnitude)
+            return Quantity(magnitude, self.unit, self.prefix)
+
+        msg ="Exponential requires dimensionless quantity"
+        raise ValueError(msg)
+
+    def log(self) -> Quantity:
+        """ Performs the Exponential operation """
+        if self.unit is DIMENSIONLESS:
+            magnitude = log(self.magnitude)
+            return Quantity(magnitude, self.unit, self.prefix)
+
+        msg ="Exponential requires dimensionless quantity"
+        raise ValueError(msg)
+
+    def to_radians(self) -> Quantity:
+        """ Converts the qunatity to radians """
+        if self.unit is DIMENSIONLESS:
+            magnitude = radians(self.magnitude)
+            return Quantity(magnitude, self.unit, self.prefix)
+
+        raise ValueError("Cannot convert a unit with dimesions to radians")
+
+    def to_degrees(self) -> Quantity:
+        """ Converts the qunatity to degrees """
+        if self.unit is DIMENSIONLESS:
+            magnitude = degrees(self.magnitude)
+            return Quantity(magnitude, self.unit, self.prefix)
+
+        raise ValueError("Cannot convert a unit with dimesions to degrees")
+
     @property
     def name(self) -> str:
         """ Returns the name as prefix + magnitude + unit """
@@ -53,7 +119,7 @@ class Quantity:
 
     @staticmethod
     def check(reference: Unit):
-        """ Returns a decorator that checks the function's unit type """
+        """Returns a decorator that checks the function's unit type"""
         def decorator(func):
             def wrapper(*args, **kwargs):
                 result = func(*args, **kwargs)
@@ -61,15 +127,32 @@ class Quantity:
                 if reference == DIMENSIONLESS:
                     return result
 
-                if not isinstance(result, Quantity):
-                    msg = f"{func.__name__} returned {type(result)}, expected Quantity"
-                    raise TypeError(msg)
+                def check_quantity(q):
+                    if not isinstance(q, Quantity):
+                        msg = f"{func.__name__} returned {type(q)}, expected Quantity"
+                        raise TypeError(msg)
+                    if q.unit != reference:
+                        msg = f"{func.__name__} returned unit {q.unit}, expected {reference}"
+                        raise TypeError(msg)
 
-                if result.unit != reference:
-                    msg = f"{func.__name__} returned unit {result.unit}, expected {reference}"
-                    raise TypeError(msg)
+                # Single Quantity
+                if isinstance(result, Quantity):
+                    check_quantity(result)
+                    return result
 
-                return result
+                # Tuple or list of Quantities
+                if isinstance(result, (tuple, list)):
+                    for item in result:
+                        check_quantity(item)
+                    return result
+
+                # Anything else is wrong
+                msg = (
+                    f"{func.__name__} returned {type(result)}, "
+                    "expected Quantity or tuple/list of Quantity"
+                )
+                raise TypeError(msg)
+
             return wrapper
         return decorator
 
@@ -129,14 +212,17 @@ class Quantity:
         other_b = other.to_base()
 
         if self_b.unit != other_b.unit:
-            raise ValueError(
-                f"Cannot add different units, {other_b.unit} != {self_b.unit}"
-            )
+            msg = f"Cannot add different units, {other_b.unit} != {self_b.unit}"
+            raise ValueError(msg)
 
         new_value = self_b.magnitude + other_b.magnitude
         return Quantity(new_value, self_b.unit).normalized()
 
     def __radd__(self, other: float | int) -> Quantity:
+        return self.__add__(other)
+
+    def __iadd__(self, other: Quantity) -> Quantity:
+        """ In-place addition (+=) """
         return self.__add__(other)
 
     def __sub__(self, other: Quantity) -> Quantity:
@@ -147,15 +233,18 @@ class Quantity:
         other_b = other.to_base()
 
         if self_b.unit != other_b.unit:
-            raise ValueError(
-                f"Cannot sub different units, {other_b.unit} != {self_b.unit}"
-            )
+            msg = f"Cannot sub different units, {other_b.unit} != {self_b.unit}"
+            raise ValueError(msg)
 
         new_value = self_b.magnitude - other_b.magnitude
         return Quantity(new_value, self_b.unit).normalized()
 
     def __rsub__(self, other: float | int) -> Quantity:
         return Quantity(other, self.unit).__sub__(self)
+
+    def __isub__(self, other: Quantity) -> Quantity:
+        """ In-place subtraction (-=) """
+        return self.__sub__(other)
 
     def __mul__(self, other: Quantity) -> Quantity:
         """ Defines behavior for the forward multiplication """
@@ -177,6 +266,10 @@ class Quantity:
     def __rmul__(self, other: float | int) -> Quantity:
         return self.__mul__(other)
 
+    def __imul__(self, other: Quantity) -> Quantity:
+        """ In-place multiplication (*=) """
+        return self.__mul__(other)
+
     def __truediv__(self, other: Quantity) -> Quantity:
         """ Defines behavior for the forward true division """
         other = self._get_other_quantity(other)
@@ -193,6 +286,10 @@ class Quantity:
 
     def __rtruediv__(self, other: float | int) -> Quantity:
         return Quantity(other, DIMENSIONLESS).__truediv__(self)
+
+    def __itruediv__(self, other: Quantity) -> Quantity:
+        """ In-place division (/=) """
+        return self.__truediv__(other)
 
     def __pow__(self, other: Quantity) -> Quantity:
         """ Defines behavior for the forward power operator """
@@ -219,9 +316,8 @@ class Quantity:
         other_b = other.to_base()
 
         if self_b.unit != other_b.unit:
-            raise ValueError(
-                f"Cannot compare different units, {other_b.unit} != {self_b.unit}"
-            )
+            msg = f"Cannot compare different units, {other_b.unit} != {self_b.unit}"
+            raise ValueError(msg)
 
         return self_b.magnitude < other_b.magnitude
 
@@ -233,9 +329,8 @@ class Quantity:
         other_b = other.to_base()
 
         if self_b.unit != other_b.unit:
-            raise ValueError(
-                f"Cannot compare different units, {other_b.unit} != {self_b.unit}"
-            )
+            msg = f"Cannot compare different units, {other_b.unit} != {self_b.unit}"
+            raise ValueError(msg)
 
         return self_b.magnitude <= other_b.magnitude
 
@@ -247,9 +342,8 @@ class Quantity:
         other_b = other.to_base()
 
         if self_b.unit != other_b.unit:
-            raise ValueError(
-                f"Cannot compare different units, {other_b.unit} != {self_b.unit}"
-            )
+            msg = f"Cannot compare different units, {other_b.unit} != {self_b.unit}"
+            raise ValueError(msg)
 
         return self_b.magnitude > other_b.magnitude
 
@@ -261,9 +355,8 @@ class Quantity:
         other_b = other.to_base()
 
         if self_b.unit != other_b.unit:
-            raise ValueError(
-                f"Cannot compare different units, {other_b.unit} != {self_b.unit}"
-            )
+            msg = f"Cannot compare different units, {other_b.unit} != {self_b.unit}"
+            raise ValueError(msg)
 
         return self_b.magnitude >= other_b.magnitude
 
@@ -275,9 +368,8 @@ class Quantity:
         other_b = other.to_base()
 
         if self_b.unit != other_b.unit:
-            raise ValueError(
-                f"Cannot compare different units, {other_b.unit} != {self_b.unit}"
-            )
+            msg = f"Cannot compare different units, {other_b.unit} != {self_b.unit}"
+            raise ValueError(msg)
 
         return self_b.magnitude == other_b.magnitude
 
@@ -287,11 +379,11 @@ class Quantity:
 
     def __neg__(self) -> Quantity:
         """ Negation operator (-quantity) """
-        return Quantity(-self.magnitude, self.unit)
+        return Quantity(-self.magnitude, self.unit, self.prefix)
 
     def __pos__(self) -> Quantity:
         """ Unary plus operator (+quantity) """
-        return Quantity(+self.magnitude, self.unit)
+        return Quantity(+self.magnitude, self.unit, self.prefix)
 
     def __ceil__(self):
         """ Defines logic for the ceiling method """
@@ -301,6 +393,10 @@ class Quantity:
         )
         return Quantity(self_b.magnitude, self_b.unit).normalized()
 
+    def __bool__(self) -> bool:
+        """ Boolean conversion (for if statements) """
+        return self.magnitude != 0
+
     def __round__(self, n=0):
         """ Defines behavior for the built-in round() function """
         return Quantity(round(self.magnitude, n), self.unit, self.prefix)
@@ -308,3 +404,4 @@ class Quantity:
     def __repr__(self) -> str:
         """ Displays the Quantity name """
         return self.name
+    

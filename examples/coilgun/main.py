@@ -11,11 +11,15 @@ Description:
     This is an analytical, lumped-parameter demonstration model.
     It is Not intended to match FEM or experimental results.
     Its purpose is to demonstrate safe unit-aware numerical loops.
+
+    NOTE:
+    This example uses the dependency matplotlib to graph results.
+    To install run the command: pip install matplotlib 
 """
 
 from math import pi
 
-from plotter import plot
+from matplot import plot
 from equations import (
     inductor_voltage, rk_2nd_order_current, position_b_field, 
     inst_force, clipping_current, projectile_drag, projectile_mass, 
@@ -67,19 +71,23 @@ for stage in range(p.model.number_stages.magnitude):
     current = 0.0 * CURRENT
     voltage = 0.0 * VOLTAGE
     b_prev = 0.0 * FLUX_DENSITY
-    induced_voltage = 0.0 * voltage
     direction = 1 * DIMENSIONLESS
+    b_gradient = 0 * (FLUX_DENSITY / TIME)
 
     while position < p.coil.axial_length:
         supply_voltage = 0.0 * VOLTAGE
-        direction = -1 * DIMENSIONLESS
+        direction = 1 * DIMENSIONLESS
+        # Switches voltage source off half way through the coil
         if position < 0.5 * p.coil.axial_length:
-            direction = 1 * DIMENSIONLESS
             supply_voltage = p.model.voltage
+
+        # Mimics the pull back force as b_field is decreasing on exit
+        if b_gradient.strip() < 0:
+            direction = -1 * DIMENSIONLESS
 
         # Calculates the inductor voltage, then inductor current & limiting
         voltage = inductor_voltage(
-            supply_voltage, current, resistance, induced_voltage
+            supply_voltage, current, resistance, 0 * VOLTAGE
         )
         current = rk_2nd_order_current(
             current, voltage, inductance, resistance,
@@ -90,10 +98,8 @@ for stage in range(p.model.number_stages.magnitude):
         # Calculates b-field strength, then force on projectile
         b_now = position_b_field(
             position, current, turns_per_meter, p.coil.axial_length,
-            average_radius, permeability
+            average_radius, permeability, p.projectile.magnetic_saturation
         )
-
-        # Ensures directionally flips due to the Flux Law
 
         force = inst_force(b_now, permeability, p.projectile.radius, direction)
         force += projectile_drag(
@@ -111,24 +117,19 @@ for stage in range(p.model.number_stages.magnitude):
         position += delta_p
         time += p.model.time_steps
 
-        # Calculates the induced voltage based on dB/dt
+        # Calculates the dB/dt
         area = pi * p.projectile.radius ** 2
-        induced = -turns * (b_now - b_prev) / p.model.time_steps * area
+        b_gradient = (b_now - b_prev) / p.model.time_steps
         b_prev = b_now
 
         # Appends cumulative and velocity for plotting (Removes units)
         cumulative_position += velocity * p.model.time_steps
 
-        _time = cumulative_time + time
-        _time = _time.to_base()
-        _force = force.to_base()
-        _velocity = velocity.to_base()
-        _position = cumulative_position.to_base()
-
-        total_time_data.append(_time.magnitude)
-        total_force_data.append(_force.magnitude)
-        total_velocity_data.append(_velocity.magnitude)
-        total_position_data.append(_position.magnitude)
+        cumulative_time += p.model.time_steps
+        total_time_data.append(cumulative_time.strip())
+        total_force_data.append(force.strip())
+        total_velocity_data.append(velocity.strip())
+        total_position_data.append(cumulative_position.strip())
 
     velocity_exit = velocity
     delta_v = velocity_exit - initial_velocity
@@ -147,7 +148,6 @@ for stage in range(p.model.number_stages.magnitude):
     )
 
     # Update cumulative time and initial velocity for next stage
-    cumulative_time += time
     initial_velocity = velocity_exit
 
 # Plot combined velocity vs time for all stages

@@ -1,5 +1,5 @@
 """
-Filename: plotter.py
+Filename: matplot.py
 Author: William Bowley
 Version: 0.1
 
@@ -22,7 +22,7 @@ def plot(
     fig, axes = plt.subplots(3, 1, figsize=(12, 8), sharex=True)
 
     # Set window title
-    fig.canvas.manager.set_window_title("Coilgun Dynamic Simulation Results")
+    fig.canvas.manager.set_window_title("Coilgun Simulation Results")
 
     # Position vs Time
     axes[0].plot(time_series, position_series, color="#00BFFF", linewidth=2)

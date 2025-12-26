@@ -3,7 +3,6 @@
 # Models electrical, magnetic and motional dynamics
 
 [model]
-flyback: True
 number_stages: 10
 voltage: 18 (kg*m^2*s^-3*A^-1)  # volts
 current_limit: 40 (A)
@@ -16,6 +15,7 @@ axial_length: 45 m(m)
 relative_perm: 1000
 density: 7850 (kg/m^3)
 coefficient_drag: 0.82 
+magnetic_saturation: 1.8 (kg*s^-2*A^-1)
 
 [coil]
 axial_length: 50 m(m)

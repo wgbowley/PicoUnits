@@ -1,0 +1,32 @@
+[notes]
+# Analytical model for 3D projectile motion simulation
+# Calculates the angles needed to reach a hoop area
+
+[model]
+timeout: 5 (s)
+gravity: -9.81 (m/s^2)
+time_step: 500 μ(s)
+atmospheric_density: 1.225 (kg/m^3)
+
+[ball]
+radius: 11.9 c(m)
+material_density: 90 (kg/m^3)
+coefficient_drag: 0.505
+
+[launch]
+i: 0 (m)
+j: 4.05 (m)
+k: 160 c(m)
+force: 40 (kg*m*s^-2)  # Newtons
+acceleration_distance: 0.7 (m)
+
+[hoop]
+radius: 45 c(m)
+height: 305 c(m)
+
+[backboard]
+width: 1.8 (m)
+height: 1.05 (m)
+offset_behind_hoop: 15 c(m)
+thickness: 5 c(m)
+restitution: 0.6

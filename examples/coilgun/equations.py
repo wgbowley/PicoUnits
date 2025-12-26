@@ -41,7 +41,7 @@ def cal_resistance(
 ) -> q:
     """ Calculates the resistance of the inductor """
     length = turns * pi * mean_radius
-    area = wire_diameter ** 2 * pi / 4
+    area = pi * (wire_diameter / 2) ** 2
     return resistivity * length / area
 
 @q.check(INDUCTANCE)
@@ -96,7 +96,7 @@ def rk_2nd_order_current(
 @q.check(FLUX_DENSITY)
 def position_b_field(
     position: q, current: q, turns: q, coil_length: q,
-    coil_radius: q, permeability: q
+    coil_radius: q, permeability: q, saturation: q
 ) -> q:
     """ Calculates the axial B-field inside a solenoid based on projectile position """
     b_constant = 0.5 * permeability * turns * current
@@ -108,7 +108,13 @@ def position_b_field(
     denom2 = (delta ** 2 + coil_radius ** 2) ** 0.5
     term2 = delta / denom2
 
-    return b_constant * (term1 - term2)
+    b_field = b_constant * (term1 - term2)
+
+    # Simple switch to mimic B-H curve
+    if abs(b_field) > saturation:
+        return saturation *(b_field / abs(b_field))
+
+    return b_field
 
 @q.check(FORCE)
 def inst_force(

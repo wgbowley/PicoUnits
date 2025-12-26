@@ -30,5 +30,17 @@
     "ylabel",
     "figsize",
     "sharex",
+    "matplot",
+    "pbound",
+    "fontsize",
+    "zlabel",
+    "zlim",
+    "pbounds",
+    "toolkits",
+    "mplot3d",
+    "verts",
+    "facecolors",
+    "edgecolors",
+    "azim"
   ]
 }
