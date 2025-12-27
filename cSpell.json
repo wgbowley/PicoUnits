@@ -48,6 +48,7 @@
     "YOCTO",
     "YOTTA",
     "PETA",
-    "ZETTA"
+    "ZETTA",
+    "nlog"
   ]
 }

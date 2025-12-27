@@ -4,3 +4,4 @@ disable =
     W0718, # Catching too general exception
     W0603, # Using the global statement
     W0105, # pointless-string-statement
+    E0601, # used-before assignment

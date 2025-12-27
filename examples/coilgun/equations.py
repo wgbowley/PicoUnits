@@ -100,7 +100,7 @@ def position_b_field(
 ) -> q:
     """ Calculates the axial B-field inside a solenoid based on projectile position """
     b_constant = 0.5 * permeability * turns * current
-
+    
     denom1 = (position ** 2 + coil_radius ** 2) ** 0.5
     term1 = position / denom1
 

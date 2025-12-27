@@ -196,7 +196,7 @@ class Evaluate:
         self.trial_paths: list[list] = []
 
     def trial(self, beta: float, alpha: float) -> float:
-        """ Tries a new beta/alpha combination with error handling """ 
+        """ Tries a new beta/alpha combination with error handling """
         name = len(self.trial_paths) + 1
         simulate = _simulate(name, self.loader, q(beta), q(alpha), self.ball_mass)
 

@@ -18,7 +18,7 @@ Description:
 """
 
 from math import pi
-
+from sys import exit
 from matplot import plot
 from equations import (
     inductor_voltage, rk_2nd_order_current, position_b_field, 
@@ -131,7 +131,7 @@ for stage in range(p.model.number_stages.magnitude):
         total_force_data.append(force.strip())
         total_velocity_data.append(velocity.strip())
         total_position_data.append(cumulative_position.strip())
-
+        # exit()
     velocity_exit = velocity
     delta_v = velocity_exit - initial_velocity
 
