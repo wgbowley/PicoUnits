@@ -10,7 +10,7 @@ Description:
 
 from math import pi, ceil
 
-from picounits.core.qualities import Quantity as q
+from picounits.core.quantities import Quantity as q
 from picounits.constants import (
     CURRENT, VOLTAGE, FLUX_DENSITY, FORCE, TIME, MASS, 
     INDUCTANCE, IMPEDANCE, MAGNETIC_PERMEABILITY, DIMENSIONLESS
@@ -112,7 +112,7 @@ def position_b_field(
 
     # Simple switch to mimic B-H curve
     if abs(b_field) > saturation:
-        return saturation *(b_field / abs(b_field))
+        return saturation * (b_field / abs(b_field))
 
     return b_field
 

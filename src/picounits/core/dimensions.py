@@ -1,5 +1,5 @@
 """
-Filename: enums.py
+Filename: dimensions.py
 Author: William Bowley
 Version: 0.4
 Clear: Y
@@ -84,11 +84,13 @@ class FBase(Enum):
         # Primary: Tries preferred symbols
         for member in cls:
             preferred = _symbols().get(member.name)
+            # units symbols are case sensitive
             if preferred and preferred == reference:
                 return member
 
         # Fallback: check standard symbols
         for enum_member, symbol in _SIBASE_SYMBOLS.items():
+            # units symbols are case sensitive
             if symbol == reference:
                 return enum_member
 
@@ -113,7 +115,7 @@ class Dimension:
         exponent: Integer power, limited to +/- 10
     """
     base: FBase = FBase.DIMENSIONLESS
-    exponent: int = 1
+    exponent: int | float = 1
     # Note _name_cache is an implementation detail, zero impact on correctness
     _name_cache: str = field(init=False, repr=False, default="")
 
@@ -123,8 +125,11 @@ class Dimension:
             msg = f"Dimension base must be FBase, not {type(self.base)}"
             raise TypeError(msg)
 
-        if not isinstance(self.exponent, int):
-            msg = f"Dimension exponent must be int, not {type(self.exponent)}"
+        if not isinstance(self.exponent, (int, float)):
+            msg = (
+                "Dimension exponent must be int or float, "
+                f"not {type(self.exponent)}"
+            )
             raise TypeError(msg)
 
         # Handle exponent limit
@@ -154,6 +159,12 @@ class Dimension:
     @property
     def superscript(self) -> str:
         """ Returns the unicode superscript. """
+        if isinstance(self.exponent, float):
+            """
+            PATCH: Develop method for common fractional powers displayed
+            """
+            return str(round(self.exponent, 3)).translate(SUPERSCRIPT_MAP)
+
         return str(self.exponent).translate(SUPERSCRIPT_MAP)
 
     @property
@@ -176,7 +187,7 @@ class Dimension:
 
 
 # Mapping int to unicode for __repr__ & name within Dimension
-SUPERSCRIPT_MAP = str.maketrans("0123456789+-", "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻")
+SUPERSCRIPT_MAP = str.maketrans("0123456789+-. ", "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻˙ ")
 
 # Standard SI Secondary fallbacks (used when not overridden in preferences)
 _SIBASE_SYMBOLS = {

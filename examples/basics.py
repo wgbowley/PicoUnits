@@ -1,3 +1,0 @@
-"""
-Docstring for examples.basics
-"""

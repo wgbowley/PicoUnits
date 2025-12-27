@@ -17,7 +17,7 @@ from equations import (
 from picounits.constants import TIME, VELOCITY, FORCE, LENGTH
 from picounits.extensions.parser import Parser
 from picounits.extensions.loader import DynamicLoader
-from picounits.core.qualities import Quantity as q
+from picounits.core.quantities import Quantity as q
 
 
 class _simulate:

@@ -169,6 +169,7 @@ class Quantity:
         """ Returns this Quantity scaled to BASE """
         if self.prefix == PrefixScale.BASE:
             return self
+
         return self.to_scale(PrefixScale.BASE)
 
     def check_unit(self, reference: Unit) -> None:
@@ -199,15 +200,15 @@ class Quantity:
         prefix_power = round(log10(abs(magnitude)))
 
         # # Clamp magnitude into [1, 1000) by adjusting prefix power
-        while (abs(magnitude) / 10 ** prefix_power) >= 1000:
-            prefix_power += 1
-        while (abs(magnitude) / 10 ** prefix_power) < 1:
-            prefix_power -= 1
+        # while (abs(magnitude) / 10 ** prefix_power) >= 1000:
+        #     prefix_power += 1
+        # while (abs(magnitude) / 10 ** prefix_power) < 1:
+        #     prefix_power -= 1
 
-        closest_value, member = PrefixScale.from_value(prefix_power)
+        closest_scale = PrefixScale.from_value(prefix_power)
 
-        magnitude /= 10 ** closest_value
-        return Quantity(magnitude, unit, member)
+        magnitude /= 10 ** closest_scale.value
+        return Quantity(magnitude, unit, closest_scale)
 
     """ Dunder methods for forward/reverse arithmetic and others """
 

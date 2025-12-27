@@ -1,65 +1,81 @@
 """
 Filename: units.py
 Author: William Bowley
-Version: 0.5
+Version: 0.6
+Clear: Y
 
 Description:
-    This file defines the 'Unit' class
+    Defines the Unit class which is comprised
+    of a Dimension dataclass. This class performs
+    abstract dimensional analysis using Dimensions.
 """
 
 from __future__ import annotations
 from typing import Any
 
-from picounits.core.dimensions import Dimension, FBase
+from picounits.core.dimensions import Dimension
 
 
 class Unit:
-    """ Defines a unit composed of one or more Dimensions. """
+    """
+    A Physical Unit: A series of different Dimension together
+
+    Allows for abstract dimensional analysis and complex unit
+    representation for displaying to the user interface
+    """
+    # Uses __slots__ to decrease memory overhead per object
     __slots__ = ('dimensions', '_hash_cache', '_name_cache')
 
     def __init__(self, *dimensions: Dimension) -> None:
-        """ Initialize the Unit class and performs checks """
+        """
+        Initialize the unit; assume dimensionless if no dimensions are given
+        """
         if not dimensions:
-            raise ValueError("Cannot define a unit without dimensions")
+            dimensions = [Dimension.dimensionless()]
 
+        # Handles units defined with non-Dimension's
         for dim in dimensions:
-            if not isinstance(dim, Dimension):
-                raise ValueError(f"{type(dim).__name__} is not a Dimension")
+            if isinstance(dim, Dimension):
+                continue
 
-        # Initializes two object variables
+            msg = f"Dimensions must be 'Dimension' not {type(dim).__name__}"
+            raise ValueError(msg)
+
         self.dimensions = list(dimensions)
         self._hash_cache = None
         self._name_cache = None
 
-        # Performs checks for consistency
+        # Performs checks for consistent representation
         self._remove_dimensionless()
         self._duplicated_bases_check()
         self._sort_order()
 
     def _remove_dimensionless(self) -> None:
-        """ Remove dimensionless units when others exist """
+        """ If more than one dimension, remove dimensionless """
         if self.length == 1:
             return
 
-        new_dims = []
-        for dim in self.dimensions:
-            if dim.base != FBase.DIMENSIONLESS:
-                new_dims.append(dim)
+        new_dimensions = []
+        for dimension in self.dimensions:
+            if dimension != Dimension.dimensionless():
+                new_dimensions.append(dimension)
 
-        self.dimensions = new_dims
+        self.dimensions = new_dimensions
 
     def _duplicated_bases_check(self) -> None:
-        """ Checks for duplicated bases """
+        """ Checks for duplicated bases during initialization """
         duplicated_bases = set()
 
         for dim in self.dimensions:
-            if dim.base in duplicated_bases:
-                msg = f"Cannot define a unit with duplicated bases: {dim.base}"
-                raise ValueError(msg)
-            duplicated_bases.add(dim.base)
+            if dim.base not in duplicated_bases:
+                duplicated_bases.add(dim.base)
+                continue
+
+            msg = f"Cannot define a unit with duplicated bases: {dim.base}"
+            raise ValueError(msg)
 
     def _sort_order(self) -> None:
-        """ Sorts the order of dimensions to ensure canonical representation """
+        """ Sorts the dimensions to ensure canonical representation """
         self.dimensions.sort(key=lambda d: d.base.order)
 
     def _dimensional_analysis(self, other: Unit, division: bool) -> Unit:
@@ -76,118 +92,147 @@ class Unit:
             else:
                 combined[key] = exponent_change
 
-        # Reconstruct dimensions, filtering out zero exponents
+        # Reconstruct dimensions, filtering out zero exponents (dimensionless)
         new_dimensions: list[Dimension] = []
         for base, exponent in combined.items():
             if exponent != 0:
-                new_dimensions.append(Dimension(base=base, exponent=exponent))
+                new_dimensions.append(Dimension(base, exponent))
 
         # Handles dimensionless unit if all dimensions canceled out
         if not new_dimensions:
-            return Unit(Dimension(base=FBase.DIMENSIONLESS))
+            return Unit()
 
         return Unit(*new_dimensions)
-
-    @property
-    def length(self) -> int:
-        """ Returns the number of dimensions within the Unit"""
-        return len(self.dimensions)
 
     @property
     def name(self) -> str:
         """ Returns the units name as dimensions and prefixscale"""
         if self._name_cache is None:
-            self._name_cache = "·".join(str(dim.name) for dim in self.dimensions)
+            # Avoid constructing multiple's times through using cache
+            self._name_cache = "·".join(str(d.name) for d in self.dimensions)
+
         return self._name_cache
 
-    def sqrt(self) -> Unit:
-        """ Defines behavior for the square root operator method """
-        for dim in self.dimensions:
-            if dim.exponent % 2 != 0:
-                msg = f"Cannot take sqrt of unit with odd exponent: {dim}"
-                raise ValueError(msg)
-
-        new_dims = [Dimension(dim.base, dim.exponent // 2) for dim in self.dimensions]
-        return Unit(*new_dims)
+    @property
+    def length(self) -> int:
+        """
+        Number of distinct dimension bases (e.g., kg·m·s⁻² has length 3)
+        """
+        return len(self.dimensions)
 
     def __mul__(self, other: Unit) -> Unit:
         """ Defines behavior for the forward multiplication operator """
-        if not isinstance(other, Unit):
-            return self.__rmul__(other)
+        if isinstance(other, Unit):
+            return self._dimensional_analysis(other, False)
 
-        return self._dimensional_analysis(other, False)
+        return self.__rmul__(other)
+
+    def __rmul__(self, other: Any):
+        """
+        Acts as a syntactic bridge to Quantity to allow for a cleaner API.
+        NOTE: Returned quantity, due dependency injection cannot hint
+
+        Example: 10 * CURRENT => Quantity(10, CURRENT)
+        """
+        if not isinstance(other, (float, int)):
+            msg = f"Cannot use syntactic bridge with {type(other).__name__}"
+            raise ValueError(msg)
+
+        try:
+            # Provides a custom error message for the dependency injection
+            from picounits.core.quantities import Quantity
+        except ImportError as e:
+            msg = (
+                "Could not import 'Quantity' for Unit.__rmul__ "
+                "This usually means picounits was not installed correctly "
+            )
+            raise ImportError(msg) from e
+
+        return Quantity(other, self)
 
     def __truediv__(self, other: Unit) -> Unit:
         """ Defines behavior for forward true division """
-        if not isinstance(other, Unit):
-            raise ValueError(f"Cannot true divide a unit by type{other}")
+        if isinstance(other, Unit):
+            return self._dimensional_analysis(other, True)
 
-        return self._dimensional_analysis(other, True)
+        msg = f"Cannot true divide a 'Unit' by {type(other).__name__}"
+        raise ValueError(msg)
 
-    def __pow__(self, other: int | float) -> Unit:
-        """ Defines behavior for forward power """
-        # Note removing float might be more optimal.
-        if not isinstance(other, (float, int)):
-            msg = f"Exponent must be int or float, not {type(other).__name__}"
-            raise TypeError(msg)
+    def __rtruediv__(self, other: Any):
+        """
+        Acts as a syntactic bridge to Quantity and reciprocal method
+        NOTE: Returned quantity | unit, due dependency injection cannot hint
+
+        Quantity bridge: 10 / CURRENT = Quantity(10, a⁻¹)
+        Reciprocal method : 1 / CURRENT => Unit(A⁻¹)
+        """
+        if not isinstance(other, (int, float)):
+            msg = (
+                "Cannot use division method or syntactic bridge with "
+                f"{type(other).__name__}"
+            )
+            raise ValueError(msg)
+
+        try:
+            # Provides a custom error message for the dependency injection
+            from picounits.core.quantities import Quantity
+        except ImportError as e:
+            msg = (
+                "Could not import 'Quantity' for Unit._rtruediv "
+                "This usually means picounits was not installed correctly "
+            )
+            raise ImportError(msg) from e
 
         new_dims = [
-            Dimension(dim.base, round(dim.exponent * other))
-            for dim in self.dimensions
+            Dimension(dim.base, dim.exponent * -1) for dim in self.dimensions
         ]
 
-        return Unit(*new_dims)
+        if other == 1:
+            # Returns the reciprocal of the unit
+            return Unit(*new_dims)
+
+        # Returns a quantity with value and reciprocal unit
+        return Quantity(other, Unit(*new_dims))
+
+    def __pow__(self, other: int | float) -> Unit:
+        """ Defines behavior for forward power method """
+        if isinstance(other, (float, int)):
+            """ NOTE: Develop method for common fractional powers displayed """
+            new_dims = [
+                Dimension(dim.base, dim.exponent * other)
+                for dim in self.dimensions
+            ]
+            return Unit(*new_dims)
+
+        msg = f"Exponent must be int or float, not {type(other).__name__}"
+        raise TypeError(msg)
 
     def __rpow__(self, other: Any) -> None:
         """ Defines behavior for the right-hand power """
-        raise TypeError(f"Cannot raise a {type(other)} by a Unit")
+        msg = f"Cannot raise a {type(other)} to the power of a 'Unit'"
+        raise TypeError(msg)
 
     def __eq__(self, other) -> bool:
-        """ Checks equality between units """
+        """ Checks equality between units of the same length """
         if not isinstance(other, Unit):
             return False
-
         if self.length != other.length:
             return False
 
-        # Compares dimensions independent of their order
-        self_set = {(d.base, d.exponent) for d in self.dimensions}
-        other_set = {(d.base, d.exponent) for d in other.dimensions}
-        return self_set == other_set
+        return hash(self) == hash(other)
 
     def __hash__(self) -> int:
         """Hash based on dimensions, order-independent"""
         if self._hash_cache is None:
             dim_tuples = {(d.base, d.exponent) for d in self.dimensions}
             self._hash_cache = hash(frozenset(dim_tuples))
+
         return self._hash_cache
 
-    def __repr__(self) -> str:
-        """ Displays the formatted unit representation """
+    def __str__(self) -> str:
+        """ returns the unit name as a string"""
         return self.name
 
-    """ Uses local import to avoid circular import across modules """
-
-    def __rmul__(self, other: Any):
-        """Defines behavior for the right-hand multiplication"""
-        from picounits.core.qualities import Quantity
-
-        return Quantity(other, self)
-
-    def __rtruediv__(self, other: Any):
-        """ Defines behavior for the right-hand true division """
-        from picounits.core.qualities import Quantity
-
-        if not isinstance(other, (int, float)):
-            msg = f"Cannot true divide a {type(other)} by a Unit"
-            raise TypeError(msg)
-
-        new_dims = [
-            Dimension(dim.base, dim.exponent * -1)
-            for dim in self.dimensions
-        ]
-        reciprocal_unit = Unit(*new_dims)
-
-        return (
-            reciprocal_unit if other == 1 else Quantity(other, reciprocal_unit)
-        )
+    def __repr__(self) -> str:
+        """ Displays the unit name """
+        return f"<Unit: {self.name}>"
