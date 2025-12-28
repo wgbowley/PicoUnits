@@ -12,7 +12,7 @@ Description:
 
 from __future__ import annotations
 
-from math import log10
+from math import log10, ceil
 from typing import Any
 from dataclasses import dataclass, InitVar
 
@@ -23,6 +23,7 @@ from picounits.constants import DIMENSIONLESS
 from picounits.core.quantities.packet import QuantityPacket
 from .methods import arithmetic as acops
 from .methods import comparison as cnops
+from .methods import validators as vsops
 
 
 @dataclass(slots=True)
@@ -62,7 +63,7 @@ class Quantity(QuantityPacket):
             return
 
         # Ex.  Kilo (3) - BASE (0) = 3 Hence scaling of 10^3
-        prefix_difference = prefix.value - PrefixScale.BASE
+        prefix_difference = prefix.value - PrefixScale.BASE.value
         factor = 10 ** prefix_difference
         self.magnitude *= factor
 
@@ -108,13 +109,23 @@ class Quantity(QuantityPacket):
 
     """ User Facing methods - (Instance methods, Dunder methods, etc) """
 
-    def unit_check(self, target: Unit) -> None:
+    def unit_check(self, target: Quantity) -> None:
         """ Uses fundamental dimensions and exponents to check equivalent """
-        if self.unit == target:
+        if self.unit == target.unit:
             return
 
-        msg = f"Units are not the same, {self.unit} != {target}"
+        msg = f"Units are not the same, {self.unit} != {target.unit}"
         raise ValueError(msg)
+
+    @staticmethod
+    def unit_validator(forecast: Unit):
+        """
+        A decorator for function unit output independent of magnitude,
+        raises an error if different
+
+        NOTE: Works for list, tuple, integer and float
+        """
+        return vsops.check_unit_output(forecast)
 
     def __add__(self, other: Any) -> Quantity:
         """ Defines the behavior for the forwards addition operator (+)"""
@@ -148,7 +159,12 @@ class Quantity(QuantityPacket):
 
     def __mul__(self, other: Any) -> Quantity:
         """ Defines behavior for the forward multiplication (*) """
-        q2 = self._get_other_packet(other)
+        if isinstance(other, Unit):
+            # Creates a syntactic bridge for moving units into quantity
+            q2 = Quantity(1, other)
+        else:
+            q2 = self._get_other_packet(other)
+
         return acops.multiplication_logic(self, q2, self.__class__)
 
     def __rmul__(self, other: Any) -> Quantity:
@@ -209,6 +225,26 @@ class Quantity(QuantityPacket):
         """ Defines the behavior for equality comparison """
         q2 = self._get_other_packet(other)
         return cnops.equality_comparison_logic(self, q2)
+
+    def __ceil__(self) -> Quantity:
+        """ Defines the behavior for ceiling method """
+        return Quantity(ceil(self.magnitude), self.unit)
+
+    def __abs__(self) -> Quantity:
+        """ Defines the absolute value operator """
+        return Quantity(abs(self.magnitude), self.unit)
+
+    def __neg__(self) -> Quantity:
+        """ Defines behavior for negation operator (-quantity) """
+        return Quantity(-self.magnitude, self.unit)
+
+    def __pos__(self) -> Quantity:
+        """ Defines behavior for unary plus operator (+quantity) """
+        return Quantity(+self.magnitude, self.unit)
+
+    def __round__(self, n=0):
+        """ Defines behavior for the built-in round() function """
+        return Quantity(round(self.magnitude, n), self.unit, self.prefix)
 
     def __repr__(self) -> str:
         """ Displays the Quantity normalized name """

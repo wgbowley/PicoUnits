@@ -11,6 +11,7 @@ Description:
 from typing import Sequence
 import matplotlib.pyplot as plt
 
+
 def plot(
     time_series: Sequence[float],
     position_series: Sequence[float],

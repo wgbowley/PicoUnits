@@ -16,15 +16,17 @@ from picounits.constants import (
     INDUCTANCE, IMPEDANCE, MAGNETIC_PERMEABILITY, DIMENSIONLESS
 )
 
-@q.check(MASS)
+
+@q.unit_validator(MASS)
 def projectile_mass(axial_length: q, radius: q, density: q) -> q:
     """ Calculates the mass of the projectile """
     volume = pi * radius ** 2 * axial_length
     return volume * density
 
-@q.check(DIMENSIONLESS)
+
+@q.unit_validator(DIMENSIONLESS)
 def estimate_turns(
-    axial_length: q, inner_radius: q, outer_radius: q, 
+    axial_length: q, inner_radius: q, outer_radius: q,
     wire_diameter: q, fill_factor: q
 ) -> q:
     """ Estimates the number of turns that can fit in a rectangular coil """
@@ -35,7 +37,8 @@ def estimate_turns(
     turns = effective_area / wire_area
     return ceil(turns)
 
-@q.check(IMPEDANCE)
+
+@q.unit_validator(IMPEDANCE)
 def cal_resistance(
     turns: q, mean_radius: q, wire_diameter: q, resistivity: q
 ) -> q:
@@ -44,16 +47,16 @@ def cal_resistance(
     area = pi * (wire_diameter / 2) ** 2
     return resistivity * length / area
 
-@q.check(INDUCTANCE)
-def cal_inductance(turns: q, axial_length: q, mean_radius: q) -> q:
+
+@q.unit_validator(INDUCTANCE)
+def cal_inductance(turns: q, axial_length: q, mean_radius: q, permeability: q) -> q:
     """ Calculates the inductance of solenoid """
     # Defines the permeability of free space
-    permeability = 4 * pi * 1e-7 * MAGNETIC_PERMEABILITY
-
     area = pi * mean_radius ** 2
     return (turns ** 2 * area * permeability) / axial_length
 
-@q.check(FORCE)
+
+@q.unit_validator(FORCE)
 def projectile_drag(velocity: q, density: q, coefficient: q, radius: q) -> q:
     """ Calculates the drag force on the projectile """
     area = pi * radius ** 2
@@ -61,17 +64,20 @@ def projectile_drag(velocity: q, density: q, coefficient: q, radius: q) -> q:
     drag_force = -0.5 * density * velocity * area * coefficient
     return drag_force
 
-@q.check(CURRENT / TIME)
+
+@q.unit_validator(CURRENT / TIME)
 def differential_currents(voltage: q, inductance: q) -> q:
     """ Differential equation for current within the system """
     return voltage / inductance
 
-@q.check(CURRENT)
+
+@q.unit_validator(CURRENT)
 def clipping_current(current_limit: q, current: q) -> q:
     """ Limits the current to simulate a current limiting supply"""
     return min(current_limit, current)
 
-@q.check(VOLTAGE)
+
+@q.unit_validator(VOLTAGE)
 def inductor_voltage(
     supply_voltage: q, current: q, resistance: q, induced_voltage: q
 ) -> q:
@@ -79,7 +85,8 @@ def inductor_voltage(
     voltage_drop = current * resistance
     return supply_voltage - voltage_drop + induced_voltage
 
-@q.check(CURRENT)
+
+@q.unit_validator(CURRENT)
 def rk_2nd_order_current(
     current: q, voltage: q, inductance: q, resistance: q, step_size: q
 ) -> q:
@@ -90,16 +97,20 @@ def rk_2nd_order_current(
     voltage = voltage - resistance * 3 / 4 * step_size * k1
     k2 = differential_currents(voltage, inductance)
 
-    current += (1 / 3 * k1 + 2 /3 * k2) * step_size
+    current += (1 / 3 * k1 + 2 / 3 * k2) * step_size
     return current
 
-@q.check(FLUX_DENSITY)
+
+@q.unit_validator(FLUX_DENSITY)
 def position_b_field(
     position: q, current: q, turns: q, coil_length: q,
-    coil_radius: q, permeability: q, saturation: q
+    coil_radius: q, relative_permeability: q, saturation: q
 ) -> q:
-    """ Calculates the axial B-field inside a solenoid based on projectile position """
-    b_constant = 0.5 * permeability * turns * current
+    """
+    Calculates the axial B-field inside a solenoid based on projectile position
+    """
+    # print(position, current, turns, coil_length, coil_radius)
+    b_constant = 0.5 * relative_permeability * turns * current
 
     denom1 = (position ** 2 + coil_radius ** 2) ** 0.5
     term1 = position / denom1
@@ -112,11 +123,12 @@ def position_b_field(
 
     # Simple switch to mimic B-H curve
     if abs(b_field) > saturation:
-        return saturation *(b_field / abs(b_field))
+        return saturation * (b_field / abs(b_field))
 
     return b_field
 
-@q.check(FORCE)
+
+@q.unit_validator(FORCE)
 def inst_force(
     b_field: q, permeability: q, projectile_outer_radius: q, direction: q
 ) -> q:
@@ -127,6 +139,8 @@ def inst_force(
     F ≈ (1/2) * (B^2 / µ) * A, where A is the cross-sectional area.
     """
     cross_section = pi * projectile_outer_radius ** 2
-    force_magnitude = 0.5 * (abs(b_field) * b_field / permeability) * cross_section
+    force_magnitude = (
+        0.5 * (abs(b_field) * b_field / permeability) * cross_section
+    )
 
     return force_magnitude * direction

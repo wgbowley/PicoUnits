@@ -10,6 +10,7 @@ Description:
 
 from typing import Any
 
+
 class DynamicLoader:
     """ Loads the values from the parser into attributes """
     def __init__(self, dictionary: dict[str, Any]) -> None:

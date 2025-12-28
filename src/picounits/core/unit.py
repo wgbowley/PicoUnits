@@ -175,7 +175,7 @@ class Unit:
 
         try:
             # Provides a custom error message for the import injection
-            from old.quantities import Quantity
+            from picounits.core.quantities.quantity import Quantity
         except ImportError as e:
             msg = (
                 "Could not import 'Quantity' for Unit._rtruediv "

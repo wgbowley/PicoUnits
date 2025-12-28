@@ -26,12 +26,12 @@ class QuantityPacket(ABC):
     magnitude: int | float
     unit: Unit
 
-    def unit_check(self, target: Unit) -> None:
+    def unit_check(self, target: QuantityPacket) -> None:
         """ Uses fundamental dimensions and exponents to check equivalent """
-        if self.unit == target:
+        if self.unit == target.unit:
             return
 
-        msg = f"Units are not the same, {self.unit} != {target}"
+        msg = f"Units are not the same, {self.unit} != {target.unit}"
         raise ValueError(msg)
 
     @property

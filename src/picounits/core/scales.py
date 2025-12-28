@@ -95,7 +95,7 @@ class PrefixScale(Enum):
 
     def __str__(self) -> str:
         """ Returns name for __str__ dunder method """
-        return self.name
+        return self.symbol
 
     def __repr__(self) -> str:
         """ Displays the scale name and its power of 10 """

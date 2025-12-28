@@ -51,6 +51,7 @@
     "ZETTA",
     "nlog",
     "acops",
-    "cnops"
+    "cnops",
+    "vsops"
   ]
 }

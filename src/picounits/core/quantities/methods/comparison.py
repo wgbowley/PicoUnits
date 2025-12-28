@@ -6,6 +6,8 @@ Version: 0.2
 Description:
     Defines the methods for comparison dunder and instance
     methods in Quantity via QuantityPacket
+
+    NOTE: All these methods are logic methods
 """
 
 
