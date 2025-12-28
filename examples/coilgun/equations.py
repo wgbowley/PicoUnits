@@ -10,9 +10,9 @@ Description:
 
 from math import pi, ceil
 
-from picounits.core.quantities import Quantity as q
+from picounits.core.quantities.quantity import Quantity as q
 from picounits.constants import (
-    CURRENT, VOLTAGE, FLUX_DENSITY, FORCE, TIME, MASS, 
+    CURRENT, VOLTAGE, FLUX_DENSITY, FORCE, TIME, MASS,
     INDUCTANCE, IMPEDANCE, MAGNETIC_PERMEABILITY, DIMENSIONLESS
 )
 
@@ -100,7 +100,7 @@ def position_b_field(
 ) -> q:
     """ Calculates the axial B-field inside a solenoid based on projectile position """
     b_constant = 0.5 * permeability * turns * current
-    
+
     denom1 = (position ** 2 + coil_radius ** 2) ** 0.5
     term1 = position / denom1
 
@@ -112,7 +112,7 @@ def position_b_field(
 
     # Simple switch to mimic B-H curve
     if abs(b_field) > saturation:
-        return saturation * (b_field / abs(b_field))
+        return saturation *(b_field / abs(b_field))
 
     return b_field
 

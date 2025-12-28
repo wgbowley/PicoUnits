@@ -130,7 +130,7 @@ class Unit:
     def __rmul__(self, other: Any):
         """
         Acts as a syntactic bridge to Quantity to allow for a cleaner API.
-        NOTE: Returned quantity, due dependency injection cannot hint
+        NOTE: Returned quantity, due import injection cannot hint
 
         Example: 10 * CURRENT => Quantity(10, CURRENT)
         """
@@ -139,8 +139,8 @@ class Unit:
             raise ValueError(msg)
 
         try:
-            # Provides a custom error message for the dependency injection
-            from picounits.core.quantities import Quantity
+            # Provides a custom error message for the import injection
+            from picounits.core.quantities.quantity import Quantity
         except ImportError as e:
             msg = (
                 "Could not import 'Quantity' for Unit.__rmul__ "
@@ -161,7 +161,7 @@ class Unit:
     def __rtruediv__(self, other: Any):
         """
         Acts as a syntactic bridge to Quantity and reciprocal method
-        NOTE: Returned quantity | unit, due dependency injection cannot hint
+        NOTE: Returned quantity | unit, due import injection cannot hint
 
         Quantity bridge: 10 / CURRENT = Quantity(10, a⁻¹)
         Reciprocal method : 1 / CURRENT => Unit(A⁻¹)
@@ -174,8 +174,8 @@ class Unit:
             raise ValueError(msg)
 
         try:
-            # Provides a custom error message for the dependency injection
-            from picounits.core.quantities import Quantity
+            # Provides a custom error message for the import injection
+            from old.quantities import Quantity
         except ImportError as e:
             msg = (
                 "Could not import 'Quantity' for Unit._rtruediv "

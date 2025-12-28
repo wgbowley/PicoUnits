@@ -49,6 +49,8 @@
     "YOTTA",
     "PETA",
     "ZETTA",
-    "nlog"
+    "nlog",
+    "acops",
+    "cnops"
   ]
 }

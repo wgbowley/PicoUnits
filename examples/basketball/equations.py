@@ -10,7 +10,7 @@ Description:
 
 from math import pi
 
-from picounits.core.quantities import Quantity as q
+from old.quantities import Quantity as q
 from picounits.constants import MASS, FORCE, LENGTH
 
 @q.check(FORCE)

@@ -13,6 +13,9 @@ Description
 from __future__ import annotations
 from enum import Enum
 
+from picounits.core.unit import Unit
+from picounits.core.dimensions import Dimension, FBase
+
 
 class PrefixScale(Enum):
     """
@@ -101,13 +104,13 @@ class PrefixScale(Enum):
     def __rmul__(self, other: float | int):
         """
         Acts as a syntactic bridge to Quantity to allow for a cleaner API.
-        NOTE: Returned type is a quantity, due dependency injection cannot hint
+        NOTE: Returned type is a quantity, due import injection cannot hint
 
         Example: 10 * kilo * LENGTH => Quantity(10, LENGTH, kilo)
         """
         try:
-            # Provides a custom error message for the dependency injection
-            from picounits.core.quantities import Quantity
+            # Provides a custom error message for the import injection
+            from picounits.core.quantities.quantity import Quantity
         except ImportError as e:
             msg = (
                 "Could not import 'Quantity' for PrefixScale.__rmul__ "
@@ -115,7 +118,14 @@ class PrefixScale(Enum):
             )
             raise ImportError(msg) from e
 
-        return Quantity(magnitude=other, prefix=self)
+        if not isinstance(other, (float, int)):
+            msg = (
+                "Prefixscale.__rmul__: Other must be of type int or float, "
+                f"not {type(other)}"
+            )
+            raise TypeError(msg)
+
+        return Quantity(other, Unit(Dimension(FBase.DIMENSIONLESS)), self)
 
 
 # Fast mapping for enums and ensure o(1) lookup
