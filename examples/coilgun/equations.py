@@ -12,8 +12,8 @@ from math import pi, ceil
 
 from picounits.core.quantities.quantity import Quantity as q
 from picounits.constants import (
-    CURRENT, VOLTAGE, FLUX_DENSITY, FORCE, TIME, MASS,
-    INDUCTANCE, IMPEDANCE, MAGNETIC_PERMEABILITY, DIMENSIONLESS
+    CURRENT, VOLTAGE, FLUX_DENSITY, FORCE, TIME, MASS, LENGTH,
+    INDUCTANCE, IMPEDANCE, DIMENSIONLESS, MAGNETIC_PERMEABILITY
 )
 
 
@@ -38,6 +38,37 @@ def estimate_turns(
     return ceil(turns)
 
 
+@q.unit_validator(MAGNETIC_PERMEABILITY)
+def calculate_approximate_core_permeability(
+    position: q, permeability: q, relative: q, coil_length: q,
+    proj_length: q, coil_outer_radius: q, proj_radius: q
+) -> q:
+    """ Calculates the approximate permeability as the coil moves through """
+    # Calculates the cross sectional axial-area
+    coil_area = 2 * coil_outer_radius * coil_length
+
+    # Calculates the rectangular bounding boxes of projectile and coil
+    px_min, py_min = position - proj_length, -proj_radius
+    px_max, py_max = position, +proj_radius
+
+    cx_min, cy_min = 0 * LENGTH, -coil_outer_radius
+    cx_max, cy_max = coil_length, +coil_outer_radius
+
+    # Calculates the width and height of the overlap
+    overlap_x = max(0 * LENGTH, min(px_max, cx_max) - max(px_min, cx_min))
+    overlap_y = max(0 * LENGTH, min(py_max, cy_max) - max(py_min, cy_min))
+
+    # Calculates the intersection area and ratio
+    in_area = overlap_x * overlap_y
+    occupancy = in_area / coil_area
+
+    # Restricts to 0 -> 1
+    occupancy = min(1.0, max(0.0, occupancy))
+
+    # Returns weighted permeability of the core
+    return permeability * (1 + (relative - 1) * occupancy)
+
+
 @q.unit_validator(IMPEDANCE)
 def cal_resistance(
     turns: q, mean_radius: q, wire_diameter: q, resistivity: q
@@ -49,7 +80,9 @@ def cal_resistance(
 
 
 @q.unit_validator(INDUCTANCE)
-def cal_inductance(turns: q, axial_length: q, mean_radius: q, permeability: q) -> q:
+def cal_inductance(
+    turns: q, axial_length: q, mean_radius: q, permeability: q
+) -> q:
     """ Calculates the inductance of solenoid """
     # Defines the permeability of free space
     area = pi * mean_radius ** 2

@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 
 def plot(
     time_series: Sequence[float],
-    position_series: Sequence[float],
+    current_series: Sequence[float],
     force_series: Sequence[float],
     velocity_series: Sequence[float]
 ) -> None:
@@ -25,10 +25,10 @@ def plot(
     # Set window title
     fig.canvas.manager.set_window_title("Coilgun Simulation Results")
 
-    # Position vs Time
-    axes[0].plot(time_series, position_series, color="#00BFFF", linewidth=2)
-    axes[0].set_ylabel("Position (m)", color="white")
-    axes[0].set_title("Projectile Position vs Time", color="white")
+    # Current vs Time
+    axes[0].plot(time_series, current_series, color="#00BFFF", linewidth=2)
+    axes[0].set_ylabel("Current (A)", color="white")
+    axes[0].set_title("Line Current vs Time", color="white")
     axes[0].tick_params(colors="white")
 
     # Force vs Time

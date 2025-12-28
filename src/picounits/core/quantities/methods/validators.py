@@ -27,8 +27,9 @@ def _check_quantity(q: QuantityPacket, wrapper: str) -> None:
 
 def _check_forecasted(u1: Unit, u2: Unit, wrapper: str) -> None:
     """ Checks to ensure u1 is equal to u2 """
-    if u1 == u2:
-        return
+    if isinstance(u1, Unit) and isinstance(u2, Unit):
+        if u1 == u2:
+            return
 
     msg = f"{wrapper.__name__} returned {u1}, expected {u2}"
     raise ValueError(msg)

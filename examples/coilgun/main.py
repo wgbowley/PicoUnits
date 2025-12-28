@@ -23,7 +23,8 @@ from matplot import plot
 from equations import (
     inductor_voltage, rk_2nd_order_current, position_b_field,
     inst_force, clipping_current, projectile_drag, projectile_mass,
-    estimate_turns, cal_resistance, cal_inductance
+    estimate_turns, cal_resistance, cal_inductance,
+    calculate_approximate_core_permeability
 )
 
 from picounits.extensions.parser import Parser
@@ -35,7 +36,6 @@ from picounits.constants import (
 p = Parser.open("examples/coilgun/parameters.uiv")
 
 # Set calculations
-relative = p.projectile.relative_perm
 permeability = 4 * pi * 1e-7 * MAGNETIC_PERMEABILITY
 average_radius = (p.coil.outer_radius + p.coil.inner_radius) / 2
 
@@ -58,7 +58,7 @@ mass = projectile_mass(
 total_time_data = []
 total_force_data = []
 total_velocity_data = []
-total_position_data = []
+total_current_data = []
 
 cumulative_time = 0.0 * TIME
 cumulative_position = 0.0 * LENGTH
@@ -74,27 +74,27 @@ for stage in range(p.model.number_stages.stripped):
     voltage = 0.0 * VOLTAGE
     b_prev = 0.0 * FLUX_DENSITY
     induced_voltage = 0.0 * VOLTAGE
+    motional_inductance = inductance
+    motional_permeability = permeability
     direction = 1 * DIMENSIONLESS
     b_gradient = 0 * (FLUX_DENSITY / TIME)
 
-    while position < p.coil.axial_length:
+    simulation_length = p.coil.axial_length + p.model.stage_gap
+    while position < simulation_length:
         supply_voltage = 0.0 * VOLTAGE
         direction = 1 * DIMENSIONLESS
 
         # Switches voltage source off half way through the coil
+        center = position - 1 / 2 * p.projectile.axial_length
         if position < 0.5 * p.coil.axial_length:
             supply_voltage = p.model.voltage
-
-        # # Mimics the pull back force as b_field is decreasing on exit
-        if b_gradient.stripped < 0:
-            direction = -1 * DIMENSIONLESS
 
         # Calculates the inductor voltage, then inductor current & limiting
         voltage = inductor_voltage(
             supply_voltage, current, resistance, induced_voltage
         )
         current = rk_2nd_order_current(
-            current, voltage, inductance, resistance,
+            current, voltage, motional_inductance, resistance,
             p.model.time_steps
         )
         current = clipping_current(p.model.current_limit, current)
@@ -102,10 +102,13 @@ for stage in range(p.model.number_stages.stripped):
         # Calculates b-field strength, then force on projectile
         b_now = position_b_field(
             position, current, turns_per_meter, p.coil.axial_length,
-            average_radius, permeability, p.projectile.magnetic_saturation
+            average_radius, motional_permeability,
+            p.projectile.magnetic_saturation
         )
 
-        force = inst_force(b_now, permeability, p.projectile.radius, direction)
+        force = inst_force(
+            b_now, motional_permeability, p.projectile.radius, direction
+        )
         force += projectile_drag(
             velocity, p.model.atmospheric_density,
             p.projectile.coefficient_drag, p.projectile.radius
@@ -127,6 +130,16 @@ for stage in range(p.model.number_stages.stripped):
         induced_voltage = - turns * b_gradient * area
         b_prev = b_now
 
+        # Calculates the motional permeability and inductance
+        motional_permeability = calculate_approximate_core_permeability(
+            position, permeability, p.projectile.relative_permeability,
+            p.coil.axial_length, p.projectile.axial_length,
+            p.coil.outer_radius, p.projectile.radius
+        )
+        motional_inductance = cal_inductance(
+            turns, p.coil.axial_length, average_radius, motional_permeability
+        )
+
         # Appends cumulative and velocity for plotting (Removes units)
         cumulative_position += velocity * p.model.time_steps
 
@@ -135,7 +148,7 @@ for stage in range(p.model.number_stages.stripped):
 
         total_force_data.append(force.stripped)
         total_velocity_data.append(velocity.stripped)
-        total_position_data.append(cumulative_position.stripped)
+        total_current_data.append(current.stripped)
 
     velocity_exit = velocity
     delta_v = velocity_exit - initial_velocity
@@ -158,5 +171,5 @@ for stage in range(p.model.number_stages.stripped):
 
 # Plot combined velocity vs time for all stages
 plot(
-    total_time_data, total_position_data, total_force_data, total_velocity_data
+    total_time_data, total_current_data, total_force_data, total_velocity_data
 )
