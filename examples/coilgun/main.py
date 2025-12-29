@@ -162,8 +162,8 @@ for stage in range(p.model.number_stages.stripped):
     })
 
     print(
-        f"Stage {stage + 1}: entry={round(initial_velocity, 3)}, "
-        f"exit={round(velocity_exit, 3)}, transit={round(time, 3)}"
+        f"Stage {stage + 1}: entry={initial_velocity}, "
+        f"exit={velocity_exit}, transit={time}"
     )
 
     # Update cumulative time and initial velocity for next stage

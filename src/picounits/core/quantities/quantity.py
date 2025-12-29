@@ -19,6 +19,7 @@ from dataclasses import dataclass, InitVar
 from picounits.core.unit import Unit
 from picounits.core.scales import PrefixScale
 from picounits.constants import DIMENSIONLESS
+from picounits.configuration.picounits import DISPLAY_FIGURES
 
 from picounits.core.quantities.packet import QuantityPacket
 from .methods import arithmetic as acops
@@ -86,12 +87,22 @@ class Quantity(QuantityPacket):
         if self.magnitude == 0:
             return 0, PrefixScale.BASE
 
-        # Uses log10 to approximate power than O(n) lookup
-        prefix_power = round(log10(abs(self.magnitude)))
+        # Uses log10 to approximate power
+        prefix_power = int(log10(abs(self.magnitude)))
+        test_magnitude = abs(self.magnitude) / (10 ** prefix_power)
+
+        # If scaled quantity is less than 1, decrease scale by 1
+        if test_magnitude < 1.0:
+            prefix_power -= 1
+
+        # O(n) prefix lookup
         closest_scale = PrefixScale.from_value(prefix_power)
 
         # Calculates new magnitude and combines to form a string
         magnitude /= 10 ** closest_scale.value
+
+        # Round magnitude to user defined significant figures
+        magnitude = round(magnitude, DISPLAY_FIGURES)
         return magnitude, closest_scale
 
     def _get_other_packet(self, other: Any) -> Quantity:
@@ -241,10 +252,6 @@ class Quantity(QuantityPacket):
     def __pos__(self) -> Quantity:
         """ Defines behavior for unary plus operator (+quantity) """
         return Quantity(+self.magnitude, self.unit)
-
-    def __round__(self, n=0):
-        """ Defines behavior for the built-in round() function """
-        return Quantity(round(self.magnitude, n), self.unit, self.prefix)
 
     def __repr__(self) -> str:
         """ Displays the Quantity normalized name """
