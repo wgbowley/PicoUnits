@@ -14,7 +14,7 @@
     "milli",
     "pico",
     "pyfemm",
-    "Dunder",
+    "dunder",
     "dataclasses",
     "dataclass",
     "Hashability",
@@ -52,6 +52,18 @@
     "nlog",
     "acops",
     "cnops",
-    "vsops"
+    "vsops",
+    "acsc",
+    "asec",
+    "asech",
+    "acot",
+    "acsch",
+    "acoth",
+    "cbrt",
+    "sqrt",
+    "tlops",
+    "cmethods",
+    "cquantity",
+    "alops",
   ]
 }

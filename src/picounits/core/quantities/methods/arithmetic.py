@@ -10,7 +10,6 @@ Description:
     NOTE: All these methods are logic methods
 """
 
-
 from picounits.core.unit import Unit
 from picounits.constants import DIMENSIONLESS
 
@@ -101,3 +100,13 @@ def power_logic(
     new_unit = q1.unit ** q2.magnitude
 
     return factory(new_value, new_unit)
+
+
+def square_root_logic(q: QuantityPacket) -> QuantityPacket:
+    """ Defines the logic for the square root of a Quantity """
+    return q ** (1 / 2)
+
+
+def cubic_root_logic(q: QuantityPacket) -> QuantityPacket:
+    """ Defines the logic for the cubic root of a Quantity """
+    return q ** (1 / 3)

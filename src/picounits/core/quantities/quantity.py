@@ -6,7 +6,7 @@ Version: 0.7
 Description:
     Defines the Quantity class which is comprised of
     a magnitude, Unit and prefixScale.This class can
-    perform complex arithmetic and display methods.
+    perform arithmetic and display methods.
 """
 
 
@@ -25,6 +25,8 @@ from picounits.core.quantities.packet import QuantityPacket
 from .methods import arithmetic as acops
 from .methods import comparison as cnops
 from .methods import validators as vsops
+from .methods import transcendental as tlops
+from .methods import additional as alops
 
 
 @dataclass(slots=True)
@@ -79,6 +81,13 @@ class Quantity(QuantityPacket):
         magnitude, prefix = self._normalize()
         return f"{magnitude} {prefix}({self.unit.name})"
 
+    def __format__(self, format_spec: str) -> str:
+        """ Formats the string based on user input through 'format_spec' """
+        magnitude, prefix = self._normalize()
+        formatted_magnitude = format(magnitude, format_spec)
+
+        return f"{formatted_magnitude} {prefix}({self.unit.name})"
+
     def _normalize(self) -> tuple[float | int, PrefixScale]:
         """ Normalizes the magnitude for Quantity representation """
         magnitude = self.magnitude
@@ -118,15 +127,27 @@ class Quantity(QuantityPacket):
         # Returns a dimensionless non-scaled quantity
         return Quantity(other, DIMENSIONLESS)
 
-    """ User Facing methods - (Instance methods, Dunder methods, etc) """
+    """
+    ================ USER FACING METHODS ================
+    """
 
-    def unit_check(self, target: Quantity) -> None:
+    def unit_check(self, target: QuantityPacket | Unit) -> None:
         """ Uses fundamental dimensions and exponents to check equivalent """
-        if self.unit == target.unit:
+        # Extracts unit from quantity or direct Unit input
+        other_unit = target
+        if isinstance(target, QuantityPacket):
+            other_unit = target.unit
+
+        if self.unit == other_unit:
             return
 
-        msg = f"Units are not the same, {self.unit} != {target.unit}"
+        msg = f"Units are not the same, {self.unit} != {other_unit}"
         raise ValueError(msg)
+
+    @property
+    def is_dimensionless(self) -> bool:
+        """ Check if quantity is dimensionless """
+        return self.unit == DIMENSIONLESS
 
     @staticmethod
     def unit_validator(forecast: Unit):
@@ -137,6 +158,174 @@ class Quantity(QuantityPacket):
         NOTE: Works for list, tuple, integer and float
         """
         return vsops.check_unit_output(forecast)
+
+    def sqrt(self) -> Quantity:
+        """ Performs the square root operation on self """
+        return acops.square_root_logic(self)
+
+    def cbrt(self) -> Quantity:
+        """ Performs the cubic root operation on self """
+        return acops.cubic_root_logic(self)
+
+    """
+    ================ Transcendental Functions ================
+    """
+
+    def to_radians(self) -> Quantity:
+        """ If dimensionless, converts the Quantity to radians """
+        return tlops.to_radians_logic(self, self.__class__)
+
+    def to_degrees(self) -> Quantity:
+        """ If dimensionless, converts the Quantity to degrees """
+        return tlops.to_degrees_logic(self, self.__class__)
+
+    def sin(self) -> Quantity:
+        """ If dimensionless, performs the sine operation on self """
+        return tlops.sin_logic(self, self.__class__)
+
+    def cos(self) -> Quantity:
+        """ If dimensionless, performs the cosine operation on self """
+        return tlops.cos_logic(self, self.__class__)
+
+    def tan(self) -> Quantity:
+        """ If dimensionless, performs the tangent operation on self """
+        return tlops.tan_logic(self, self.__class__)
+
+    def csc(self) -> Quantity:
+        """ If dimensionless, performs the cosecant operation on self """
+        return tlops.csc_logic(self, self.__class__)
+
+    def sec(self) -> Quantity:
+        """ If dimensionless, performs the secant operation on self """
+        return tlops.sec_logic(self, self.__class__)
+
+    def cot(self) -> Quantity:
+        """ If dimensionless, performs the cotangent operation on self """
+        return tlops.cot_logic(self, self.__class__)
+
+    def asin(self) -> Quantity:
+        """ If dimensionless, performs the arc sine operation on self """
+        return tlops.asin_logic(self, self.__class__)
+
+    def acos(self) -> Quantity:
+        """ If dimensionless, performs the arc cosine operation on self """
+        return tlops.acos_logic(self, self.__class__)
+
+    def atan(self) -> Quantity:
+        """ If dimensionless, performs the arc tangent operation on self """
+        return tlops.atan_logic(self, self.__class__)
+
+    def atan2(self, other: Any) -> Quantity:
+        """ Defines the atan2 method for quantities """
+        q2 = self._get_other_packet(other)
+        return tlops.atan2_logic(self, q2, self.__class__)
+
+    def acsc(self) -> Quantity:
+        """ If dimensionless, performs the arc cosecant operation on self """
+        return tlops.acsc_logic(self, self.__class__)
+
+    def asec(self) -> Quantity:
+        """ If dimensionless, performs the arc secant operation on self """
+        return tlops.asec_logic(self, self.__class__)
+
+    def acot(self) -> Quantity:
+        """ If dimensionless, performs the arc cotangent operation on self """
+        return tlops.acot_logic(self, self.__class__)
+
+    def sinh(self) -> Quantity:
+        """
+        If dimensionless, performs the hyperbolic sine operation on self
+        """
+        return tlops.sinh_logic(self, self.__class__)
+
+    def cosh(self) -> Quantity:
+        """
+        If dimensionless, performs the hyperbolic cosine operation on self
+        """
+        return tlops.cosh_logic(self, self.__class__)
+
+    def tanh(self) -> Quantity:
+        """
+        If dimensionless, performs the hyperbolic tangent operation on self
+        """
+        return tlops.tanh_logic(self, self.__class__) 
+
+    def csch(self) -> Quantity:
+        """
+        If dimensionless, performs the hyperbolic cosecant operation on self
+        """
+        return tlops.csch_logic(self, self.__class__)
+
+    def sech(self) -> Quantity:
+        """
+        If dimensionless, performs the hyperbolic secant operation on self
+        """
+        return tlops.sech_logic(self, self.__class__)
+
+    def coth(self) -> Quantity:
+        """
+        If dimensionless, performs the hyperbolic cotangent operation on self
+        """
+        return tlops.coth_logic(self, self.__class__)
+
+    def asinh(self) -> Quantity:
+        """
+        If dimensionless, performs the inverse hyperbolic sine operation on
+        self
+        """
+        return tlops.asinh_logic(self, self.__class__)
+
+    def acosh(self) -> Quantity:
+        """
+        If dimensionless, performs the inverse hyperbolic cosine operation on
+        self
+        """
+        return tlops.acosh_logic(self, self.__class__)
+
+    def atanh(self) -> Quantity:
+        """
+        If dimensionless, performs the inverse hyperbolic tangent operation on
+        self
+        """
+        return tlops.atanh_logic(self, self.__class__)
+
+    def acsch(self) -> Quantity:
+        """
+        If dimensionless, performs the inverse hyperbolic cosecant operation on
+        self
+        """
+        return tlops.acsch_logic(self, self.__class__)
+
+    def acoth(self) -> Quantity:
+        """
+        If dimensionless, performs the inverse hyperbolic cotangent operation
+        on self
+        """
+        return tlops.acoth_logic(self, self.__class__)
+
+    def exp(self) -> Quantity:
+        """ If dimensionless, performs the exponential operation on self """
+        return tlops.exp_logic(self, self.__class__)
+
+    def log(self, base: float | int) -> Quantity:
+        """ If dimensionless, performs the variable logarithm on self """
+        return tlops.log_logic(self, base, self.__class__)
+
+    def log2(self) -> Quantity:
+        """ If dimensionless, performs the base 2 logarithm on self """
+        return tlops.log2_logic(self, self.__class__)
+
+    def log10(self) -> Quantity:
+        """ If dimensionless, performs the base 10 logarithm on self """
+        return tlops.log10_logic(self, self.__class__)
+
+    def nlog(self) -> Quantity:
+        """ If dimensionless, performs the natural logarithm on self """
+        return tlops.nlog_logic(self, self.__class__)
+
+    """
+    ================ DUNDER METHODS ================
+    """
 
     def __add__(self, other: Any) -> Quantity:
         """ Defines the behavior for the forwards addition operator (+)"""
@@ -166,12 +355,15 @@ class Quantity(QuantityPacket):
 
     def __isub__(self, other: Any) -> Quantity:
         """ Defines in-place subtraction operation (-=) """
-        return self.__sub__(self)
+        return self.__sub__(other)
 
     def __mul__(self, other: Any) -> Quantity:
-        """ Defines behavior for the forward multiplication (*) """
+        """
+        Defines behavior for the forward multiplication (*)
+        Also defines the syntactic bridge to move units into quantity:
+        Ex. 10s * LENGTH = 10s * 1m => 10ms (meter * second)
+        """
         if isinstance(other, Unit):
-            # Creates a syntactic bridge for moving units into quantity
             q2 = Quantity(1, other)
         else:
             q2 = self._get_other_packet(other)
@@ -253,6 +445,14 @@ class Quantity(QuantityPacket):
         """ Defines behavior for unary plus operator (+quantity) """
         return Quantity(+self.magnitude, self.unit)
 
+    def __hash__(self) -> int:
+        """ Defines behavior for hashing the Quantity """
+        return alops.hashing_logic(self)
+
     def __repr__(self) -> str:
         """ Displays the Quantity normalized name """
+        return str(self.name)
+
+    def __str__(self) -> str:
+        """ Return string representation of Quantity """
         return str(self.name)

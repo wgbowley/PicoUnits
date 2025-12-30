@@ -16,6 +16,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from picounits.core.unit import Unit
+from picounits.constants import DIMENSIONLESS
 
 
 @dataclass
@@ -23,16 +24,26 @@ class QuantityPacket(ABC):
     """
     A physical Quantity Packet: A magnitude and Unit
     """
-    magnitude: int | float
+    magnitude: Any
     unit: Unit
 
-    def unit_check(self, target: QuantityPacket) -> None:
+    def unit_check(self, target: QuantityPacket | Unit) -> None:
         """ Uses fundamental dimensions and exponents to check equivalent """
-        if self.unit == target.unit:
+        # Extracts unit from quantity or direct Unit input
+        other_unit = target
+        if isinstance(target, QuantityPacket):
+            other_unit = target.unit
+
+        if self.unit == other_unit:
             return
 
-        msg = f"Units are not the same, {self.unit} != {target.unit}"
+        msg = f"Units are not the same, {self.unit} != {other_unit}"
         raise ValueError(msg)
+
+    @property
+    def is_dimensionless(self) -> bool:
+        """ Check if quantity is dimensionless """
+        return self.unit == DIMENSIONLESS
 
     @property
     def stripped(self) -> int | float:
