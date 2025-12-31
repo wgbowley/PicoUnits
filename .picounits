@@ -6,7 +6,7 @@
 [symbols]
 # Common analytical/natural units style (t = time, l = length, m = mass)
 # Uncomment and modify as needed
-# time: t
+# time: s
 # length: l
 # mass: m
 # current: I

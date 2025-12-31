@@ -5,7 +5,7 @@ Version: 0.1
 
 Description:
     Defines the methods for unit and arithmetic validators
-    methods in Quantity via QuantityPacket
+    methods in Quantity & CQuantity via VPacket
 
     NOTE: All these methods are logic methods
 """
@@ -13,12 +13,12 @@ Description:
 from typing import Callable
 
 from picounits.core.unit import Unit
-from picounits.core.quantities.packet import QuantityPacket
+from picounits.core.quantities.vpacket import VPacket
 
 
-def _check_quantity(q: QuantityPacket, wrapper: str) -> None:
+def _check_quantity(q: VPacket, wrapper: str) -> None:
     """ Checks to ensure q is a quantity """
-    if isinstance(q, QuantityPacket):
+    if isinstance(q, VPacket):
         return
 
     msg = f"{wrapper} returned {type(q)}, expected Quantity"
@@ -44,7 +44,7 @@ def check_unit_output(forecasted: Unit) -> Callable:
             result = func(*args, **kwargs)
 
             # Single Quantity
-            if isinstance(result, QuantityPacket):
+            if isinstance(result, VPacket):
                 _check_forecasted(result.unit, forecasted, wrapper.__name__)
                 return result
 
