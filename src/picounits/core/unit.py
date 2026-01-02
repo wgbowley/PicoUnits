@@ -129,26 +129,19 @@ class Unit:
 
     def __rmul__(self, other: Any):
         """
-        Acts as a syntactic bridge to Quantity to allow for a cleaner API.
-        NOTE: Returned quantity, due import injection cannot hint
-
+        Acts as a syntactic bridge to packet to allow for a cleaner API.
         Example: 10 * CURRENT => Quantity(10, CURRENT)
         """
-        if not isinstance(other, (float, int)):
-            msg = f"Cannot use syntactic bridge with {type(other).__name__}"
-            raise ValueError(msg)
-
         try:
             # Provides a custom error message for the import injection
-            from picounits.core.quantities.quantity import Quantity
+            from picounits.core.quantities.factory import Factory
         except ImportError as e:
             msg = (
-                "Could not import 'Quantity' for Unit.__rmul__ "
+                "Could not import 'Factory' for Unit.__rmul__ "
                 "This usually means picounits was not installed correctly "
             )
             raise ImportError(msg) from e
-
-        return Quantity(other, self)
+        return Factory.create(other, self)
 
     def __truediv__(self, other: Unit) -> Unit:
         """ Defines behavior for forward true division """
@@ -160,28 +153,26 @@ class Unit:
 
     def __rtruediv__(self, other: Any):
         """
-        Acts as a syntactic bridge to Quantity and reciprocal method
-        NOTE: Returned quantity | unit, due import injection cannot hint
+        Acts as a syntactic bridge to packet and reciprocal method
 
-        Quantity bridge: 10 / CURRENT = Quantity(10, a⁻¹)
+        Quantity bridge: 10 / CURRENT = Real_Packet(10, a⁻¹)
         Reciprocal method : 1 / CURRENT => Unit(A⁻¹)
         """
-        if not isinstance(other, (int, float)):
-            msg = (
-                "Cannot use division method or syntactic bridge with "
-                f"{type(other).__name__}"
-            )
-            raise ValueError(msg)
-
         try:
             # Provides a custom error message for the import injection
-            from picounits.core.quantities.quantity import Quantity
+            from picounits.core.quantities.factory import Factory
         except ImportError as e:
             msg = (
-                "Could not import 'Quantity' for Unit._rtruediv "
+                "Could not import 'Factory' for Unit.__rtruediv__ "
                 "This usually means picounits was not installed correctly "
             )
             raise ImportError(msg) from e
+
+        if not isinstance(other, (int, float)):
+            msg = (
+                f"Cannot use division method with {type(other).__name__} "
+            )
+            raise ValueError(msg)
 
         new_dims = [
             Dimension(dim.base, dim.exponent * -1) for dim in self.dimensions
@@ -191,8 +182,8 @@ class Unit:
             # Returns the reciprocal of the unit
             return Unit(*new_dims)
 
-        # Returns a quantity with value and reciprocal unit
-        return Quantity(other, Unit(*new_dims))
+        # Returns a packet with value and reciprocal unit
+        return Factory.create(other, Unit(*new_dims))
 
     def __pow__(self, other: int | float) -> Unit:
         """ Defines behavior for forward power method """

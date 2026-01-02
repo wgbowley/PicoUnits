@@ -1,27 +1,26 @@
 """
 Filename: validators.py
 Author: William Bowley
-Version: 0.1
+Version: 0.2
+Clear: X
 
 Description:
-    Defines the methods for unit and arithmetic validators
-    methods in Quantity & CQuantity via VPacket
-
-    NOTE: All these methods are logic methods
+    Defines the methods for the unit validator
+    method in the Packet ABC dataclass
 """
 
 from typing import Callable
 
 from picounits.core.unit import Unit
-from picounits.core.quantities.vpacket import VPacket
+from picounits.core.quantities.packet import Packet
 
 
-def _check_quantity(q: VPacket, wrapper: str) -> None:
-    """ Checks to ensure q is a quantity """
-    if isinstance(q, VPacket):
+def _check_packet(q: Packet, wrapper: str) -> None:
+    """ Checks to ensure q is a packet """
+    if isinstance(q, Packet):
         return
 
-    msg = f"{wrapper} returned {type(q)}, expected Quantity"
+    msg = f"{wrapper} returned {type(q)}, expected packet"
     raise TypeError(msg)
 
 
@@ -43,15 +42,15 @@ def check_unit_output(forecasted: Unit) -> Callable:
         def wrapper(*args, **kwargs) -> Callable:
             result = func(*args, **kwargs)
 
-            # Single Quantity
-            if isinstance(result, VPacket):
+            # Single Packet
+            if isinstance(result, Packet):
                 _check_forecasted(result.unit, forecasted, wrapper.__name__)
                 return result
 
-            # Tuple or list of Quantities
+            # Tuple or list of Packets
             if isinstance(result, (tuple, list)):
                 for item in result:
-                    _check_quantity(item, wrapper.__name__)
+                    _check_packet(item, wrapper.__name__)
                     _check_forecasted(
                         item.unit, forecasted, wrapper.__name__
                     )
@@ -59,7 +58,7 @@ def check_unit_output(forecasted: Unit) -> Callable:
 
             msg = (
                 f"{func.__name__} returned {type(result)}, "
-                "expected Quantity or tuple/list of Quantity"
+                "expected Packet or tuple/list of Packets"
             )
             raise TypeError(msg)
 

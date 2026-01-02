@@ -14,7 +14,7 @@ from enum import Enum, auto
 
 from picounits.core.unit import Unit
 from picounits.constants import DIMENSIONLESS
-from picounits.core.quantities.quantity import Quantity
+from picounits.core.quantities.quantites.real_quantity import Quantity
 from picounits.core.dimensions import FBase, Dimension
 from picounits.extensions.loader import DynamicLoader
 from picounits.core.scales import PrefixScale

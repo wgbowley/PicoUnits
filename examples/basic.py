@@ -1,3 +1,5 @@
-from picounits.constants import LENGTH, TIME
+from picounits.constants import LENGTH
 
-print(10 * LENGTH)
+print((-1 * LENGTH) ** (1/2))
+
+print(-1 ** (1/2))

@@ -76,6 +76,3 @@ DEFAULT_ORDER = {
 
 # Dimension maximum exponent size
 MAX_EXPONENT = 10
-
-# Number of figures to display on output
-DISPLAY_FIGURES = 4

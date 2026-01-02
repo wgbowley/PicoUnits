@@ -10,7 +10,7 @@ Description:
 
 from math import pi, ceil
 
-from picounits.core.quantities.quantity import Quantity as q
+from picounits.core.quantities.quantites.real_quantity import Quantity as q
 from picounits.constants import (
     CURRENT, VOLTAGE, FLUX_DENSITY, FORCE, TIME, MASS, LENGTH,
     INDUCTANCE, IMPEDANCE, DIMENSIONLESS, MAGNETIC_PERMEABILITY

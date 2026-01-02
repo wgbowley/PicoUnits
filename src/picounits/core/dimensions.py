@@ -161,7 +161,7 @@ class Dimension:
         """ Returns the unicode superscript. """
         if isinstance(self.exponent, float):
             """
-            PATCH: Develop method for common fractional powers displayed
+            UPGRADE NEED: Develop method for common fractional powers displayed
             """
             return str(round(self.exponent, 3)).translate(SUPERSCRIPT_MAP)
 
