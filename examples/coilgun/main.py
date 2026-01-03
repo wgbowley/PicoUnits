@@ -162,8 +162,8 @@ for stage in range(p.model.number_stages.stripped):
     })
 
     print(
-        f"Stage {stage + 1}: entry={initial_velocity}, "
-        f"exit={velocity_exit}, transit={time}"
+        f"Stage {stage + 1}: entry={initial_velocity:.3f}, "
+        f"exit={velocity_exit:.3f}, transit={time:.3f}"
     )
 
     # Update cumulative time and initial velocity for next stage

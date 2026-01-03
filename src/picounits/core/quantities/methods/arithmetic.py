@@ -5,8 +5,10 @@ Version: 0.2
 
 Description:
     Defines the methods for arithmetic dunder and instance
-    methods in Quantity & CQuantity via VPacket
+    methods in ComplexPacket & RealPacket via Packet
 """
+
+from math import ceil
 
 from picounits.core.unit import Unit
 from picounits.constants import DIMENSIONLESS
@@ -80,21 +82,28 @@ def power_logic(q1: Packet, q2: Packet) -> Packet:
     if q2.value == 0:
         return Factory(1.0, DIMENSIONLESS)
 
-    # Negative values to the power of a fraction returns a complex number
-    if q1.value < 0 and q2.value < 1:
-        """ This logic is incorrect """
-        value = complex(q1.value)
-
-        # Calculates new value and unit, than returns packet
-        new_value = value ** q2.value
-        new_unit = q1.unit ** q2.value
-        return Factory.create(new_value, new_unit)
-
     # Calculates new value and unit, than returns packet
     new_value = q1.value ** q2.value
     new_unit = q1.unit ** q2.value
 
     return Factory.create(new_value, new_unit)
+
+
+def ceiling_logic(q1: Packet) -> Packet:
+    """ Define the logic for ceiling of different types """
+    value = q1.value
+    if isinstance(value, complex):
+        real_ceil = ceil(value.real)
+        imag_ceil = ceil(value.imag)
+
+        ceiling = complex(real_ceil, imag_ceil)
+        return Factory.create(ceiling, q1.unit)
+
+    if isinstance(value, (int, float)):
+        return Factory.create(ceil(value), q1.unit)
+
+    msg = f"{type(value)} isn't supported by {ceiling_logic.__name__}"
+    raise TypeError(msg)
 
 
 def square_root_logic(q: Packet) -> Packet:

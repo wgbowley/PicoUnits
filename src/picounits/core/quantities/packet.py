@@ -49,17 +49,26 @@ class Packet(ABC):
         msg = f"Units are not the same, {self.unit} != {other_unit}"
         raise ValueError(msg)
 
+    @staticmethod
+    def _get_other_packet(other: Any) -> Packet:
+        """ Takes non-packet, checks and converts if possible """
+        if isinstance(other, Unit):
+            msg = "Value cannot be type Unit, must be either float or int"
+            raise TypeError(msg)
+
+        if isinstance(other, Packet):
+            return other
+
+        if not isinstance(other, (str, bool)):
+            # Uses lazy import to avoid circular import between self & factory
+            from picounits.core.quantities.factory import Factory
+            return Factory.create(other, Unit())
+
     @abstractmethod
     def _normalize(self) -> tuple[Any, PrefixScale]:
         """
         Normalizes the value for representation and returns value + prefix
         """
-        return
-
-    @staticmethod
-    @abstractmethod
-    def _get_other_packet(other: Any) -> Packet:
-        """ Takes non-packet, checks and converts if possible """
         return
 
     @property
@@ -78,6 +87,12 @@ class Packet(ABC):
     def magnitude(self) -> Any:
         """ Returns the absolute physical size of the value """
         return
+
+    @abstractmethod
+    def __format__(self, format_spec: str) -> str:
+        """ Formats the string based on user input through 'format_spec' """
+        msg = "Subclasses must implement __format__"
+        raise NotImplementedError(msg)
 
     def __repr__(self) -> str:
         """ Displays the packet name """

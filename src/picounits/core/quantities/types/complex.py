@@ -9,7 +9,7 @@ Description:
     comprised of a Value, Unit and prefixScale.
 """
 
-from math import log10
+from math import log10, ceil
 from typing import Any
 from dataclasses import dataclass
 
@@ -84,33 +84,46 @@ class ComplexPacket(Packet):
 
         return value, closest
 
-    @staticmethod
-    def _get_other_packet(other: Any) -> Packet:
-        """ Takes non-packet, checks and converts if possible """
-        if isinstance(other, Unit):
-            msg = "Value cannot be type Unit, must be either float or int"
-            raise TypeError(msg)
-
-        if isinstance(other, Packet):
-            return other
-
-        if not isinstance(other, (str, bool)):
-            return Factory.create(other, Unit())
-
-        msg = f" {Factory.__name__} failed to cast {type(other)} into a packet"
-        raise TypeError(msg)
+    """  ================ TRANSCENDENTAL FUNCTION ================ """
 
     """ ================ DUNDER METHODS ================ """
+
+    def __format__(self, format_spec: str) -> str:
+        """ Formats the string based on user input through 'format_spec'"""
+        value, prefix = self._normalize()
+        formatted_value = format(value, format_spec)
+
+        return f"{formatted_value} {prefix}({self.unit.name})"
 
     def __add__(self, other: Any) -> Packet:
         """ Defines the behavior for the forwards addition operator (+) """
         q2 = self._get_other_packet(other)
         return acops.add_logic(self, q2)
 
+    def __radd__(self, other: Any) -> Packet:
+        """ Defines the behavior for the reverse addition operator (+) """
+        # Due to the commutative property of addition (a+b = b+a)
+        return self.__add__(other)
+
+    def __iadd__(self, other: Any) -> Packet:
+        """ Defines in-place addition operation (+=) """
+        # Due to the commutative property of addition (a+b = b+a)
+        return self.__add__(other)
+
     def __sub__(self, other: Any) -> Packet:
         """ Defines behavior for the forwards subtraction operator (-) """
         q2 = self._get_other_packet(other)
         return acops.sub_logic(self, q2)
+
+    def __rsub__(self, other: Any) -> Packet:
+        """ Defines the behavior for the reverse subtraction method """
+        # Due to subtraction being non-commutative
+        q1 = self._get_other_packet(other)
+        return q1.__sub__(self)
+
+    def __isub__(self, other: Any) -> Packet:
+        """ Defines in-place subtraction operation (-=) """
+        return self.__sub__(other)
 
     def __mul__(self, other: Any) -> Packet:
         """
@@ -125,12 +138,95 @@ class ComplexPacket(Packet):
 
         return acops.multiplication_logic(self, q2)
 
+    def __rmul__(self, other: Any) -> Packet:
+        """ Defines behavior for the reverse multiplication """
+        # Due to the commutative property of multiplication (ab = ba)
+        return self.__mul__(other)
+
+    def __imul__(self, other: Any) -> Packet:
+        """ Defines in-place multiplication operation (*=) """
+        return self.__mul__(other)
+
     def __truediv__(self, other: Any) -> Packet:
         """ Defines behavior for the forward true division (/)"""
         q2 = self._get_other_packet(other)
         return acops.true_division_logic(self, q2)
 
+    def __rtruediv__(self, other: float | int) -> Packet:
+        """ Defines behavior for the reverse true division """
+        # Due to division being non-commutative
+        q1 = self._get_other_packet(other)
+        return q1.__truediv__(self)
+
+    def __itruediv__(self, other: Any) -> Packet:
+        """ Defines in-place division (/=) """
+        return self.__truediv__(other)
+
     def __pow__(self, other: Any) -> Packet:
         """ Defines behavior for the forward power operator (**) """
         q2 = self._get_other_packet(other)
         return acops.power_logic(self, q2)
+
+    def __rpow__(self, other: float | int) -> Packet:
+        """ Defines behavior for the reverse power """
+        q1 = self._get_other_packet(other)
+        return q1.__pow__(self)
+
+    def __ceil__(self) -> Packet:
+        """ Defines the behavior for ceiling method """
+        real_ceil = ceil(self.value.real)
+        imag_ceil = ceil(self.value.imag)
+
+        ceiling = complex(real_ceil, imag_ceil)
+        return Factory.create(ceiling, self.unit)
+
+    def __abs__(self) -> Packet:
+        """ Defines the absolute value operator """
+        return Factory.create(self.magnitude, self.unit)
+
+    def __neg__(self) -> Packet:
+        """ Defines behavior for negation operator (-quantity) """
+        return Factory.create(-self.value, self.unit)
+
+    def __pos__(self) -> Packet:
+        """ Defines behavior for unary plus operator (+quantity) """
+        return Factory.create(+self.value, self.unit)
+
+    def __eq__(self, other: Any) -> bool:
+        """ Defines the behavior for equality comparison """
+        q2 = self._get_other_packet(other)
+        if self.unit != q2.unit:
+            # Unit equality matters
+            return False
+
+        return self.value == q2.value
+
+    def _raise_ordering_error(self) -> None:
+        """ Helper for ordering comparison errors """
+        msg = (
+            "Cannot order complex quantities. "
+            "Complex numbers have no natural ordering. "
+            "Use abs() to compare magnitudes."
+        )
+        raise TypeError(msg)
+
+    def __lt__(self, other: Any) -> bool:
+        """ Defines the behavior for less than comparison """
+        _ = other
+        self._raise_ordering_error()
+
+    def __le__(self, other: Any) -> bool:
+        """ Defines the behavior for less than or equal to comparison """
+        _ = other
+        self._raise_ordering_error()
+
+    def __gt__(self, other: Any) -> bool:
+        """ Defines the behavior for greater than comparison """
+        _ = other
+        self._raise_ordering_error()
+
+    def __ge__(self, other: Any) -> bool:
+        """ Defines the behavior for greater than or equal to comparison """
+        _ = other
+        self._raise_ordering_error()
+    

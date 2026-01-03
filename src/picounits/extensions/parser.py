@@ -14,10 +14,12 @@ from enum import Enum, auto
 
 from picounits.core.unit import Unit
 from picounits.constants import DIMENSIONLESS
-from picounits.core.quantities.quantites.real_quantity import Quantity
+from picounits.core.quantities.packet import Packet
 from picounits.core.dimensions import FBase, Dimension
 from picounits.extensions.loader import DynamicLoader
 from picounits.core.scales import PrefixScale
+
+from picounits.core.quantities.factory import Factory
 
 
 class Operators(Enum):
@@ -46,10 +48,11 @@ _OPERATORS = {
     Operators.MULTIPLICATION: ["*", "x", "·", "∙"],
     Operators.DIVIDED: ["/", "÷"],
     Operators.POWER: [
-        "^","⁰","¹","²","³","⁴","⁵",
-        "⁶","⁷","⁸","⁹","⁺","⁻",
+        "^", "⁰", "¹", "²", "³", "⁴", "⁵",
+        "⁶", "⁷", "⁸", "⁹", "⁺", "⁻",
     ]
 }
+
 
 class Matcher:
     """ Matches user defined units in .uiv to qualities """
@@ -132,7 +135,7 @@ class Matcher:
     @classmethod
     def quantity(
         cls, value: Any, prefix: str, unit: str
-    ) -> Quantity | str | bool:
+    ) -> Packet | str | bool:
         """ Returns a quantity object with those properties """
         if isinstance(value, (str, bool)):
             return value
@@ -150,7 +153,7 @@ class Matcher:
         # Finds / creates the unit
         unit = cls._construct_unit(unit)
         # print(value, unit, prefix_scale)
-        return Quantity(value, unit, prefix_scale)
+        return Factory.create(value, unit, prefix_scale)
 
 
 class Parser:
@@ -187,7 +190,7 @@ class Parser:
         end = value_str.find(')', start)
 
         if start != -1 and end != -1:
-            unit = value_str[start + 1 : end]
+            unit = value_str[start + 1: end]
 
             # Everything before the bracket
             head = value_str[:start].strip()

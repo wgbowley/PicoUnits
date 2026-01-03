@@ -4,7 +4,7 @@ Author: William Bowley
 Version: 0.1
 
 Description:
-    Defines the dynamic loader for .uiv 
+    Defines the dynamic loader for .uiv
     (Unit-Informed Values) files.
 """
 
@@ -49,10 +49,11 @@ class DynamicLoader:
         attrs = self._attributes()
 
         # Formation of name as key=value pairs
-        items = ', '.join(f'{k}={v!r}' for k,v in attrs.items())
+        items = ', '.join(f'{k}={v!r}' for k, v in attrs.items())
         return f'{self.__class__.__name__}({items})'
 
     def __getattr__(self, name: str) -> Any:
         """Allow dynamic attribute access"""
-        raise AttributeError(f"'{type(self).__name__}' has no attribute '{name}'")
-
+        raise AttributeError(
+            f"'{type(self).__name__}' has no attribute '{name}'"
+        )

@@ -10,21 +10,23 @@ Description:
 
 from math import pi, ceil
 
-from picounits.core.quantities.quantites.real_quantity import Quantity as q
+from picounits.core.quantities.validators import (
+    unit_validator, Quantity as q
+)
 from picounits.constants import (
     CURRENT, VOLTAGE, FLUX_DENSITY, FORCE, TIME, MASS, LENGTH,
     INDUCTANCE, IMPEDANCE, DIMENSIONLESS, MAGNETIC_PERMEABILITY
 )
 
 
-@q.unit_validator(MASS)
+@unit_validator(MASS)
 def projectile_mass(axial_length: q, radius: q, density: q) -> q:
     """ Calculates the mass of the projectile """
     volume = pi * radius ** 2 * axial_length
     return volume * density
 
 
-@q.unit_validator(DIMENSIONLESS)
+@unit_validator(DIMENSIONLESS)
 def estimate_turns(
     axial_length: q, inner_radius: q, outer_radius: q,
     wire_diameter: q, fill_factor: q
@@ -38,7 +40,7 @@ def estimate_turns(
     return ceil(turns)
 
 
-@q.unit_validator(MAGNETIC_PERMEABILITY)
+@unit_validator(MAGNETIC_PERMEABILITY)
 def calculate_approximate_core_permeability(
     position: q, permeability: q, relative: q, coil_length: q,
     proj_length: q, coil_outer_radius: q, proj_radius: q
@@ -69,7 +71,7 @@ def calculate_approximate_core_permeability(
     return permeability * (1 + (relative - 1) * occupancy)
 
 
-@q.unit_validator(IMPEDANCE)
+@unit_validator(IMPEDANCE)
 def cal_resistance(
     turns: q, mean_radius: q, wire_diameter: q, resistivity: q
 ) -> q:
@@ -79,7 +81,7 @@ def cal_resistance(
     return resistivity * length / area
 
 
-@q.unit_validator(INDUCTANCE)
+@unit_validator(INDUCTANCE)
 def cal_inductance(
     turns: q, axial_length: q, mean_radius: q, permeability: q
 ) -> q:
@@ -89,7 +91,7 @@ def cal_inductance(
     return (turns ** 2 * area * permeability) / axial_length
 
 
-@q.unit_validator(FORCE)
+@unit_validator(FORCE)
 def projectile_drag(velocity: q, density: q, coefficient: q, radius: q) -> q:
     """ Calculates the drag force on the projectile """
     area = pi * radius ** 2
@@ -98,19 +100,19 @@ def projectile_drag(velocity: q, density: q, coefficient: q, radius: q) -> q:
     return drag_force
 
 
-@q.unit_validator(CURRENT / TIME)
+@unit_validator(CURRENT / TIME)
 def differential_currents(voltage: q, inductance: q) -> q:
     """ Differential equation for current within the system """
     return voltage / inductance
 
 
-@q.unit_validator(CURRENT)
+@unit_validator(CURRENT)
 def clipping_current(current_limit: q, current: q) -> q:
     """ Limits the current to simulate a current limiting supply"""
     return min(current_limit, current)
 
 
-@q.unit_validator(VOLTAGE)
+@unit_validator(VOLTAGE)
 def inductor_voltage(
     supply_voltage: q, current: q, resistance: q, induced_voltage: q
 ) -> q:
@@ -119,7 +121,7 @@ def inductor_voltage(
     return supply_voltage - voltage_drop + induced_voltage
 
 
-@q.unit_validator(CURRENT)
+@unit_validator(CURRENT)
 def rk_2nd_order_current(
     current: q, voltage: q, inductance: q, resistance: q, step_size: q
 ) -> q:
@@ -134,7 +136,7 @@ def rk_2nd_order_current(
     return current
 
 
-@q.unit_validator(FLUX_DENSITY)
+@unit_validator(FLUX_DENSITY)
 def position_b_field(
     position: q, current: q, turns: q, coil_length: q,
     coil_radius: q, relative_permeability: q, saturation: q
@@ -161,7 +163,7 @@ def position_b_field(
     return b_field
 
 
-@q.unit_validator(FORCE)
+@unit_validator(FORCE)
 def inst_force(
     b_field: q, permeability: q, projectile_outer_radius: q, direction: q
 ) -> q:

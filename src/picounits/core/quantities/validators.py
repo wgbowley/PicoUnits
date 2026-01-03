@@ -14,6 +14,9 @@ from typing import Callable
 from picounits.core.unit import Unit
 from picounits.core.quantities.packet import Packet
 
+# Easy reference for users
+Quantity = Packet
+
 
 def _check_packet(q: Packet, wrapper: str) -> None:
     """ Checks to ensure q is a packet """
@@ -34,7 +37,7 @@ def _check_forecasted(u1: Unit, u2: Unit, wrapper: str) -> None:
     raise ValueError(msg)
 
 
-def check_unit_output(forecasted: Unit) -> Callable:
+def unit_validator(forecasted: Unit) -> Callable:
     """
     A decorator; it checks a function unit output, if different raises an error
     """

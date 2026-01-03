@@ -27,16 +27,7 @@ class Factory:
         NOTE: Cannot type hint unit nor prefix due to circular imports
         """
         if prefix is None:
-            try:
-                # Provides a custom error message for the import injection
-                from picounits.core.scales import PrefixScale
-            except ImportError as e:
-                msg = (
-                    "Could not import 'PrefixScale' for Factory.create"
-                    "This usually means picounits was not installed correctly "
-                )
-                raise ImportError(msg) from e
-
+            from picounits.core.scales import PrefixScale
             prefix = PrefixScale.BASE
 
         match value:
