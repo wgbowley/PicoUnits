@@ -4,8 +4,8 @@ Author: William Bowley
 Version: 0.2
 
 Description:
-    Defines the methods for arithmetic dunder and instance
-    methods in ComplexPacket & RealPacket via Packet
+    Defines the methods for arithmetic dunder
+    and instance methods for scalar quantities
 """
 
 from math import ceil

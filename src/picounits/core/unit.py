@@ -120,6 +120,14 @@ class Unit:
         """
         return len(self.dimensions)
 
+    @classmethod
+    def dimensionless(cls) -> Dimension:
+        """Factory method for dimensionless. """
+        # Note an empty unit is automatically dimensionless, this exists to
+        # ensure that the API is explicit instead of implicit with just unit()
+        dimensionless = Dimension.dimensionless()
+        return cls(dimensionless)
+
     def __mul__(self, other: Unit) -> Unit:
         """ Defines behavior for the forward multiplication operator """
         if isinstance(other, Unit):
@@ -135,12 +143,13 @@ class Unit:
         try:
             # Provides a custom error message for the import injection
             from picounits.core.quantities.factory import Factory
-        except ImportError as e:
+        except ImportError as error:
             msg = (
                 "Could not import 'Factory' for Unit.__rmul__ "
                 "This usually means picounits was not installed correctly "
             )
-            raise ImportError(msg) from e
+            raise ImportError(msg) from error
+
         return Factory.create(other, self)
 
     def __truediv__(self, other: Unit) -> Unit:
@@ -161,12 +170,12 @@ class Unit:
         try:
             # Provides a custom error message for the import injection
             from picounits.core.quantities.factory import Factory
-        except ImportError as e:
+        except ImportError as error:
             msg = (
                 "Could not import 'Factory' for Unit.__rtruediv__ "
                 "This usually means picounits was not installed correctly "
             )
-            raise ImportError(msg) from e
+            raise ImportError(msg) from error
 
         if not isinstance(other, (int, float)):
             msg = (
@@ -188,7 +197,6 @@ class Unit:
     def __pow__(self, other: int | float) -> Unit:
         """ Defines behavior for forward power method """
         if isinstance(other, (float, int)):
-            """ NOTE: Develop method for common fractional powers displayed """
             new_dims = [
                 Dimension(dim.base, dim.exponent * other)
                 for dim in self.dimensions

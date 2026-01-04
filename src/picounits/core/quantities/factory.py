@@ -27,18 +27,27 @@ class Factory:
         NOTE: Cannot type hint unit nor prefix due to circular imports
         """
         if prefix is None:
-            from picounits.core.scales import PrefixScale
+            try:
+                # Provides a custom error message for the import injection
+                from picounits.core.scales import PrefixScale
+            except ImportError as error:
+                msg = (
+                    "Could not import 'PrefixScale' for Factory.create"
+                    "This usually means picounits was not installed correctly "
+                )
+                raise ImportError(msg) from error
+
             prefix = PrefixScale.BASE
 
         match value:
             case complex():
-                from picounits.core.quantities.types.complex import (
+                from picounits.core.quantities.scalars.types.complex import (
                     ComplexPacket
                 )
                 return ComplexPacket(value, unit, prefix)
 
             case float() | int():
-                from picounits.core.quantities.types.real import (
+                from picounits.core.quantities.scalars.types.real import (
                     RealPacket
                 )
                 return RealPacket(value, unit, prefix)

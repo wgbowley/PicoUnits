@@ -10,7 +10,7 @@ Description:
 
 from math import pi, ceil
 
-from picounits.core.quantities.validators import (
+from picounits.core.quantities.scalars.methods.validators import (
     unit_validator, Quantity as q
 )
 from picounits.constants import (

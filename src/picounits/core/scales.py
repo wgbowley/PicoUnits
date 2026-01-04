@@ -108,12 +108,12 @@ class PrefixScale(Enum):
             # Provides a custom error message for the import injection
             from picounits.core.unit import Unit
             from picounits.core.quantities.factory import Factory
-        except ImportError as e:
+        except ImportError as error:
             msg = (
                 "Could not import 'Unit'/'Factory' for PrefixScale.__rmul__ "
                 "This usually means picounits was not installed correctly "
             )
-            raise ImportError(msg) from e
+            raise ImportError(msg) from error
 
         return Factory.create(other, Unit(), self)
 

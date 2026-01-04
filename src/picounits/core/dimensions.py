@@ -19,6 +19,8 @@ from __future__ import annotations
 from enum import Enum, auto
 from functools import lru_cache
 from dataclasses import dataclass, field
+from fractions import Fraction
+from math import isfinite
 
 from picounits.configuration.picounits import MAX_EXPONENT
 
@@ -108,7 +110,7 @@ class FBase(Enum):
 @dataclass(frozen=True, slots=True)
 class Dimension:
     """
-    A Physical dimension: Base unit raised to an signed integer power.
+    A Physical dimension: Base unit raised to an signed integer or float power.
 
     Args:
         base: The fundamental unit type (FBase Enum)
@@ -116,6 +118,7 @@ class Dimension:
     """
     base: FBase = FBase.DIMENSIONLESS
     exponent: int | float = 1
+
     # Note _name_cache is an implementation detail, zero impact on correctness
     _name_cache: str = field(init=False, repr=False, default="")
 
@@ -131,6 +134,11 @@ class Dimension:
                 f"not {type(self.exponent)}"
             )
             raise TypeError(msg)
+
+        # Handles non finite exponent values to ensure fraction works
+        if not isfinite(self.exponent):
+            msg = f"Exponent must be a finite number, not {self.exponent}"
+            raise ValueError(msg)
 
         # Handle exponent limit
         if abs(self.exponent) > MAX_EXPONENT:
@@ -153,19 +161,26 @@ class Dimension:
             else self.base.symbol + self.superscript
         )
 
-        # NOTE: Caches name to improve performance uses mutation
+        # NOTE: Caches name to improve performance via base mutation
         object.__setattr__(self, "_name_cache", name)
 
     @property
     def superscript(self) -> str:
         """ Returns the unicode superscript. """
-        if isinstance(self.exponent, float):
-            """
-            UPGRADE NEED: Develop method for common fractional powers displayed
-            """
-            return str(round(self.exponent, 3)).translate(SUPERSCRIPT_MAP)
+        if not isinstance(self.exponent, float):
+            # Directly translate integers exponent to superscript
+            return str(self.exponent).translate(SUPERSCRIPT_MAP)
 
-        return str(self.exponent).translate(SUPERSCRIPT_MAP)
+        # Converts float to fraction
+        frac = Fraction(self.exponent).limit_denominator()
+        numerator, denominator = frac.numerator, frac.denominator
+
+        # Handles case of natural numbers encoded as floats (e.g 2.0 -> 2)
+        if denominator == 1:
+            return str(int(self.exponent)).translate(SUPERSCRIPT_MAP)
+
+        # Returns fractional representation as ¹/²
+        return f"{numerator}/{denominator}".translate(SUPERSCRIPT_MAP)
 
     @property
     def name(self) -> str:
@@ -187,7 +202,7 @@ class Dimension:
 
 
 # Mapping int to unicode for __repr__ & name within Dimension
-SUPERSCRIPT_MAP = str.maketrans("0123456789+-. ", "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻˙ ")
+SUPERSCRIPT_MAP = str.maketrans("/0123456789+-. ", "⁄⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻· ")
 
 # Standard SI Secondary fallbacks (used when not overridden in preferences)
 _SIBASE_SYMBOLS = {

@@ -23,7 +23,7 @@ from picounits.core.unit import Unit
 @dataclass
 class Packet(ABC):
     """
-    A Physical Packet: A Prefix, Value and Unit
+    An Abstract Physical Packet: A Prefix, Value and Unit
 
     NOTE: Prefix is init-only (InitVar)
     All packets, normalize value to BASE unit during init
@@ -36,6 +36,67 @@ class Packet(ABC):
     def __post_init__(self, prefix: PrefixScale) -> None:
         """ Validates value and unit, then mutates value to base """
         return
+
+    @abstractmethod
+    def _normalize(self) -> tuple[Any, PrefixScale]:
+        """
+        Normalizes the value for representation and returns value + prefix
+        """
+        return
+
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        """ Returns the packet name as value + prefix(unit) """
+        return
+
+    @property
+    @abstractmethod
+    def magnitude(self) -> Any:
+        """ Returns the absolute physical size of the value """
+        return
+
+    @abstractmethod
+    def __format__(self, format_spec: str) -> str:
+        """ Formats the string based on user input through 'format_spec' """
+        msg = "Subclasses must implement __format__"
+        raise NotImplementedError(msg)
+
+    @abstractmethod
+    def __ceil__(self) -> Packet:
+        """ Defines the behavior for ceiling method """
+        msg = "Subclasses must implement __ceil__"
+        raise NotImplementedError(msg)
+
+    @abstractmethod
+    def __abs__(self) -> Packet:
+        """ Defines the absolute value operator """
+        msg = "Subclasses must implement __abs__"
+        raise NotImplementedError(msg)
+
+    @abstractmethod
+    def __lt__(self, other: Any) -> bool:
+        """ Defines the behavior for less than comparison """
+        msg = "Subclasses must implement __lt__"
+        raise NotImplementedError(msg)
+
+    @abstractmethod
+    def __le__(self, other: Any) -> bool:
+        """ Defines the behavior for less than or equal to comparison """
+        msg = "Subclasses must implement __le__"
+        raise NotImplementedError(msg)
+
+    @abstractmethod
+    def __gt__(self, other: Any) -> bool:
+        """ Defines the behavior for greater than comparison """
+        msg = "Subclasses must implement __gt__"
+        raise NotImplementedError(msg)
+
+    @abstractmethod
+    def __ge__(self, other: Any) -> bool:
+        """ Defines the behavior for greater than or equal to comparison """
+        msg = "Subclasses must implement __ge__"
+        raise NotImplementedError(msg)
 
     def unit_check(self, target: Packet | Unit) -> None:
         """ Uses fundamental dimensions and exponents to check equivalent """
@@ -64,35 +125,10 @@ class Packet(ABC):
             from picounits.core.quantities.factory import Factory
             return Factory.create(other, Unit())
 
-    @abstractmethod
-    def _normalize(self) -> tuple[Any, PrefixScale]:
-        """
-        Normalizes the value for representation and returns value + prefix
-        """
-        return
-
     @property
     def stripped(self) -> Any:
         """ Strips the unit object away, returns non-scaled value """
         return self.value
-
-    @property
-    @abstractmethod
-    def name(self) -> str:
-        """ Returns the packet name as value + prefix(unit) """
-        return
-
-    @property
-    @abstractmethod
-    def magnitude(self) -> Any:
-        """ Returns the absolute physical size of the value """
-        return
-
-    @abstractmethod
-    def __format__(self, format_spec: str) -> str:
-        """ Formats the string based on user input through 'format_spec' """
-        msg = "Subclasses must implement __format__"
-        raise NotImplementedError(msg)
 
     def __repr__(self) -> str:
         """ Displays the packet name """
