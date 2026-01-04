@@ -8,7 +8,6 @@ Description:
     and instance methods for scalar quantities
 """
 
-from math import ceil
 
 from picounits.core.unit import Unit
 from picounits.constants import DIMENSIONLESS
@@ -17,6 +16,7 @@ from picounits.core.quantities.packet import Packet
 from picounits.core.quantities.factory import Factory
 
 
+@Factory.reallocate("__add__")
 def add_logic(q1: Packet, q2: Packet) -> Packet:
     """ Defines the logic for adding two packets """
 
@@ -28,6 +28,7 @@ def add_logic(q1: Packet, q2: Packet) -> Packet:
     return Factory.create(new_value, q1.unit)
 
 
+@Factory.reallocate("__sub__")
 def sub_logic(q1: Packet, q2: Packet) -> Packet:
     """ Defines the logic for adding subtracting two packets """
 
@@ -39,6 +40,7 @@ def sub_logic(q1: Packet, q2: Packet) -> Packet:
     return Factory.create(new_value, q1.unit)
 
 
+@Factory.reallocate("__mul__")
 def multiplication_logic(q1: Packet, q2: Packet | Unit) -> Packet:
     """ Defines the logic for multiplication between two quantities"""
 
@@ -58,6 +60,7 @@ def multiplication_logic(q1: Packet, q2: Packet | Unit) -> Packet:
     raise RuntimeError(msg)
 
 
+@Factory.reallocate("__truediv__")
 def true_division_logic(q1: Packet, q2: Packet) -> Packet:
     """ Defines the logic for true division between two quantities """
     if q2.value == 0:
@@ -72,6 +75,7 @@ def true_division_logic(q1: Packet, q2: Packet) -> Packet:
     return Factory.create(new_value, new_unit)
 
 
+@Factory.reallocate("__pow__")
 def power_logic(q1: Packet, q2: Packet) -> Packet:
     """ Defines the logic for power between two quantities """
     if q2.unit != DIMENSIONLESS:
@@ -87,30 +91,3 @@ def power_logic(q1: Packet, q2: Packet) -> Packet:
     new_unit = q1.unit ** q2.value
 
     return Factory.create(new_value, new_unit)
-
-
-def ceiling_logic(q1: Packet) -> Packet:
-    """ Define the logic for ceiling of different types """
-    value = q1.value
-    if isinstance(value, complex):
-        real_ceil = ceil(value.real)
-        imag_ceil = ceil(value.imag)
-
-        ceiling = complex(real_ceil, imag_ceil)
-        return Factory.create(ceiling, q1.unit)
-
-    if isinstance(value, (int, float)):
-        return Factory.create(ceil(value), q1.unit)
-
-    msg = f"{type(value)} isn't supported by {ceiling_logic.__name__}"
-    raise TypeError(msg)
-
-
-def square_root_logic(q: Packet) -> Packet:
-    """ Defines the logic for the square root of a Quantity """
-    return q ** (1 / 2)
-
-
-def cubic_root_logic(q: Packet) -> Packet:
-    """ Defines the logic for the cubic root of a Quantity """
-    return q ** (1 / 3)

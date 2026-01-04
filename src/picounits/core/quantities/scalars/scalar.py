@@ -30,6 +30,16 @@ class ScalarPacket(Packet, ABC):
     are not implemented in this base case.
     """
 
+    def sqrt(self) -> Packet:
+        """ Defines the behavior for taking the square root of a scalar """
+        q2 = self._get_other_packet(1 / 2)  # Due to fractional exponent law
+        return acops.power_logic(self, q2)
+
+    def cbrt(self) -> Packet:
+        """ Defines the behavior for taking the cubic root of a scalar """
+        q2 = self._get_other_packet(1 / 3)  # Due to fractional exponent law
+        return acops.power_logic(self, q2)
+
     def __add__(self, other: Any) -> Packet:
         """ Defines the behavior for the forwards addition operator (+) """
         q2 = self._get_other_packet(other)

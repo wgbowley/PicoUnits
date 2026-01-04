@@ -14,7 +14,7 @@ from picounits.core.quantities.scalars.methods.validators import (
 )
 
 """ User variables """
-Initial_Velocity = 10 * VELOCITY
+Initial_Velocity = (10+2j) * VELOCITY
 Acceleration = 2.5 * (LENGTH / TIME ** 2)
 Displacement = 12 * KILO * LENGTH
 Projectile_Mass = 12 * MASS
