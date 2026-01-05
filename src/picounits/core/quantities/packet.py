@@ -19,6 +19,7 @@ from typing import Any
 from picounits.core.scales import PrefixScale
 from picounits.core.unit import Unit
 
+from picounits.lazy_imports import import_factory
 
 @dataclass
 class Packet(ABC):
@@ -122,8 +123,8 @@ class Packet(ABC):
 
         if not isinstance(other, (str, bool)):
             # Uses lazy import to avoid circular import between self & factory
-            from picounits.core.quantities.factory import Factory
-            return Factory.create(other, Unit())
+            factory = import_factory("Packet._get_other_packet")
+            return factory.create(other, Unit())
 
     @property
     def stripped(self) -> Any:

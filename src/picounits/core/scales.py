@@ -14,6 +14,7 @@ from __future__ import annotations
 from typing import Any
 from enum import Enum
 
+from picounits.lazy_imports import import_factory, lazy_import
 
 class PrefixScale(Enum):
     """
@@ -104,18 +105,12 @@ class PrefixScale(Enum):
         Acts as a syntactic bridge to Quantity to allow for a cleaner API.
         Example: 10 * kilo * LENGTH => Quantity(10, LENGTH, kilo)
         """
-        try:
-            # Provides a custom error message for the import injection
-            from picounits.core.unit import Unit
-            from picounits.core.quantities.factory import Factory
-        except ImportError as error:
-            msg = (
-                "Could not import 'Unit'/'Factory' for PrefixScale.__rmul__ "
-                "This usually means picounits was not installed correctly "
-            )
-            raise ImportError(msg) from error
+        factory = import_factory('PrefixScale.__rmul__')
+        unit = lazy_import(
+            "picounits.core.unit", "Unit", 'PrefixScale.__rmul__'
+        )
 
-        return Factory.create(other, Unit(), self)
+        return factory.create(other, unit(), self)
 
 
 # Fast mapping for enums and ensure o(1) lookup

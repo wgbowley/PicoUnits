@@ -19,6 +19,7 @@ from picounits.core.scales import PrefixScale
 from picounits.core.quantities.packet import Packet
 from picounits.core.quantities.scalars.scalar import ScalarPacket
 
+from picounits.lazy_imports import import_factory
 
 @dataclass(slots=True)
 class RealPacket(ScalarPacket):
@@ -30,18 +31,10 @@ class RealPacket(ScalarPacket):
     def __post_init__(self, prefix: PrefixScale) -> None:
         """ Validates value and unit, then mutates value to BASE """
         if not isinstance(self.value, (int, float)):
-            try:
-                # Provides a custom error message for the import injection
-                from picounits.core.quantities.factory import Factory
-            except ImportError as error:
-                msg = (
-                    "Could not import 'Factory' for RealPacket.__post_init__"
-                    "This usually means picounits was not installed correctly "
-                )
-                raise ImportError(msg) from error
+            factory = import_factory("ComplexPacket.__post_init__")
 
             # Attempts to pass the value to the correct type
-            return Factory.create(self.value, self.unit, prefix)
+            return factory.create(self.value, self.unit, prefix)
 
         if not isinstance(self.unit, Unit):
             msg = f"Unit must be of type 'Unit', not {type(self.unit)}"
@@ -101,17 +94,8 @@ class RealPacket(ScalarPacket):
 
     def __ceil__(self) -> Packet:
         """ Defines the behavior for ceiling method """
-        try:
-            # Provides a custom error message for the import injection
-            from picounits.core.quantities.factory import Factory
-        except ImportError as error:
-            msg = (
-                "Could not import 'Factory' for RealPacket.__ceil__"
-                "This usually means picounits was not installed correctly "
-            )
-            raise ImportError(msg) from error
-
-        return Factory.create(ceil(self.value), self.unit)
+        factory = import_factory("ComplexPacket.__post_init__")
+        return factory.create(ceil(self.value), self.unit)
 
     def __eq__(self, other: Any) -> bool:
         """ Defines the behavior for equality comparison """

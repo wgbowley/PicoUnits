@@ -22,6 +22,8 @@ from picounits.core.scales import PrefixScale
 from picounits.core.quantities.packet import Packet
 from picounits.core.quantities.scalars.scalar import ScalarPacket
 
+from picounits.lazy_imports import import_factory
+
 
 @dataclass(slots=True)
 class ComplexPacket(ScalarPacket):
@@ -33,19 +35,10 @@ class ComplexPacket(ScalarPacket):
     def __post_init__(self, prefix: PrefixScale) -> None:
         """ Validates value and unit, then mutates value to Base """
         if not isinstance(self.value, (complex)):
-            try:
-                # Provides a custom error message for the import injection
-                from picounits.core.quantities.factory import Factory
-            except ImportError as error:
-                msg = (
-                    "Could not import 'Factory' for "
-                    "ComplexPacket.__post_init__"
-                    "This usually means picounits was not installed correctly "
-                )
-                raise ImportError(msg) from error
+            factory = import_factory("ComplexPacket.__post_init__")
 
             # Attempts to pass the value to the correct type
-            return Factory.create(self.value, self.unit, prefix)
+            return factory.create(self.value, self.unit, prefix)
 
         if not isinstance(self.unit, Unit):
             msg = f"Unit must be of type 'Unit', not {type(self.unit)}"
@@ -82,18 +75,10 @@ class ComplexPacket(ScalarPacket):
 
     def phase(self) -> Packet:
         """ Returns the phase of self.value in degrees """
-        try:
-            # Provides a custom error message for the import injection
-            from picounits.core.quantities.factory import Factory
-        except ImportError as error:
-            msg = (
-                "Could not import 'Factory' for ComplexPacket.__ceil__"
-                "This usually means picounits was not installed correctly "
-            )
-            raise ImportError(msg) from error
-
+        factory = import_factory("ComplexPacket.phase")
         phasor = degrees(phase(self.value))
-        return Factory.create(phasor, Unit.dimensionless())
+
+        return factory.create(phasor, Unit.dimensionless())
 
     def _normalize(self) -> tuple[complex, PrefixScale]:
         """ Normalizes the value for packet name representation """
@@ -125,21 +110,13 @@ class ComplexPacket(ScalarPacket):
 
     def __ceil__(self) -> Packet:
         """ Defines the behavior for ceiling method """
-        try:
-            # Provides a custom error message for the import injection
-            from picounits.core.quantities.factory import Factory
-        except ImportError as error:
-            msg = (
-                "Could not import 'Factory' for ComplexPacket.__ceil__"
-                "This usually means picounits was not installed correctly "
-            )
-            raise ImportError(msg) from error
+        factory = import_factory("ComplexPacket.__ceil__")
 
         real_ceil = ceil(self.value.real)
         imag_ceil = ceil(self.value.imag)
 
         ceiling = complex(real_ceil, imag_ceil)
-        return Factory.create(ceiling, self.unit)
+        return factory.create(ceiling, self.unit)
 
     def __eq__(self, other: Any) -> bool:
         """ Defines the behavior for equality comparison """

@@ -14,12 +14,11 @@ from picounits.core.quantities.scalars.methods.validators import (
 )
 
 """ User variables """
-Initial_Velocity = (10+2j) * VELOCITY
-Acceleration = 2.5 * (LENGTH / TIME ** 2)
-Displacement = 12 * KILO * LENGTH
+Initial_Velocity = (10+100j) * VELOCITY
+Acceleration = 2.5 * LENGTH / TIME ** 2
+Displacement = (10+12j) * KILO * LENGTH
 Projectile_Mass = 12 * MASS
 
-Initial_Velocity.plot()
 
 @unit_validator(VELOCITY)
 def suvat(initial_velocity: q, acceleration: q, distance: q) -> q:

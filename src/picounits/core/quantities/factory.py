@@ -14,6 +14,7 @@ from typing import Any, Callable
 
 from picounits.core.quantities.packet import Packet
 
+from picounits.lazy_imports import lazy_import
 
 class Factory:
     """
@@ -27,30 +28,26 @@ class Factory:
         NOTE: Cannot type hint unit nor prefix due to circular imports
         """
         if prefix is None:
-            try:
-                # Provides a custom error message for the import injection
-                from picounits.core.scales import PrefixScale
-            except ImportError as error:
-                msg = (
-                    "Could not import 'PrefixScale' for Factory.create"
-                    "This usually means picounits was not installed correctly "
-                )
-                raise ImportError(msg) from error
-
-            prefix = PrefixScale.BASE
+            prefixscale = lazy_import(
+                "picounits.core.scales", "PrefixScale", "Factory.create"
+            )
+            prefix = prefixscale.BASE
 
         match value:
             case complex():
-                from picounits.core.quantities.scalars.types.complex import (
-                    ComplexPacket
+                complex_packet = lazy_import(
+                    "picounits.core.quantities.scalars.types.complex", 
+                    "ComplexPacket", "Factory.create"
                 )
-                return ComplexPacket(value, unit, prefix)
+
+                return complex_packet(value, unit, prefix)
 
             case float() | int():
-                from picounits.core.quantities.scalars.types.real import (
-                    RealPacket
+                real_packet = lazy_import(
+                    "picounits.core.quantities.scalars.types.real", 
+                    "RealPacket", "Factory.create"
                 )
-                return RealPacket(value, unit, prefix)
+                return real_packet(value, unit, prefix)
 
             case _:
                 msg = f"No Packet for this value type: {type(value)}"
@@ -73,21 +70,14 @@ class Factory:
                     return method(q1, q2)
 
                 # Initialization due to circular import of literals
-                try:
-                    from picounits.core.quantities.priority import (
-                        DOMAIN_PRIORITY
-                    )
-                except ImportError as error:
-                    msg = (
-                        "Could not import 'DOMAIN_PRIORITY' for "
-                        "Factory.reallocate. This usually means "
-                        "picounits was not installed correctly"
-                    )
-                    raise ImportError(msg) from error
+                domain_priority = lazy_import(
+                    "picounits.core.quantities.priority",
+                    "DOMAIN_PRIORITY", "Factory.reallocate"
+                )
 
                 # Gets priority of each packet_type
-                p1 = DOMAIN_PRIORITY.get(q1_parents, 0)
-                p2 = DOMAIN_PRIORITY.get(q2_parents, 0)
+                p1 = domain_priority.get(q1_parents, 0)
+                p2 = domain_priority.get(q2_parents, 0)
 
                 # Finds the native operator for these packets
                 winner = q1 if p1 >= p2 else q2

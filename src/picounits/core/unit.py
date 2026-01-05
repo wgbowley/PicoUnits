@@ -14,6 +14,7 @@ from __future__ import annotations
 from typing import Any
 
 from picounits.core.dimensions import Dimension
+from picounits.lazy_imports import import_factory
 
 
 class Unit:
@@ -138,19 +139,10 @@ class Unit:
     def __rmul__(self, other: Any):
         """
         Acts as a syntactic bridge to packet to allow for a cleaner API.
-        Example: 10 * CURRENT => Quantity(10, CURRENT)
+        Example: 10 * CURRENT => RealPacket(10, CURRENT)
         """
-        try:
-            # Provides a custom error message for the import injection
-            from picounits.core.quantities.factory import Factory
-        except ImportError as error:
-            msg = (
-                "Could not import 'Factory' for Unit.__rmul__ "
-                "This usually means picounits was not installed correctly "
-            )
-            raise ImportError(msg) from error
-
-        return Factory.create(other, self)
+        factory = import_factory('Unit.__rmul__')
+        return factory.create(other, self)
 
     def __truediv__(self, other: Unit) -> Unit:
         """ Defines behavior for forward true division """
@@ -164,18 +156,10 @@ class Unit:
         """
         Acts as a syntactic bridge to packet and reciprocal method
 
-        Quantity bridge: 10 / CURRENT = Real_Packet(10, a⁻¹)
+        Quantity bridge: 10 / CURRENT = RealPacket(10, a⁻¹)
         Reciprocal method : 1 / CURRENT => Unit(A⁻¹)
         """
-        try:
-            # Provides a custom error message for the import injection
-            from picounits.core.quantities.factory import Factory
-        except ImportError as error:
-            msg = (
-                "Could not import 'Factory' for Unit.__rtruediv__ "
-                "This usually means picounits was not installed correctly "
-            )
-            raise ImportError(msg) from error
+        factory = import_factory('Unit.__rtruediv__')
 
         if not isinstance(other, (int, float)):
             msg = (
@@ -192,7 +176,7 @@ class Unit:
             return Unit(*new_dims)
 
         # Returns a packet with value and reciprocal unit
-        return Factory.create(other, Unit(*new_dims))
+        return factory.create(other, Unit(*new_dims))
 
     def __pow__(self, other: int | float) -> Unit:
         """ Defines behavior for forward power method """

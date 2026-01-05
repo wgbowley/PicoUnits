@@ -59,7 +59,12 @@ def _draw_line(
 def argand_plot(complex_numbers: list[ComplexQuantity]) -> None:
     """ Generates a argand diagram for complex quantity """
     width, height = get_terminal_size()
-    width, height = width - 1, height - 1
+    width, height = width // 2, height // 2
+
+    biggest = complex_numbers[0]
+    for i in complex_numbers:
+        if i.magnitude > biggest.magnitude:
+            biggest = i
 
     # Checks for same units before plotting
     reference = complex_numbers[0]
@@ -72,8 +77,8 @@ def argand_plot(complex_numbers: list[ComplexQuantity]) -> None:
 
     # Uses -2 / 2 to force the origin to be in the viewable area
     # Uses +5 Real to reverse space for labels, Uses +2 Img to prevent overlap
-    min_real, max_real = min(min(reals), -2) -3, max(max(reals), 2) + 5
-    min_imag, max_imag = min(min(imags), -2) -2, max(max(imags), 2) + 2
+    min_real, max_real = min(*reals, -2) -3, max(*reals, 2) + 5
+    min_imag, max_imag = min(*imags, -2) -2, max(*imags, 2) + 2
 
     # Defaults the grid to cells of ' '
     grid = [[' ' for _ in range(width)] for _ in range(height)]
@@ -90,17 +95,18 @@ def argand_plot(complex_numbers: list[ComplexQuantity]) -> None:
             if 0 <= x + i < width and 0 <= y < height:
                 grid[y][x + i] = (char)
 
-    # 1. Draw Axes
     ox, oy = get_coords(0, 0)
-    for i in range(width): grid[oy][i] = '─'
-    for i in range(height): grid[i][ox] = '│'
+    for i in range(width): 
+        grid[oy][i] = '─'
+    for i in range(height): 
+        grid[i][ox] = '│'
+
     grid[oy][ox] = '┼'
 
-    # 2. Add Axis Labels (Imaginary & Real)
     text = f"Re {reference.unit}"
     put_text(width - len(text), oy, text)
     text = f"Im {reference.unit}"
-    put_text(ox - 1, 0, text)
+    put_text(ox - len(text) // 2, 0, text)
 
     for z in numbers:
         px, py = get_coords(z.real, z.imag)
@@ -113,8 +119,8 @@ def argand_plot(complex_numbers: list[ComplexQuantity]) -> None:
         text = f" {str(z).strip('()')}"
         put_text(px + 1, py, text)
 
-    print(f"\nArgand Diagram")
-    for row in grid: print("".join(row))
+    print("\n Argand Diagram")
+    for row in grid: 
+        print("".join(row))
 
-
-argand_plot([(8+1j) * IMPEDANCE, (-8+1j) * IMPEDANCE])
+argand_plot([(80+10j) * IMPEDANCE, (-88-10j) * IMPEDANCE])
