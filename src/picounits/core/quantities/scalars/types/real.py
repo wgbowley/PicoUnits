@@ -83,7 +83,7 @@ class RealPacket(ScalarPacket):
         prefix_power = int(log10(magnitude))
         test_value = magnitude / (10 ** prefix_power)
 
-        if test_value < 1.0:
+        if test_value <= 1.0:
             prefix_power -= 1
 
         # O(n) prefix lookup & calculation of new value

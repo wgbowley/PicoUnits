@@ -66,6 +66,9 @@
     "cquantity",
     "alops",
     "vpacket",
-    "moivre"
+    "moivre",
+    "Bresenham",
+    "argand",
+    "phasor"
   ]
 }

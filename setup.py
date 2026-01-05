@@ -20,6 +20,8 @@ setup(
     author_email='wgrantbowley@gmail.com',
     packages=find_packages(where="src"),
     package_dir={"": "src"},
+    package_data={"picounits": ["py.typed", "**/*.pyi"]},
+    include_package_data=True,
     install_requires=[
     ],
     classifiers=[

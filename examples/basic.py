@@ -19,6 +19,7 @@ Acceleration = 2.5 * (LENGTH / TIME ** 2)
 Displacement = 12 * KILO * LENGTH
 Projectile_Mass = 12 * MASS
 
+Initial_Velocity.plot()
 
 @unit_validator(VELOCITY)
 def suvat(initial_velocity: q, acceleration: q, distance: q) -> q:
@@ -36,5 +37,4 @@ def kinetic_energy(mass: q, velocity: q) -> q:
 if __name__ == "__main__":
     final_velocity = suvat(Initial_Velocity, Acceleration, Displacement)
     kinetic = kinetic_energy(Projectile_Mass, final_velocity)
-
     print(f"{final_velocity:.3f}", f"{kinetic:.3f}")

@@ -9,7 +9,10 @@ Description:
     comprised of a Value, Unit and prefixScale.
 """
 
-from math import log10, ceil
+from __future__ import annotations
+
+from math import log10, ceil, degrees
+from cmath import phase
 from typing import Any
 from dataclasses import dataclass
 
@@ -72,6 +75,26 @@ class ComplexPacket(ScalarPacket):
         """ Returns the mathematical absolute value """
         return abs(self.value)
 
+    def conjugate(self) -> ComplexPacket:
+        """ Returns the complex conjugate of self.value """
+        value: complex = self.value
+        return ComplexPacket(value.conjugate(), self.unit)
+
+    def phase(self) -> Packet:
+        """ Returns the phase of self.value in degrees """
+        try:
+            # Provides a custom error message for the import injection
+            from picounits.core.quantities.factory import Factory
+        except ImportError as error:
+            msg = (
+                "Could not import 'Factory' for ComplexPacket.__ceil__"
+                "This usually means picounits was not installed correctly "
+            )
+            raise ImportError(msg) from error
+
+        phasor = degrees(phase(self.value))
+        return Factory.create(phasor, Unit.dimensionless())
+
     def _normalize(self) -> tuple[complex, PrefixScale]:
         """ Normalizes the value for packet name representation """
         value = self.value
@@ -84,7 +107,7 @@ class ComplexPacket(ScalarPacket):
         prefix_power = int(log10(magnitude))
         test_value = magnitude / 10 ** prefix_power
 
-        if test_value < 1.0:
+        if test_value <= 1.0:
             prefix_power -= 1
 
         # O(n) prefix lookup & calculation of new value
