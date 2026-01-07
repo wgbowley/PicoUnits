@@ -9,7 +9,7 @@ Description:
     comprised of a Value, Unit and prefixScale.
 """
 
-from math import log10, ceil
+from math import log10, ceil, trunc, floor
 from typing import Any
 from dataclasses import dataclass
 
@@ -21,6 +21,11 @@ from picounits.core.quantities.scalars.scalar import ScalarPacket
 
 from picounits.lazy_imports import import_factory
 
+
+# Import transcendental logic functions
+from picounits.core.quantities.scalars.methods import transcendental as tlops
+
+
 @dataclass(slots=True)
 class RealPacket(ScalarPacket):
     """
@@ -31,7 +36,7 @@ class RealPacket(ScalarPacket):
     def __post_init__(self, prefix: PrefixScale) -> None:
         """ Validates value and unit, then mutates value to BASE """
         if not isinstance(self.value, (int, float)):
-            factory = import_factory("ComplexPacket.__post_init__")
+            factory = import_factory("RealPacket.__post_init__")
 
             # Attempts to pass the value to the correct type
             return factory.create(self.value, self.unit, prefix)
@@ -64,6 +69,16 @@ class RealPacket(ScalarPacket):
         """ Returns the mathematical absolute value """
         return abs(self.value)
 
+    @property
+    def sign(self) -> int:
+        """ Returns the sign of self.value """
+        if self.value > 0:
+            return 1
+        elif self.value < 0:
+            return -1
+        else:
+            return 0
+
     def _normalize(self) -> tuple[float | int, PrefixScale]:
         """ Normalizes the value for packet name representation """
         value = self.value
@@ -94,8 +109,23 @@ class RealPacket(ScalarPacket):
 
     def __ceil__(self) -> Packet:
         """ Defines the behavior for ceiling method """
-        factory = import_factory("ComplexPacket.__post_init__")
+        factory = import_factory("RealPacket.__ceil__")
         return factory.create(ceil(self.value), self.unit)
+
+    def __floor__(self) -> Packet:
+        """ Defines the behavior for floor method """
+        factory = import_factory("RealPacket.__floor__")
+        return factory.create(floor(self.value), self.unit)
+
+    def __trunc__(self) -> Packet:
+        """ Defines the behavior for trunc method """
+        factory = import_factory("RealPacket.__trunc__")
+        return factory.create(trunc(self.value), self.unit)
+
+    def __round__(self, ndigits=None):
+        """ Defines the behavior for the round operation """
+        factory = import_factory("RealPacket.__round__")
+        return factory.create(round(self.value, ndigits), self.unit)
 
     def __eq__(self, other: Any) -> bool:
         """ Defines the behavior for equality comparison """
@@ -144,3 +174,166 @@ class RealPacket(ScalarPacket):
         self._valid_comparison(self, q2)
 
         return self.value >= q2.value
+
+    """
+    ================ TRANSCENDENTAL METHODS ================
+    """
+
+    def to_radians(self) -> Packet:
+        """ If dimensionless, converts the Packet to radians """
+        return tlops.to_radians_logic(self)
+
+    def to_degrees(self) -> Packet:
+        """ If dimensionless, converts the Packet to degrees """
+        return tlops.to_degrees_logic(self)
+
+    def sin(self) -> Packet:
+        """ If dimensionless, performs the sine operation on self """
+        return tlops.sin_logic(self)
+
+    def cos(self) -> Packet:
+        """ If dimensionless, performs the cosine operation on self """
+        return tlops.cos_logic(self)
+
+    def tan(self) -> Packet:
+        """ If dimensionless, performs the tangent operation on self """
+        return tlops.tan_logic(self)
+
+    def csc(self) -> Packet:
+        """ If dimensionless, performs the cosecant operation on self """
+        return tlops.csc_logic(self)
+
+    def sec(self) -> Packet:
+        """ If dimensionless, performs the secant operation on self """
+        return tlops.sec_logic(self)
+
+    def cot(self) -> Packet:
+        """ If dimensionless, performs the cotangent operation on self """
+        return tlops.cot_logic(self)
+
+    def asin(self) -> Packet:
+        """ If dimensionless, performs the arc sine operation on self """
+        return tlops.asin_logic(self)
+
+    def acos(self) -> Packet:
+        """ If dimensionless, performs the arc cosine operation on self """
+        return tlops.acos_logic(self)
+
+    def atan(self) -> Packet:
+        """ If dimensionless, performs the arc tangent operation on self """
+        return tlops.atan_logic(self)
+
+    def atan2(self, other: Any) -> Packet:
+        """ Defines the atan2 method for packets """
+        q2 = self._get_other_packet(other)
+        return tlops.atan2_logic(self, q2)
+
+    def acsc(self) -> Packet:
+        """ If dimensionless, performs the arc cosecant operation on self """
+        return tlops.acsc_logic(self)
+
+    def asec(self) -> Packet:
+        """ If dimensionless, performs the arc secant operation on self """
+        return tlops.asec_logic(self)
+
+    def acot(self) -> Packet:
+        """ If dimensionless, performs the arc cotangent operation on self """
+        return tlops.acot_logic(self)
+
+    def sinh(self) -> Packet:
+        """
+        If dimensionless, performs the hyperbolic sine operation on self
+        """
+        return tlops.sinh_logic(self)
+
+    def cosh(self) -> Packet:
+        """
+        If dimensionless, performs the hyperbolic cosine operation on self
+        """
+        return tlops.cosh_logic(self)
+
+    def tanh(self) -> Packet:
+        """
+        If dimensionless, performs the hyperbolic tangent operation on self
+        """
+        return tlops.tanh_logic(self)
+
+    def csch(self) -> Packet:
+        """
+        If dimensionless, performs the hyperbolic cosecant operation on self
+        """
+        return tlops.csch_logic(self)
+
+    def sech(self) -> Packet:
+        """
+        If dimensionless, performs the hyperbolic secant operation on self
+        """
+        return tlops.sech_logic(self)
+
+    def coth(self) -> Packet:
+        """
+        If dimensionless, performs the hyperbolic cotangent operation on self
+        """
+        return tlops.coth_logic(self)
+
+    def asinh(self) -> Packet:
+        """
+        If dimensionless, performs the inverse hyperbolic sine operation on
+        self
+        """
+        return tlops.asinh_logic(self)
+
+    def acosh(self) -> Packet:
+        """
+        If dimensionless, performs the inverse hyperbolic cosine operation on
+        self
+        """
+        return tlops.acosh_logic(self)
+
+    def atanh(self) -> Packet:
+        """
+        If dimensionless, performs the inverse hyperbolic tangent operation on
+        self
+        """
+        return tlops.atanh_logic(self)
+
+    def acsch(self) -> Packet:
+        """
+        If dimensionless, performs the inverse hyperbolic cosecant operation on
+        self
+        """
+        return tlops.acsch_logic(self)
+
+    def asech(self) -> Packet:
+        """
+        If dimensionless, performs the inverse hyperbolic secant operation on
+        self
+        """
+        return tlops.asech_logic(self)
+
+    def acoth(self) -> Packet:
+        """
+        If dimensionless, performs the inverse hyperbolic cotangent operation
+        on self
+        """
+        return tlops.acoth_logic(self)
+
+    def exp(self) -> Packet:
+        """ If dimensionless, performs the exponential operation on self """
+        return tlops.exp_logic(self)
+
+    def log(self, base: float | int) -> Packet:
+        """ If dimensionless, performs the variable logarithm on self """
+        return tlops.log_logic(self, base)
+
+    def log2(self) -> Packet:
+        """ If dimensionless, performs the base 2 logarithm on self """
+        return tlops.log2_logic(self)
+
+    def log10(self) -> Packet:
+        """ If dimensionless, performs the base 10 logarithm on self """
+        return tlops.log10_logic(self)
+
+    def nlog(self) -> Packet:
+        """ If dimensionless, performs the natural logarithm on self """
+        return tlops.nlog_logic(self)

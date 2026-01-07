@@ -15,7 +15,7 @@ from picounits.core.quantities.scalars.methods.validators import (
 )
 from picounits.constants import (
     CURRENT, VOLTAGE, FLUX_DENSITY, FORCE, TIME, MASS, LENGTH,
-    INDUCTANCE, IMPEDANCE, DIMENSIONLESS, MAGNETIC_PERMEABILITY
+    INDUCTANCE, IMPEDANCE, DIMENSIONLESS, PERMEABILITY
 )
 
 
@@ -40,7 +40,7 @@ def estimate_turns(
     return ceil(turns)
 
 
-@unit_validator(MAGNETIC_PERMEABILITY)
+@unit_validator(PERMEABILITY)
 def calculate_approximate_core_permeability(
     position: q, permeability: q, relative: q, coil_length: q,
     proj_length: q, coil_outer_radius: q, proj_radius: q

@@ -124,7 +124,7 @@ class Packet(ABC):
         if not isinstance(other, (str, bool)):
             # Uses lazy import to avoid circular import between self & factory
             factory = import_factory("Packet._get_other_packet")
-            return factory.create(other, Unit())
+            return factory.create(other, Unit.dimensionless())
 
     @property
     def stripped(self) -> Any:

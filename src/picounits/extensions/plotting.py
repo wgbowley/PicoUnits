@@ -75,10 +75,11 @@ def argand_plot(complex_numbers: list[ComplexQuantity]) -> None:
     numbers = [complex_number.value for complex_number in complex_numbers]
     reals, imags = [z.real for z in numbers], [z.imag for z in numbers]
 
-    # Uses -2 / 2 to force the origin to be in the viewable area
-    # Uses +5 Real to reverse space for labels, Uses +2 Img to prevent overlap
-    min_real, max_real = min(*reals, -2) -3, max(*reals, 2) + 5
-    min_imag, max_imag = min(*imags, -2) -2, max(*imags, 2) + 2
+    # Defines the graph area for plotting the numbers
+    r_margin = int(2/10 * width)
+    i_margin = int(1/10 * width)
+    min_real, max_real = min(*reals, -2) -r_margin, max(*reals, 2) + r_margin
+    min_imag, max_imag = min(*imags, -2) -i_margin, max(*imags, 2) + i_margin
 
     # Defaults the grid to cells of ' '
     grid = [[' ' for _ in range(width)] for _ in range(height)]

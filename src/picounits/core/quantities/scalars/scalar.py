@@ -135,3 +135,7 @@ class ScalarPacket(Packet, ABC):
     def __pos__(self) -> Packet:
         """ Defines behavior for unary plus operator (+quantity) """
         return Factory.create(+self.value, self.unit)
+
+    def __bool__(self) -> bool:
+        """ Defines behavior for boolean conversion (USES MAGNITUDE) """
+        return self.magnitude != 0

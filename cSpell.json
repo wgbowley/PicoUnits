@@ -72,5 +72,6 @@
     "phasor",
     "imags",
     "fromlist",
+    "ndigits"
   ]
 }

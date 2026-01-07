@@ -30,13 +30,13 @@ from equations import (
 from picounits.extensions.parser import Parser
 from picounits.constants import (
     TIME, VELOCITY, LENGTH, CURRENT, VOLTAGE, DIMENSIONLESS,
-    MAGNETIC_PERMEABILITY, FLUX_DENSITY
+    PERMEABILITY, FLUX_DENSITY
 )
 
 p = Parser.open("examples/coilgun/parameters.uiv")
 
 # Set calculations
-permeability = 4 * pi * 1e-7 * MAGNETIC_PERMEABILITY
+permeability = 4 * pi * 1e-7 * PERMEABILITY
 average_radius = (p.coil.outer_radius + p.coil.inner_radius) / 2
 
 turns = estimate_turns(

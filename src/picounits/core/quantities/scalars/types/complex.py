@@ -11,7 +11,7 @@ Description:
 
 from __future__ import annotations
 
-from math import log10, ceil, degrees
+from math import log10, ceil, degrees, trunc, floor
 from cmath import phase
 from typing import Any
 from dataclasses import dataclass
@@ -68,17 +68,58 @@ class ComplexPacket(ScalarPacket):
         """ Returns the mathematical absolute value """
         return abs(self.value)
 
+    @property
+    def real(self) -> Packet:
+        """ Returns the real part of self.value """
+        factory = import_factory("ComplexPacket.real")
+        return factory.create(self.value.real, self.unit)
+
+    @property
+    def imag(self) -> Packet:
+        """ Returns the imaginary part of self.value """
+        factory = import_factory("ComplexPacket.imag")
+        return factory.create(self.value.imag, self.unit)
+
     def conjugate(self) -> ComplexPacket:
         """ Returns the complex conjugate of self.value """
         value: complex = self.value
         return ComplexPacket(value.conjugate(), self.unit)
 
-    def phase(self) -> Packet:
+    def degree_phase(self) -> Packet:
         """ Returns the phase of self.value in degrees """
-        factory = import_factory("ComplexPacket.phase")
         phasor = degrees(phase(self.value))
 
+        factory = import_factory("ComplexPacket.degree_phase")
         return factory.create(phasor, Unit.dimensionless())
+
+    def radians_phase(self) -> Packet:
+        """ Returns the phase of self.value in radians """
+        phasor = phase(self.value)
+
+        factory = import_factory("ComplexPacket.radians_phase")
+        return factory.create(phasor, Unit.dimensionless())
+
+    def degrees_polar(self) -> tuple[Packet, Packet]:
+        """ Returns the polar representation of the self.value in degrees """
+        phasor = degrees(phase(self.value))
+        magnitude = self.magnitude
+
+        factory = import_factory("ComplexPacket.degrees_polar")
+        return (
+            factory.create(phasor, Unit.dimensionless()), 
+            factory.create(magnitude, self.unit)
+        )
+
+    def radians_polar(self) -> tuple[Packet, Packet]:
+        """ Returns the polar representation of the self.value in radians """
+        phasor = phase(self.value)
+        magnitude = self.magnitude
+
+        factory = import_factory("ComplexPacket.radians_polar")
+        return (
+            factory.create(phasor, Unit.dimensionless()),
+            factory.create(magnitude, self.unit)
+        )
 
     def _normalize(self) -> tuple[complex, PrefixScale]:
         """ Normalizes the value for packet name representation """
@@ -110,13 +151,45 @@ class ComplexPacket(ScalarPacket):
 
     def __ceil__(self) -> Packet:
         """ Defines the behavior for ceiling method """
-        factory = import_factory("ComplexPacket.__ceil__")
-
         real_ceil = ceil(self.value.real)
         imag_ceil = ceil(self.value.imag)
 
         ceiling = complex(real_ceil, imag_ceil)
+
+        factory = import_factory("ComplexPacket.__ceil__")
         return factory.create(ceiling, self.unit)
+
+    def __floor__(self) -> Packet:
+        """ Defines the behavior for floor method """
+        new_complex = complex(
+            floor(self.value.real),
+            floor(self.value.imag)
+        )
+
+        factory = import_factory("ComplexPacket.__floor__")
+        return factory.create(new_complex, self.unit)
+
+
+    def __trunc__(self) -> Packet:
+        """ Defines the behavior for trunc method """
+        new_complex = complex(
+            trunc(self.value.real),
+            trunc(self.value.imag)
+        )
+
+        factory = import_factory("ComplexPacket.__trunc__")
+        return factory.create(new_complex, self.unit)
+
+
+    def __round__(self, ndigits=None):
+        """ Defines the behavior for the round operation """
+        new_complex = complex(
+            round(self.value.real, ndigits),
+            round(self.value.imag, ndigits)
+        )
+
+        factory = import_factory("ComplexPacket.__round__")
+        return factory.create(new_complex, self.unit)
 
     def __eq__(self, other: Any) -> bool:
         """ Defines the behavior for equality comparison """
@@ -155,3 +228,5 @@ class ComplexPacket(ScalarPacket):
         """ Defines the behavior for greater than or equal to comparison """
         _ = other
         self._raise_ordering_error()
+
+

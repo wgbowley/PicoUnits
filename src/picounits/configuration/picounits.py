@@ -53,25 +53,25 @@ DIMENSIONLESS: 7
 
 # Package defaults symbols and order (SI)
 DEFAULT_SYMBOLS = {
-    "TIME": "s",
-    "LENGTH": "m",
-    "MASS": "kg",
-    "CURRENT": "A",
-    "THERMAL": "K",
-    "AMOUNT": "mol",
-    "LUMINOSITY": "cd",
-    "DIMENSIONLESS": "∅",
+    "TIME":                 "s",
+    "LENGTH":               "m",
+    "MASS":                 "kg",
+    "CURRENT":              "A",
+    "THERMAL":              "K",
+    "AMOUNT":               "mol",
+    "LUMINOSITY":           "cd",
+    "DIMENSIONLESS":        "∅",
 }
 
 DEFAULT_ORDER = {
-    "MASS": 0,
-    "LENGTH": 1,
-    "TIME": 2,
-    "CURRENT": 3,
-    "THERMAL": 4,
-    "AMOUNT": 5,
-    "LUMINOSITY": 6,
-    "DIMENSIONLESS": 7,
+    "MASS":             0,
+    "LENGTH":           1,
+    "TIME":             2,
+    "CURRENT":          3,
+    "THERMAL":          4,
+    "AMOUNT":           5,
+    "LUMINOSITY":       6,
+    "DIMENSIONLESS":    7,
 }
 
 # Dimension maximum exponent size
