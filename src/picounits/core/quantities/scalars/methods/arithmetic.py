@@ -84,7 +84,7 @@ def power_logic(q1: Packet, q2: Packet) -> Packet:
 
     # Handles zero exponent rule (x^0 = 1)
     if q2.value == 0:
-        return Factory(1.0, DIMENSIONLESS)
+        return Factory.create(1.0, DIMENSIONLESS)
 
     # Calculates new value and unit, than returns packet
     new_value = q1.value ** q2.value

@@ -33,7 +33,7 @@ def _check_forecasted(u1: Unit, u2: Unit, wrapper: str) -> None:
         if u1 == u2:
             return
 
-    msg = f"{wrapper.__name__} returned {u1}, expected {u2}"
+    msg = f"{wrapper} returned {u1}, expected {u2}"
     raise ValueError(msg)
 
 

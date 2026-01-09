@@ -13,9 +13,11 @@ Description:
 """
 
 from picounits.core.quantities.scalars.scalar import ScalarPacket
+from picounits.core.quantities.vectors.vector import VectorPacket
 
 
 DOMAIN_PRIORITY = {
     ScalarPacket: 1,
+    VectorPacket: 2,
     # Add new ones here - just assign the Arithmetic Router
 }

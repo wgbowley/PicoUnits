@@ -1,1 +1,1 @@
-# picounits/core/quantities/scalars__init__.py
+# picounits/core/quantities/scalars/__init__.py

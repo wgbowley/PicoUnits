@@ -9,10 +9,8 @@ Description:
 """
 
 from math import pi, ceil
+from picounits.core import unit_validator, Quantity as q
 
-from picounits.core.quantities.scalars.methods.validators import (
-    unit_validator, Quantity as q
-)
 from picounits.constants import (
     CURRENT, VOLTAGE, FLUX_DENSITY, FORCE, TIME, MASS, LENGTH,
     INDUCTANCE, IMPEDANCE, DIMENSIONLESS, PERMEABILITY

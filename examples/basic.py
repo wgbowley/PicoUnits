@@ -9,9 +9,7 @@ Description:
 """
 
 from picounits.constants import LENGTH, TIME, MASS, VELOCITY, ENERGY, KILO
-from picounits.core.quantities.scalars.methods.validators import (
-    unit_validator, Quantity as q
-)
+from picounits.core import unit_validator, Quantity as q
 
 """ User variables """
 Initial_Velocity = (10+100j) * VELOCITY

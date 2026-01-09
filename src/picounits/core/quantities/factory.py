@@ -49,6 +49,13 @@ class Factory:
                 )
                 return real_packet(value, unit, prefix)
 
+            case tuple() | list():
+                array_packet = lazy_import(
+                    "picounits.core.quantities.vectors.types.array_vector",
+                    "ArrayPacket", "Factory.create"
+                )
+                return array_packet(value, unit, prefix)
+
             case _:
                 msg = f"No Packet for this value type: {type(value)}"
                 raise TypeError(msg)
