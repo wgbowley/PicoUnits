@@ -12,8 +12,6 @@ Description:
 
 from __future__ import annotations
 
-from math import log10
-from typing import Any
 from dataclasses import dataclass
 
 from picounits.core.unit import Unit

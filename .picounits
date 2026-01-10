@@ -17,7 +17,7 @@
 
 # Standard SI defaults (used if lines above are commented)
 time: s
-length: m
+length: ly
 mass: kg
 current: A
 thermal: K
