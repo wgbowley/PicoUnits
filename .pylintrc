@@ -5,6 +5,7 @@ disable =
     W0603, # Using the global statement
     W0105, # pointless-string-statement
     E0601, # used-before assignment
+    C0103, # doesn't conform to snake_case naming
 
 [MASTER]
 ignore-paths=^.*\.pyi$

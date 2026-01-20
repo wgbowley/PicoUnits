@@ -1,5 +1,5 @@
 """
-Filename: definitions.py
+Filename: operations.py
 Author: William Bowley
 Version: 0.2
 
@@ -11,13 +11,7 @@ Description:
 from __future__ import annotations
 from enum import Enum, auto
 
-class ParserError(ValueError):
-    """ Exception for parser errors when parsing """
-    def __init__(self, caller: str, error: str):
-        """ Returns a custom error message """
-        msg = f"'{caller}' raised error: {error}. "
-        super().__init__(msg)
-
+from picounits.extensions.parser_errors import ParserError
 
 class Operations(Enum):
     """ Map of Mathematical Operations for Units """
@@ -50,6 +44,18 @@ class Operations(Enum):
     def check_unicode_power(cls, power: str) -> int | None:
         """ Returns converted unicode power """
         return SUPERSCRIPT_MAP[power]
+
+    @classmethod
+    def validate_unicode_usage(cls, tokens: list[str]) -> None:
+        """ Ensures non mixing of ^ with unicode superscripts """
+        for index, token in enumerate(tokens):
+            if token == "^" and index + 1 < len(tokens):
+                if tokens[index+1] in SUPERSCRIPT_MAP:
+                    msg = (
+                        f"Ambiguous power syntax: '^' followed by unicode "
+                        f"'{tokens[index+1]}'"
+                    )
+                    raise ParserError(cls.__name__, msg)
 
     @classmethod
     def all_symbols(cls) -> list[str]:

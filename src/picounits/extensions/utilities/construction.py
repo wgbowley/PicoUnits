@@ -18,11 +18,12 @@ from picounits.core.dimensions import FBase, Dimension
 from picounits.core.quantities.packet import Packet
 from picounits.core.quantities.factory import Factory
 
-from picounits.extensions.definitions import Operations, ParserError
-
+from picounits.extensions.parser_errors import ParserError
+from picounits.extensions.utilities.operations import Operations
 
 class Construct:
-    """ Constructs units and quantities for the parser """
+    """ Stateless construction utility for unit and quantity construction """
+
     @classmethod
     def _construct_from_tokenized_unit(cls, tokens: list[str]) -> Unit:
         """ Constructs the unit from the tokenized unit string """
@@ -30,6 +31,9 @@ class Construct:
         queue_operation = None
         pending_unit = None
         pending_power = None
+
+        # Ensure usage unicode isn't mixed with ^ Ex. m^⁶ only either m^6 or m⁶
+        Operations.validate_unicode_usage(tokens)
 
         for token in tokens:
             symbol = FBase.from_symbol(token)
@@ -54,7 +58,7 @@ class Construct:
                     # Handles the power operation for unicode
                     pending_power = Operations.check_unicode_power(operation)
                     if pending_unit is not None:
-                        pending_unit **= pending_unit
+                        pending_unit **= pending_power
                         pending_power = None
 
                     continue
