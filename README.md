@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="media/PicoUnit_logo.png" alt="PicoUnits" style="max-width:600px;">
+  <img src="media/picounit_logo.png" alt="PicoUnits" style="max-width:600px;">
   <br>
   <br>
   <em>Explicit units and dimensional analysis for scientific Python – Built with Correctness by <a style="color: #861211" href="https://github.com/wgbowley">William Bowley</a></em>
