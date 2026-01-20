@@ -74,6 +74,10 @@
     "phasor",
     "imags",
     "fromlist",
-    "ndigits"
+    "ndigits",
+    "complexfloating",
+    "ndarry",
+    "linalg",
+    "numpy",
   ]
 }

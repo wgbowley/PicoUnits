@@ -131,10 +131,6 @@ class Packet(ABC):
         """ Strips the unit object away, returns non-scaled value """
         return self.value
 
-    def __repr__(self) -> str:
-        """ Displays the packet name """
-        return str(self.name)
-
     def __hash__(self):
         """ Defines behavior for hashing the packet """
         return hash((self.value, self.unit))
@@ -142,3 +138,8 @@ class Packet(ABC):
     def __str__(self) -> str:
         """ Return string representation of the packet name """
         return str(self.name)
+
+    @abstractmethod
+    def __repr__(self) -> str:
+        """ Must be defined by children to avoid automatic generation """
+        return ""

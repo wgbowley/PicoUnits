@@ -15,6 +15,7 @@ from math import log10, ceil, degrees, trunc, floor
 from cmath import phase
 from typing import Any
 from dataclasses import dataclass
+from numpy import complexfloating
 
 from picounits.core.unit import Unit
 from picounits.core.scales import PrefixScale
@@ -25,7 +26,7 @@ from picounits.core.quantities.scalars.scalar import ScalarPacket
 from picounits.lazy_imports import import_factory
 
 
-@dataclass(slots=True)
+@dataclass(slots=True, repr=False)
 class ComplexPacket(ScalarPacket):
     """
     A Complex Packet: A prefix, value (Real + Imaginary) and Unit
@@ -34,7 +35,7 @@ class ComplexPacket(ScalarPacket):
     """
     def __post_init__(self, prefix: PrefixScale) -> None:
         """ Validates value and unit, then mutates value to Base """
-        if not isinstance(self.value, (complex)):
+        if not isinstance(self.value, (complex, complexfloating)):
             factory = import_factory("ComplexPacket.__post_init__")
 
             # Attempts to pass the value to the correct type
@@ -127,6 +128,10 @@ class ComplexPacket(ScalarPacket):
         if value == 0:
             # Handles division by zero edge case
             return 0 + 0j, PrefixScale.BASE
+
+        if self.unit == Unit.dimensionless():
+            # Handles dimensionless values via non-normalization
+            return self.value, PrefixScale.BASE
 
         # Uses log10 to approximate power
         magnitude = abs(value)
@@ -229,4 +234,6 @@ class ComplexPacket(ScalarPacket):
         _ = other
         self._raise_ordering_error()
 
-
+    def __repr__(self) -> str:
+        """ Displays the packet name """
+        return str(self.name)

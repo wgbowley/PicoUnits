@@ -31,10 +31,7 @@ class PrefixScale(Enum):
     GIGA    = 9
     MEGA    = 6
     KILO    = 3
-    HECTO   = 2
-    DEKA    = 1
     BASE    = 0
-    DECI    = -1
     CENTI   = -2
     MILLI   = -3
     MICRO   = -6
@@ -87,6 +84,11 @@ class PrefixScale(Enum):
 
         return _SYMBOLS_TO_SCALE.get(reference)
 
+    @classmethod
+    def all_symbols(cls) -> list[str]:
+        """ Returns a list of all symbols """
+        return list(_SYMBOLS_TO_SCALE.items())
+
     @property
     def symbol(self) -> str:
         """ Returns the prefix symbol. """
@@ -124,10 +126,7 @@ _SCALE_SYMBOLS = {
     PrefixScale.GIGA:   "G",
     PrefixScale.MEGA:   "M",
     PrefixScale.KILO:   "k",
-    PrefixScale.HECTO:  "h",
-    PrefixScale.DEKA:   "da",
     PrefixScale.BASE:   "",
-    PrefixScale.DECI:   "d",
     PrefixScale.CENTI:  "c",
     PrefixScale.MILLI:  "m",
     PrefixScale.MICRO:  "u",

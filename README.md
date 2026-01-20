@@ -20,7 +20,7 @@ Picounits is a lightweight dimensional analysis library and DSL for writing dime
 ![Python Version](https://img.shields.io/badge/python-3.10+-red)
 ![License](https://img.shields.io/badge/license-MIT-white)
 
-Picounit is a zero-dependency Python package that does dimensional analysis at runtime. Key features:
+Picounit is a single dependency (numpy) Python package that does dimensional analysis at runtime. Key features:
 
 - **Pluggable unit systems**:  Define custom "Unit Frames" for your domain
 - **Configuration format**:  `.uiv` files with embedded, validated units  
@@ -32,7 +32,7 @@ But instead of talking about it, let's see some examples:
 ```py
 >>> from picounits import MILLI, LENGTH
 >>> 12 * MILLI * LENGTH + 10 * LENGTH
->>> RealPacket(value=10.01, unit=<Unit: m>)
+>>> 10.012 (m)
 ```
 
 As expected, it returns 10.01 meters, but what is a unit? A more exotic feature of Picounits is that its fundamental units are fully abstract. We call this the user's "Unit Frame"; by default, it's SI metric, but it could be astronomical units:
@@ -41,7 +41,7 @@ As expected, it returns 10.01 meters, but what is a unit? A more exotic feature 
 # With a custom .picounit file defining light-years as LENGTH:
 >>> from picounits import MILLI, LENGTH
 >>> 12 * MILLI * LENGTH + 10 * LENGTH
->>> RealPacket(value=10.01, unit=<Unit: ly>)
+>>> 10.012 (ly)
 ```
 
 All depends on the users `.picounit` file, which can be generated via the command `picounits generate`. Another feature is the ability to use the `.uiv` (unit-informed values) format, which picounits loads in via recursive attribute injection. So instead of a nested list, you get a wonderful object-based loader.
@@ -58,7 +58,7 @@ Your `.picounit` file defines both your Unit Frame *and* what units your `.uiv` 
 ```py
 >>> from picounits.parser import Parser
 >>> p = Parser(parameters.uiv)
->>> print(p.model.voltage)
+>>> p.model.voltage
 >>> 18 (kg·m²·s⁻³·A⁻¹)
 ```
 

@@ -23,6 +23,7 @@ setup(
     package_data={"picounits": ["py.typed", "**/*.pyi"]},
     include_package_data=True,
     install_requires=[
+        'numpy'
     ],
     classifiers=[
         'Programming Language :: Python :: 3',

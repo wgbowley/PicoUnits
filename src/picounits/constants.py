@@ -20,6 +20,7 @@ KILO                    = PrefixScale.KILO
 CENTI                   = PrefixScale.CENTI
 MILLI                   = PrefixScale.MILLI
 NANO                    = PrefixScale.NANO
+PICO                    = PrefixScale.PICO
 
 """ =============== Predefined fundamental units =============== """
 
@@ -45,3 +46,4 @@ IMPEDANCE               = ENERGY / (TIME * CURRENT ** 2)
 INDUCTANCE              = IMPEDANCE * TIME
 PERMEABILITY            = INDUCTANCE / LENGTH
 VOLTAGE                 = POWER / CURRENT
+CAPACITANCE             = CURRENT ** 2 * TIME ** 4 / (MASS * LENGTH ** 2)

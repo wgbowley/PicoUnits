@@ -76,6 +76,11 @@ class FBase(Enum):
         return _order().get(self.name, _ORDER[self])
 
     @classmethod
+    def all_symbols(cls) -> list[str]:
+        """ Returns the symbols of all base units """
+        return list(_symbols().items())
+
+    @classmethod
     def from_symbol(cls, reference: str) -> FBase | None:
         """
         Compares reference symbol with symbol lookup, if not found returns none
@@ -104,7 +109,7 @@ class FBase(Enum):
 
     def __repr__(self) -> str:
         """ Displays the fundamental base. """
-        return f"<FBase.{self.name}>"
+        return f"<FBase type={self.name}, symbol={self.symbol}>"
 
 
 @dataclass(frozen=True, slots=True)

@@ -12,6 +12,7 @@ Description:
 from math import log10, ceil, trunc, floor
 from typing import Any
 from dataclasses import dataclass
+from numpy import integer, floating
 
 from picounits.core.unit import Unit
 from picounits.core.scales import PrefixScale
@@ -26,7 +27,7 @@ from picounits.lazy_imports import import_factory
 from picounits.core.quantities.scalars.methods import transcendental as tlops
 
 
-@dataclass(slots=True)
+@dataclass(slots=True, repr=False)
 class RealPacket(ScalarPacket):
     """
     A Real Packet: A prefix, value (integer or float) and Unit
@@ -35,7 +36,7 @@ class RealPacket(ScalarPacket):
     """
     def __post_init__(self, prefix: PrefixScale) -> None:
         """ Validates value and unit, then mutates value to BASE """
-        if not isinstance(self.value, (int, float)):
+        if not isinstance(self.value, (int, float, integer, floating)):
             factory = import_factory("RealPacket.__post_init__")
 
             # Attempts to pass the value to the correct type
@@ -85,6 +86,10 @@ class RealPacket(ScalarPacket):
         if value == 0:
             # Handles division by zero edge case
             return 0, PrefixScale.BASE
+
+        if self.unit == Unit.dimensionless():
+            # Handles dimensionless values via non-normalization
+            return self.value, PrefixScale.BASE
 
         # Uses log10 to approximate power
         magnitude = abs(value)
@@ -174,6 +179,10 @@ class RealPacket(ScalarPacket):
         self._valid_comparison(self, q2)
 
         return self.value >= q2.value
+
+    def __repr__(self) -> str:
+        """ Displays the packet name """
+        return str(self.name)
 
     """
     ================ TRANSCENDENTAL METHODS ================

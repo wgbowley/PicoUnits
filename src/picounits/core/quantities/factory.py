@@ -11,6 +11,7 @@ Description:
 """
 
 from typing import Any, Callable
+from numpy import array, integer, floating, complexfloating
 
 from picounits.core.quantities.packet import Packet
 
@@ -34,7 +35,7 @@ class Factory:
             prefix = prefixscale.BASE
 
         match value:
-            case complex():
+            case complex() | complexfloating() | integer() | floating():
                 complex_packet = lazy_import(
                     "picounits.core.quantities.scalars.types.complex", 
                     "ComplexPacket", "Factory.create"
@@ -49,9 +50,9 @@ class Factory:
                 )
                 return real_packet(value, unit, prefix)
 
-            case tuple() | list():
+            case tuple() | list() | array():
                 array_packet = lazy_import(
-                    "picounits.core.quantities.vectors.types.array_vector",
+                    "picounits.core.quantities.vectors.types.array",
                     "ArrayPacket", "Factory.create"
                 )
                 return array_packet(value, unit, prefix)
