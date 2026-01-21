@@ -1,3 +1,8 @@
+[version]
+format: 0.1.0
+unit_frame: SI_METRIC_NON_DERIVED
+
+
 [stc_air.meta]
 tag: "environmental"
 note: "Dry air at STC: Standard Test Conditions (25 °C / 298.15 K, 101.325 kPa, 1 atm)"
@@ -48,8 +53,8 @@ temp_dependence: [
 
 
 [pure_iron.meta]
-tag = "material"
-note = "It is assumed to be 99%+ Pure Iron without an oxide layer"
+tag:" "material"
+note: "It is assumed to be 99%+ Pure Iron without an oxide layer"
 last_updated: "2026-01-20"
 
 [pure_iron.physical]
@@ -83,9 +88,9 @@ temp_dependence: [
 
 
 [pure_copper.meta]
-tag = "material"
-note = "It is assumed to be 99%+ Pure copper"
-last_updated = "2026-01-20"
+tag: "material"
+note: "It is assumed to be 99%+ Pure copper"
+last_updated: "2026-01-20"
 
 [pure_copper.physical]
 lamination: "solid"
@@ -94,7 +99,7 @@ lamination_thickness: 1.0
 wire_diameter: 0.0 (m)
 
 [pure_copper.magnetic]
-relative_permeability = [1.0, 1.0] (kg*m*s^-2*A^-2)
+relative_permeability: [1.0, 1.0] (kg*m*s^-2*A^-2)
 coercivity: 0.0 k(A*m^-1)
 remanence: 0.0 (kg*s^-2*A^-1)
 current_density: 0.0 (A*m^-2)
@@ -118,9 +123,9 @@ temp_dependence: [
 
 
 [NdFeB.meta]
-tag = "magnet material"
-note = ""
-last_updated = "2026-01-20"
+tag: "magnet material"
+note: ""
+last_updated: "2026-01-20"
 
 [NdFeB.physical]
 lamination: "solid"

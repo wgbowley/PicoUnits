@@ -60,7 +60,7 @@ class Tokenizer:
 
             # Handles ':' inside quotation via toggle logic
             if character in "\"'":
-                # Ex. "Hello" true inside 'hello' empty outside.
+                # Ex. "Hello" true inside 'hello' none outside.
                 if not quote_character:
                     quote_character = character
                 elif character == quote_character:
@@ -95,7 +95,7 @@ class Tokenizer:
 
             # Handles brackets inside quotes
             if character in "\"'":
-                # Ex. "Hello" true inside 'hello' empty outside.
+                # Ex. "Hello" true inside 'hello' none outside.
                 if not quote_character:
                     quote_character = character
                 elif character == quote_character:
@@ -115,7 +115,7 @@ class Tokenizer:
                     content = text[open_index + 1:index]
                     return content, index
 
-        msg = f"'{text}' requires balanced brackets to be parsed."
+        msg = f"{text!r} requires balanced brackets to be parsed."
         raise ParserError(cls.__name__, msg)
 
     @classmethod
@@ -153,7 +153,7 @@ class Tokenizer:
 
                 # Handles brackets inside quotes
                 if character in "\"'":
-                    # Ex. "Hello" true inside 'hello' empty outside.
+                    # Ex. "Hello" true inside 'hello' none outside.
                     if not quote_character:
                         quote_character = character
                     elif character == quote_character:
