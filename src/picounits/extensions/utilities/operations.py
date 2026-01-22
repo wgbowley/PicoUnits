@@ -41,9 +41,12 @@ class Operations(Enum):
         return operator
 
     @classmethod
-    def check_unicode_power(cls, power: str) -> int | None:
+    def check_unicode_power(cls, power: str) -> int | False:
         """ Returns converted unicode power """
-        return SUPERSCRIPT_MAP[power]
+        try:
+            return SUPERSCRIPT_MAP[power]
+        except KeyError:
+            return False
 
     @classmethod
     def validate_unicode_usage(cls, tokens: list[str]) -> None:

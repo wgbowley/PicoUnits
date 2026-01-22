@@ -1,7 +1,7 @@
 """
 Filename: tokenizer.py
 Author: William Bowley
-Version: 0.1
+Version: 0.2
 
 Description:
     Low-level tokenization for .uiv format.
@@ -67,7 +67,7 @@ class Tokenizer:
                     quote_character = None
 
             elif character == ':' and not quote_character:
-                return line[:index], line[index+1:].strip()
+                return line[:index].strip(), line[index+1:].strip()
 
         return None
 
@@ -76,12 +76,12 @@ class Tokenizer:
         cls, text: str, start_index: int = 0
     ) -> tuple[str, int] | None:
         """
-        Extracts content between matching brackets Ex. '[1,2,3]' -> (1,2,3)
+        Extracts content between matching brackets Ex. '[1,2,3]' -> ('1,2,3', 6)
         """
         open_index = text.find('[', start_index)
 
         if open_index == -1:
-            # Handles when '[' is not founded
+            # Handles when '[' is not found
             return None
 
         bracket_pair_depth = 0
@@ -119,61 +119,57 @@ class Tokenizer:
         raise ParserError(cls.__name__, msg)
 
     @classmethod
-    def extract_parent_groups(cls, text: str) -> list[str]:
-        """ Extracts all top-level parenthesized groups """
+    def extract_paren_groups(cls, text: str) -> list[str]:
+        """ Extracts all top-level parenthesized groups. """
         groups = []
         index = 0
-        MAX_ITERATIONS = 10000
-        iterations = 0
 
         while index < len(text):
-            iterations += 1
-            if iterations > MAX_ITERATIONS:
-                msg = f"Loop limit exceeded in: {text[:50]}..."
-                raise ParserError(cls.__name__, msg)
-
-            # Handles whitespace/delimiters via skipping
-            if text[index] not in '(':
+            # Skip non-paren characters
+            while index < len(text) and text[index] not in '(':
                 index += 1
-                continue
 
-            # Start tracking the group
+            if index >= len(text):
+                break
+
+            # Found opening paren - track depth
+            depth = 1
             start = index + 1
-            depth = 0
+            index += 1
             quote_character = None
-            found_match = False  
 
-            # Internal state machine
-            while index < len(text):
+            while index < len(text) and depth > 0:
                 character = text[index]
 
-                # Handles if character is escaped
+                # Handle escaped characters
                 if index > 0 and text[index-1] == '\\':
+                    index += 1
                     continue
 
-                # Handles brackets inside quotes
+                # Handle quotes
                 if character in "\"'":
-                    # Ex. "Hello" true inside 'hello' none outside.
                     if not quote_character:
                         quote_character = character
                     elif character == quote_character:
                         quote_character = None
 
-                # Handles parens (only if not in quotes)
-                if not quote_character:
+                # Handle parens (only if not in quotes)
+                elif not quote_character:
                     if character == '(':
                         depth += 1
                     elif character == ')':
                         depth -= 1
                         if depth == 0:
+                            # Found matching close paren
                             groups.append(text[start:index])
-                            found_match = True
                             index += 1
                             break
 
                 index += 1
 
-            # Check if the inner loop fails to find a closing paren
-            if not found_match:
+            # Check for unclosed paren
+            if depth > 0:
                 msg = f"Unbalanced parentheses in: {text}"
                 raise ParserError(cls.__name__, msg)
+
+        return groups

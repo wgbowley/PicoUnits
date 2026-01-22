@@ -25,70 +25,76 @@ class Construct:
     """ Stateless construction utility for unit and quantity construction """
 
     @classmethod
-    def _construct_from_tokenized_unit(cls, tokens: list[str]) -> Unit:
-        """ Constructs the unit from the tokenized unit string """
-        result = Dimension.dimensionless()
-        queue_operation = None
-        pending_unit = None
-        pending_power = None
+    def _construct_from_tokenized_unit(cls, tokens: list[str]) -> 'Unit':
+        """ Constructs the unit from already tokenized unit string """
+        if not tokens:
+            return Unit.dimensionless()
 
-        # Ensure usage unicode isn't mixed with ^ Ex. m^⁶ only either m^6 or m⁶
+        result = Unit.dimensionless()
+        queue_op = None
+        pending_unit: Unit | None = None
+        pending_power: int | None = None
+
         Operations.validate_unicode_usage(tokens)
 
         for token in tokens:
             symbol = FBase.from_symbol(token)
-
-            if not symbol:
-                try:
-                    operation = Operations.from_symbol(token)
-                except ParserError:
-                    # Not an operation, try as power
-                    try:
-                        pending_power = int(token)
-                        if pending_unit is not None:
-                            pending_unit = pending_unit ** pending_power
-                            pending_power = None
-                        continue
-
-                    except ValueError as exc:
-                        msg = f"'{token}' is unknown in unit expression"
-                        raise ParserError(cls.__name__, msg) from exc
-
-                if operation == Operations.POWER:
-                    # Handles the power operation for unicode
-                    pending_power = Operations.check_unicode_power(operation)
-                    if pending_unit is not None:
-                        pending_unit **= pending_power
-                        pending_power = None
-
-                    continue
-
-                # Matches queue operation and performs that operation
-                if pending_unit is not None:
-                    if queue_operation == Operations.MULTIPLICATION:
-                        result *= pending_unit
-                    elif queue_operation == Operations.DIVIDED:
-                        result /= pending_unit
-                    elif queue_operation is None:
-                        result = pending_unit
-                    pending_unit = None
-
-                # Loads the new operation into queue
-                queue_operation = operation
+            if symbol:
+                pending_unit = Unit(Dimension(symbol))
                 continue
 
-            pending_unit = Unit(Dimension(symbol))
+            # Not a base symbol → try operation
+            try:
+                operation = Operations.from_symbol(token)
+            except ParserError:
+                try:
+                    exp = int(token)
+                    if pending_unit is not None:
+                        pending_unit = pending_unit ** exp
+                        pending_power = None   # clear
+                    else:
+                        msg = f"Stray number '{token}'"
+                        raise ParserError(cls.__name__, msg) from None
+                    continue
 
-        # Finishes any pending power or operations post-loop
+                except ValueError:
+                    pass
+
+                # Special case: unicode superscript (whole token)
+                exp = Operations.check_unicode_power(token)
+                if exp is not None:
+                    if pending_unit is not None:
+                        pending_unit = pending_unit ** exp
+                    continue
+
+                msg = f"Unknown token '{token}'"
+                raise ParserError(cls.__name__, msg) from None
+
+            if operation is Operations.POWER:
+                # (power will be consumed in the next iteration)
+                continue
+
+            # Apply pending unit before changing operator
+            if pending_unit is not None:
+                if queue_op == Operations.MULTIPLICATION:
+                    result *= pending_unit
+                elif queue_op == Operations.DIVIDED:
+                    result /= pending_unit
+                elif queue_op is None:
+                    result = pending_unit
+                pending_unit = None
+
+            queue_op = operation
+
+        # Last dimension operations
         if pending_unit is not None:
             if pending_power is not None:
                 pending_unit **= pending_power
-
-            if queue_operation == Operations.MULTIPLICATION:
+            if queue_op == Operations.MULTIPLICATION:
                 result *= pending_unit
-            elif queue_operation == Operations.DIVIDED:
+            elif queue_op == Operations.DIVIDED:
                 result /= pending_unit
-            elif queue_operation is None:
+            elif queue_op is None:
                 result = pending_unit
 
         return result

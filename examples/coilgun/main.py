@@ -38,7 +38,6 @@ p = Parser.open("examples/coilgun/parameters.uiv")
 # Set calculations
 permeability = 4 * pi * 1e-7 * PERMEABILITY
 average_radius = (p.coil.outer_radius + p.coil.inner_radius) / 2
-
 turns = estimate_turns(
     p.coil.axial_length, p.coil.inner_radius, p.coil.outer_radius,
     p.coil.wire_diameter, p.coil.fill_factor
