@@ -11,10 +11,7 @@ last_updated: "2026-01-19"
 
 [stc_air.physical]
 pressure: 101.325 k(kg*m^-1*s^-2)
-lamination: "solid"
-lamination_fill: 1.0
-lamination_thickness: 1.0
-wire_diameter: 0.0 (m)
+density: 1.225 (kg*m^-3)
 
 [stc_air.magnetic]
 relative_permeability: [1.0, 1.0] (kg*m*s^-2*A^-2)
@@ -58,10 +55,7 @@ note: "It is assumed to be 99%+ Pure Iron without an oxide layer"
 last_updated: "2026-01-20"
 
 [pure_iron.physical]
-lamination: "solid"
-lamination_fill: 1.0
-lamination_thickness: 1.0
-wire_diameter: 0.0 (m)
+density: 7872 (kg*m^-3)
 
 [pure_iron.magnetic]
 relative_permeability: [14872, 14872] (kg*m*s^-2*A^-2)
@@ -93,10 +87,7 @@ note: "It is assumed to be 99%+ Pure copper"
 last_updated: "2026-01-20"
 
 [pure_copper.physical]
-lamination: "solid"
-lamination_fill: 1.0
-lamination_thickness: 1.0
-wire_diameter: 0.0 (m)
+density: 8960 (kg*m^-3)
 
 [pure_copper.magnetic]
 relative_permeability: [1.0, 1.0] (kg*m*s^-2*A^-2)
@@ -128,10 +119,7 @@ note: ""
 last_updated: "2026-01-20"
 
 [NdFeB.physical]
-lamination: "solid"
-lamination_fill: 1.0
-lamination_thickness: 1.0
-wire_diameter: 0.0 (m)
+density: 7600 (kg*m^-3)
 
 [NdFeB.magnetic]
 relative_permeability: [1.05, 1.05] (kg*m*s^-2*A^-2)
@@ -155,7 +143,7 @@ temp_dependence: [
   [473.0, 4.42]
 ] (K), (kg*m*s^-3*K^-1)
 
-[NdFeB.grades]
+[NdFeB.coercivity]
 N30: 836420 k(A*m^-1)
 N33: 878619 k(A*m^-1)
 N35: 905659 k(A*m^-1)

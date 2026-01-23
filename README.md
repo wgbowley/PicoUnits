@@ -69,9 +69,9 @@ Well, we’ve looked at simple calculations, changing unit frames, and importing
 >>> @unit_validator(VOLTAGE)
 >>> def calculate_voltage(current, impedance):
 >>>   return current * impedance
->>>
+>>> 
 >>> calculate_voltage((10+1j) * CURRENT ** 2, 10 * IMPEDANCE)
->>> ValueError: calculate_voltage returned kg·m²·s⁻³, expected kg·m²·s⁻³·A⁻¹
+>>> DimensionError: 'calculate_voltage' returned kg·m²·s⁻³, expected kg·m²·s⁻³·A⁻¹
 ```
 
 The `unit_validator` checks the dimensionality of the output to ensure it matches the expected type. It's very useful when prototyping as it compartmentalizes dimensional checking, decreasing mental overhead. 

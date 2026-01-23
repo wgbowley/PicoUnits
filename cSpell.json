@@ -79,5 +79,8 @@
     "ndarry",
     "linalg",
     "numpy",
+    "linearizer",
+    "SBOA323A",
+    "Steinhart",
   ]
 }

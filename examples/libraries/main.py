@@ -14,28 +14,38 @@ Description:
 from picounits.extensions.parser import Parser
 from picounits.extensions.loader import DynamicLoader
 
+
 def print_loader_tree(
     loader: DynamicLoader, name="Root", indent="", is_last=True
 ) -> None:
-    """
-    Recursively prints the structure of the materials.uiv as a tree.
-    """
+    """ Recursively prints the structure of the .uiv file as a tree. """
     connector = "└── " if is_last else "├── "
-
     print(f"{indent}{connector}{name}")
-
     new_indent = indent + ("    " if is_last else "│   ")
 
     attrs = loader.attributes()
     items = list(attrs.items())
 
-    for i, (key, value) in enumerate(items):
-        last_item = (i == len(items) - 1)
+    for index, (key, value) in enumerate(items):
+        last_item = index == len(items) - 1
+        leaf_connector = "└── " if last_item else "├── "
 
         if isinstance(value, DynamicLoader):
             print_loader_tree(value, key, new_indent, last_item)
+
+        elif isinstance(value, (list, tuple)):
+            # Format lists nicely
+            if len(value) <= 4:
+                print(f"{new_indent}{leaf_connector}{key}: {value}")
+            else:
+                print(f"{new_indent}{leaf_connector}{key}: [")
+
+                for i, v in enumerate(value):
+                    item_connector = "└── " if i == len(value) - 1 else "├── "
+                    print(f"{new_indent}    {item_connector}{v}")
+                print(f"{new_indent}    ]")
+
         else:
-            leaf_connector = "└── " if last_item else "├── "
             print(f"{new_indent}{leaf_connector}{key}: {value}")
 
 if __name__ == "__main__":

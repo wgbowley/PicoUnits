@@ -14,7 +14,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from numpy import (
-    array, floating, integer, ceil, linalg, floor,
+    array, ndarray, floating, integer, ceil, linalg, floor,
     log10, unique, argmax, any as NpAny
 )
 
@@ -36,7 +36,7 @@ class ArrayPacket(VectorPacket):
     """
     def __post_init__(self, prefix: PrefixScale) -> None:
         """ Validates value and unit, then mutates values to BASE """
-        if not isinstance(self.value, (list, tuple, array)):
+        if not isinstance(self.value, (list, tuple, ndarray)):
             factory = import_factory("ArrayPacket.__post_init__")
 
             # Attempts to pass the value to the correct type
@@ -72,6 +72,10 @@ class ArrayPacket(VectorPacket):
                 new_value.append(item)
 
             else:
+                if isinstance(item, complex):
+                    msg = "Cannot create a vector of complex numbers"
+                    raise TypeError(msg)
+
                 msg = f"Cannot convert {type(item)} to ArrayPacket value"
                 raise TypeError(msg)
 

@@ -17,7 +17,7 @@ DEFAULT_CONFIG = """
 # length: l
 # mass: m
 # current: I
-# thermal: Θ
+# TEMPERATURE: Θ
 # amount: N
 # luminosity: J
 # dimensionless: 1
@@ -27,7 +27,7 @@ time: s
 length: m
 mass: kg
 current: A
-thermal: K
+TEMPERATURE: K
 amount: mol
 luminosity: cd
 dimensionless: ∅
@@ -45,7 +45,7 @@ MASS: 0
 LENGTH: 1
 TIME: 2
 CURRENT: 3
-THERMAL: 4
+TEMPERATURE: 4
 AMOUNT: 5
 LUMINOSITY: 6
 DIMENSIONLESS: 7
@@ -57,7 +57,7 @@ DEFAULT_SYMBOLS = {
     "LENGTH":               "m",
     "MASS":                 "kg",
     "CURRENT":              "A",
-    "THERMAL":              "K",
+    "TEMPERATURE":          "K",
     "AMOUNT":               "mol",
     "LUMINOSITY":           "cd",
     "DIMENSIONLESS":        "∅",
@@ -68,7 +68,7 @@ DEFAULT_ORDER = {
     "LENGTH":           1,
     "TIME":             2,
     "CURRENT":          3,
-    "THERMAL":          4,
+    "TEMPERATURE":          4,
     "AMOUNT":           5,
     "LUMINOSITY":       6,
     "DIMENSIONLESS":    7,

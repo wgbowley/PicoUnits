@@ -60,7 +60,7 @@ class FBase(Enum):
     LENGTH  = auto()
     MASS    = auto()
     CURRENT = auto()
-    THERMAL = auto()
+    TEMPERATURE = auto()
     AMOUNT  = auto()
     LUMINOSITY  = auto()
     DIMENSIONLESS = auto()
@@ -215,7 +215,7 @@ _SIBASE_SYMBOLS = {
     FBase.LENGTH: "m",
     FBase.MASS: "kg",
     FBase.CURRENT: "A",
-    FBase.THERMAL: "K",
+    FBase.TEMPERATURE: "K",
     FBase.AMOUNT: "mol",
     FBase.LUMINOSITY: "cd",
     FBase.DIMENSIONLESS: "∅",
@@ -228,7 +228,7 @@ _ORDER = {
     FBase.LENGTH: 1,
     FBase.TIME: 2,
     FBase.CURRENT: 3,
-    FBase.THERMAL: 4,
+    FBase.TEMPERATURE: 4,
     FBase.AMOUNT: 5,
     FBase.LUMINOSITY: 6,
     FBase.DIMENSIONLESS: 7,

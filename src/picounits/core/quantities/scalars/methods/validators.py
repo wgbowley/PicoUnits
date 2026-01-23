@@ -18,23 +18,31 @@ from picounits.core.quantities.packet import Packet
 Quantity = Packet
 
 
-def _check_packet(q: Packet, wrapper: str) -> None:
+class DimensionError(ValueError):
+    """ Exception for unit error """
+    def __init__(self, caller: str, message: str):
+        """ Returns a custom error message for unit error """
+        msg = f"{caller!r} {message}"
+        super().__init__(msg)
+
+
+def _check_packet(q: Packet, func: str) -> None:
     """ Checks to ensure q is a packet """
     if isinstance(q, Packet):
         return
 
-    msg = f"{wrapper} returned {type(q)}, expected packet"
-    raise TypeError(msg)
+    msg = f"returned {type(q)}, expected packet"
+    raise DimensionError(func, msg)
 
 
-def _check_forecasted(u1: Unit, u2: Unit, wrapper: str) -> None:
+def _check_forecasted(u1: Unit, u2: Unit, func: str) -> None:
     """ Checks to ensure u1 is equal to u2 """
     if isinstance(u1, Unit) and isinstance(u2, Unit):
         if u1 == u2:
             return
 
-    msg = f"{wrapper} returned {u1}, expected {u2}"
-    raise ValueError(msg)
+    msg = f"returned {u1}, expected {u2}"
+    raise DimensionError(func, msg)
 
 
 def unit_validator(forecasted: Unit) -> Callable:
@@ -47,15 +55,15 @@ def unit_validator(forecasted: Unit) -> Callable:
 
             # Single Packet
             if isinstance(result, Packet):
-                _check_forecasted(result.unit, forecasted, wrapper.__name__)
+                _check_forecasted(result.unit, forecasted, func.__name__)
                 return result
 
             # Tuple or list of Packets
             if isinstance(result, (tuple, list)):
                 for item in result:
-                    _check_packet(item, wrapper.__name__)
+                    _check_packet(item, func.__name__)
                     _check_forecasted(
-                        item.unit, forecasted, wrapper.__name__
+                        item.unit, forecasted, func.__name__
                     )
                 return result
 

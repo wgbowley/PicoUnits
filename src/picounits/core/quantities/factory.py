@@ -11,8 +11,8 @@ Description:
 """
 
 from typing import Any, Callable
-from numpy import array, integer, floating, complexfloating
-
+from numpy import ndarray, integer, floating, complexfloating
+from time import sleep
 from picounits.core.quantities.packet import Packet
 
 from picounits.lazy_imports import lazy_import
@@ -50,7 +50,7 @@ class Factory:
                 )
                 return real_packet(value, unit, prefix)
 
-            case tuple() | list() | array():
+            case tuple() | list() | ndarray():
                 array_packet = lazy_import(
                     "picounits.core.quantities.vectors.types.array",
                     "ArrayPacket", "Factory.create"
@@ -90,6 +90,10 @@ class Factory:
                 # Finds the native operator for these packets
                 winner = q1 if p1 >= p2 else q2
                 loser = q2 if winner is q1 else q1
+
+                if q1.__class__ == winner.__class__:
+                    # If winner is q1 than return the method
+                    return method(q1, q2)
 
                 # Reallocate this result to another arithmetic router
                 return getattr(winner, op_name)(loser)

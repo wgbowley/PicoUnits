@@ -113,7 +113,7 @@ class Parser:
         return Converter.cast(value_str), "", ""
 
     @classmethod
-    def open(cls, filepath: str) -> dict:
+    def open(cls, filepath: str) -> DynamicLoader:
         """
         Parse .uiv file into structured data.
         """

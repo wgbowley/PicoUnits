@@ -1,3 +1,7 @@
+[version]
+format: 0.1.0
+unit_frame: SI_METRIC_NON_DERIVED
+
 [notes]
 # Analytical model for a multi-stage coil-gun
 # Models electrical, magnetic and motional dynamics
@@ -16,7 +20,7 @@ axial_length: 45 m(m)
 density: 7850 (kg/m^3)
 coefficient_drag: 0.82
 relative_permeability: 100
-magnetic_saturation: 1.8 (kg*s^-2*A^-1)
+magnetic_saturation: 1.8 (kg*s^-2*A^-1) # Tesla
 
 [coil]
 axial_length: 50 m(m)
@@ -24,4 +28,4 @@ outer_radius: 17.5 m(m)
 inner_radius: 6.25 m(m)
 wire_diameter: 1.25 m(m)
 fill_factor: 0.7
-resistivity: 16.8 n(kg*m^3*s^-3*A^-2)
+resistivity: 16.8 n(kg*m^3*s^-3*A^-2)   # ohms-meter 
