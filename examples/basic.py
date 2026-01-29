@@ -33,4 +33,4 @@ def kinetic_energy(mass: q, velocity: q) -> q:
 if __name__ == "__main__":
     final_velocity = suvat(Initial_Velocity, Acceleration, Displacement)
     kinetic = kinetic_energy(Projectile_Mass, final_velocity)
-    print(f"{final_velocity:.3f}", f"{kinetic:.3f}")
+    print(f"Velocity: {final_velocity:.3f}", f"Energy: {kinetic:.3f}")

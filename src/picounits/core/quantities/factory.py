@@ -12,7 +12,6 @@ Description:
 
 from typing import Any, Callable
 from numpy import ndarray, integer, floating, complexfloating
-from time import sleep
 from picounits.core.quantities.packet import Packet
 
 from picounits.lazy_imports import lazy_import
@@ -99,3 +98,15 @@ class Factory:
                 return getattr(winner, op_name)(loser)
             return wrapper
         return decorator
+
+    @classmethod
+    def category_check(cls, q1: Packet, q2: Packet) -> None:
+        """ Checks if two packets are from the same category """
+        q1_parents = q1.__class__.__bases__[0]
+        q2_parents = q2.__class__.__bases__[0]
+
+        if q1_parents == q2_parents:
+            return
+
+        msg = f"{q1!r} is not in the same quality category as {q2!r}"
+        raise TypeError(msg)

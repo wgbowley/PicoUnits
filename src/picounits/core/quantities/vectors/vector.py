@@ -19,6 +19,7 @@ from picounits.core.quantities.packet import Packet
 from picounits.core.quantities.factory import Factory
 
 from picounits.core.quantities.vectors.methods import arithmetic as acops
+from picounits.core.quantities.vectors.methods import operations as osops
 
 
 @dataclass(slots=True)
@@ -29,7 +30,26 @@ class VectorPacket(Packet, ABC):
     NOTE: Representation, prefix scaling, comparison, validation
     are not implemented in this base case.
     """
-    
+
+    @property
+    def unit_vector(self) -> Packet:
+        """ Calculates the unit vector of self """
+        return osops.normalize(self)
+
+    def dot(self, other: Packet) -> Packet:
+        """ Defines the behavior for the dot product method """
+        return osops.dot(self, other)
+
+    def cross(self, other: Packet) -> Packet:
+        """ Defines the behavior for the cross product method"""
+        return osops.cross(self, other)
+
+    def angle_between(self, other: Packet) -> Packet:
+        """
+        Defines the behavior for the angle between method. Returns in radians
+        """
+        return osops.angle_between(self, other)
+
     def __add__(self, other: Any) -> Packet:
         """ Defines the behavior for the forwards addition operator (+) """
         q2 = self._get_other_packet(other)
