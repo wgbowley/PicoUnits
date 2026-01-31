@@ -7,7 +7,7 @@ disable =
     E0601, # used-before assignment
     C0103, # doesn't conform to snake_case naming
     redefined-outer-name,   # I think this one is stupid
+    E1101,                  # Instance has no member
     
-
 [MASTER]
 ignore-paths=^.*\.pyi$

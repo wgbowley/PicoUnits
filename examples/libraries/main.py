@@ -53,8 +53,8 @@ if __name__ == "__main__":
     print_loader_tree(p, name="materials.uiv")
 
     # Iron/Copper mix 70%/30%
-    iron_density = p.pure_iron_physical.density
-    copper_density = p.pure_copper_physical.density
+    iron_density = p.pure_iron.physical.density
+    copper_density = p.pure_copper.physical.density
 
     density = iron_density * 7/10 + copper_density * 3 / 10
     print(f"70 % Iron 30% Copper density: {density!r}")

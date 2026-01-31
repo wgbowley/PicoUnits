@@ -19,6 +19,7 @@ GIGA                    = PrefixScale.GIGA
 KILO                    = PrefixScale.KILO
 CENTI                   = PrefixScale.CENTI
 MILLI                   = PrefixScale.MILLI
+MICRO                   = PrefixScale.MICRO
 NANO                    = PrefixScale.NANO
 PICO                    = PrefixScale.PICO
 

@@ -113,16 +113,10 @@ class Parser:
         return Converter.cast(value_str), "", ""
 
     @classmethod
-    def open(cls, filepath: str) -> DynamicLoader:
-        """
-        Parse .uiv file into structured data.
-        """
+    def _parse_lines(cls, lines: list[str]) -> dict:
+        """ Extract logic from raw_open into reusable method """
         data = {}
         current_section = None
-
-        # Read all lines
-        with open(filepath, 'r', encoding='utf-8') as f:
-            lines = f.readlines()
 
         i = 0
         while i < len(lines):
@@ -172,4 +166,16 @@ class Parser:
             quantity = Construct.quantity(value, prefix, unit)
             data[current_section][key] = quantity
 
-        return DynamicLoader(data)
+        return data
+
+    @classmethod
+    def open(cls, filepath_or_file) -> DynamicLoader:
+        """ Parse .uiv file into structured data via attribute injection. """
+        # If it’s a file-like object, read lines directly
+        if hasattr(filepath_or_file, "read"):
+            lines = filepath_or_file.readlines()
+            return DynamicLoader(cls._parse_lines(lines))
+        else:
+            with open(filepath_or_file, 'r', encoding='utf-8') as f:
+                lines = f.readlines()
+                return DynamicLoader(cls._parse_lines(lines))

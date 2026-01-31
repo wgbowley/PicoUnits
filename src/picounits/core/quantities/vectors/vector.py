@@ -11,7 +11,7 @@ Description:
 """
 
 from abc import ABC
-from typing import Any
+from typing import Any, Generator
 from dataclasses import dataclass
 
 from picounits.core.unit import Unit
@@ -178,3 +178,16 @@ class VectorPacket(Packet, ABC):
     def __bool__(self) -> bool:
         """ Defines behavior for boolean conversion (USES MAGNITUDE) """
         return self.magnitude != 0
+
+    def __len__(self) -> int:
+        """ Returns the number of elements in the vector. """
+        return len(self.value)
+
+    def __getitem__(self, index) -> Any:
+        """ Allows indexing like packet[0] """
+        return Factory.create(self.value[index], self.unit)
+
+    def __iter__(self) -> Generator[Packet, None, None]:
+        """ Returns an iterator for the array. """
+        for val in self.value:
+            yield Factory.create(val, self.unit)

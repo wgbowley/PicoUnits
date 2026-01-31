@@ -20,7 +20,7 @@ from picounits.core.quantities.factory import Factory
 
 def _valid_input_for_transcendental(q: Packet, method: str) -> None:
     """ if unit is not dimensionless, it raises a value error """
-    if q.unit is Unit.dimensionless():
+    if q.unit == Unit.dimensionless():
         return None
 
     msg = (

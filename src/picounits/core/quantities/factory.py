@@ -34,7 +34,7 @@ class Factory:
             prefix = prefixscale.BASE
 
         match value:
-            case complex() | complexfloating() | integer() | floating():
+            case complex() | complexfloating():
                 complex_packet = lazy_import(
                     "picounits.core.quantities.scalars.types.complex", 
                     "ComplexPacket", "Factory.create"
@@ -42,7 +42,7 @@ class Factory:
 
                 return complex_packet(value, unit, prefix)
 
-            case float() | int():
+            case float() | int() | integer() | floating():
                 real_packet = lazy_import(
                     "picounits.core.quantities.scalars.types.real", 
                     "RealPacket", "Factory.create"
