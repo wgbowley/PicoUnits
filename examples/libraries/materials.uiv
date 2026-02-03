@@ -4,12 +4,13 @@ unit_frame: SI_METRIC_NON_DERIVED
 
 
 [stc_air.meta]
-tag: "environmental"
+tag: "environmental_material"
 note: "Dry air at STC: Standard Test Conditions (25 °C / 298.15 K, 101.325 kPa, 1 atm)"
 humidity_assumption: "Dry (Percentage Unknown)"
 last_updated: "2026-01-19"
 
 [stc_air.physical]
+test: 10 + 1j k(kg)
 pressure: 101.325 k(kg*m^-1*s^-2)
 density: 1.225 (kg*m^-3)
 
@@ -105,7 +106,7 @@ temp_dependence: [
 
 
 [NdFeB.meta]
-tag: "magnet material"
+tag: "magnet_material"
 note: ""
 last_updated: "2026-01-20"
 
@@ -116,18 +117,18 @@ density: 7600 (kg*m^-3)
 relative_permeability: [1.05, 1.05] (kg*m*s^-2*A^-2)
 remanence: 1.104 (kg*s^-2*A^-1)
 
-[NdFeB.magnetic.coercivity]
-N30: 836420 k(A*m^-1)
-N33: 878619 k(A*m^-1)
-N35: 905659 k(A*m^-1)
-N38: 944771 k(A*m^-1)
-N40: 969969 k(A*m^-1)
-N42: 994529 k(A*m^-1)
-N45: 1030272 k(A*m^-1)
-N48: 1014538 k(A*m^-1)
-N50: 987837 k(A*m^-1)
-N52: 956180 k(A*m^-1)
-N55: 922850 k(A*m^-1)
+[NdFeB.grades]
+N30: [[836420, 1.104]] k(A*m^-1), (kg*s^-2*A^-1)
+N33: [[878619, 1.104]] k(A*m^-1), (kg*s^-2*A^-1)
+N35: [[905659,1.104]] k(A*m^-1), (kg*s^-2*A^-1)
+N38: [[944771, 1.104]] k(A*m^-1), (kg*s^-2*A^-1)
+N40: [[969969, 1.104]] k(A*m^-1), (kg*s^-2*A^-1)
+N42: [[994529, 1.104]] k(A*m^-1), (kg*s^-2*A^-1)
+N45: [[1030272, 1.104]] k(A*m^-1), (kg*s^-2*A^-1)
+N48: [[1014538, 1.104]] k(A*m^-1), (kg*s^-2*A^-1)
+N50: [[987837, 1.104]] k(A*m^-1), (kg*s^-2*A^-1)
+N52: [[956180, 1.104]] k(A*m^-1), (kg*s^-2*A^-1)
+N55: [[922850, 1.104]] k(A*m^-1), (kg*s^-2*A^-1)
 
 [NdFeB.electrical]
 relative_permittivity: [0, 0] (A^2*s^4*kg^-1*m^-3)

@@ -169,13 +169,17 @@ class Parser:
         return data
 
     @classmethod
-    def open(cls, filepath_or_file) -> DynamicLoader:
+    def open(cls, filepath_or_file, loader_class=None) -> DynamicLoader:
         """ Parse .uiv file into structured data via attribute injection. """
-        # If it’s a file-like object, read lines directly
+        if loader_class is None:
+            loader_class = DynamicLoader
+
+        # If it's a file-like object, read lines directly
         if hasattr(filepath_or_file, "read"):
             lines = filepath_or_file.readlines()
-            return DynamicLoader(cls._parse_lines(lines))
+            return loader_class(cls._parse_lines(lines))
+
         else:
             with open(filepath_or_file, 'r', encoding='utf-8') as f:
                 lines = f.readlines()
-                return DynamicLoader(cls._parse_lines(lines))
+                return loader_class(cls._parse_lines(lines))

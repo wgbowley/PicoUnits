@@ -22,7 +22,6 @@ class Converter:
     def cast(cls, text: Any) -> int | float | str | bool | None:
         """ Converts text to appropriate python type """
         text = text.strip()
-
         if Tokenizer.is_quoted(text):
             # Handles quoted strings first
             return Tokenizer.strip_quotes(text)
@@ -36,6 +35,12 @@ class Converter:
         # Try float
         try:
             return float(text)
+        except ValueError:
+            pass
+        
+        # Try complex
+        try:
+            return complex(text)
         except ValueError:
             pass
 
