@@ -27,7 +27,7 @@ from picounits.lazy_imports import import_factory
 from picounits.core.quantities.scalars.methods import transcendental as tlops
 
 
-@dataclass(slots=True, repr=False)
+@dataclass(slots=True, repr=False, unsafe_hash=True)
 class RealPacket(ScalarPacket):
     """
     A Real Packet: A prefix, value (integer or float) and Unit

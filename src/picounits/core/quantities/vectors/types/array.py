@@ -27,7 +27,7 @@ from picounits.core.quantities.vectors.vector import VectorPacket
 from picounits.lazy_imports import import_factory
 
 
-@dataclass(slots=True, repr=False)
+@dataclass(slots=True, repr=False, unsafe_hash=True)
 class ArrayPacket(VectorPacket):
     """
     A Array Packet: A prefix, array and a unit

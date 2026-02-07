@@ -63,6 +63,10 @@ class DynamicLoader:
         """ Returns a list of keys within that node """
         return list(self.attributes().keys())
 
+    def values(self):
+        """ Returns a list of values within that node """
+        return list(self.attributes().values())
+
     def __repr__(self):
         """ Returns the loaders direct members """
         items = ', '.join(self.keys())

@@ -26,7 +26,7 @@ from picounits.core.quantities.scalars.scalar import ScalarPacket
 from picounits.lazy_imports import import_factory
 
 
-@dataclass(slots=True, repr=False)
+@dataclass(slots=True, repr=False, unsafe_hash=True)
 class ComplexPacket(ScalarPacket):
     """
     A Complex Packet: A prefix, value (Real + Imaginary) and Unit

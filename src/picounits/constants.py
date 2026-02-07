@@ -15,6 +15,7 @@ from picounits.core.scales import PrefixScale
 """ =============== Predefined scales for quantities =============== """
 
 GIGA                    = PrefixScale.GIGA
+MEGA                    = PrefixScale.MEGA
 KILO                    = PrefixScale.KILO
 CENTI                   = PrefixScale.CENTI
 MILLI                   = PrefixScale.MILLI
@@ -91,6 +92,8 @@ MAGNETIC_FIELD          = FORCE / (CURRENT * LENGTH)
 MAGNETIC_FLUX           = MAGNETIC_FIELD * AREA
 PERMEABILITY            = INDUCTANCE / LENGTH
 FLUX_DENSITY            = MASS / (TIME ** 2 * CURRENT)
+COERCIVITY              = CURRENT / LENGTH
+CONDUCTIVITY            = MASS ** -1 * LENGTH ** -3 * TIME ** 3 * CURRENT ** 2
 
 
 """ =============== Waves & radiation =============== """
