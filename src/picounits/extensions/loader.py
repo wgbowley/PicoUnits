@@ -28,6 +28,15 @@ class DynamicLoader:
         else:
             setattr(obj, parts[-1], value)
 
+    def _get_path(self, parts):
+        """ Navigates to a path and returns the object """
+        obj = self
+        for part in parts:
+            if not hasattr(obj, part):
+                return None
+            obj = getattr(obj, part)
+        return obj
+
     @property
     def occupied(self) -> bool:
         """ Returns the state of the key pair """
@@ -52,6 +61,36 @@ class DynamicLoader:
                 items[key] = value
         return self.__class__(items)
 
+    def find_and_replace(self, path: str, new_value: Any) -> bool:
+        """ Finds a specific path and replaces its value. """
+        parts = path.split('.')
+
+        # Navigate to parent
+        if len(parts) == 1:
+            # Top-level attribute
+            if hasattr(self, parts[0]):
+                setattr(self, parts[0], new_value)
+                return True
+            return False
+
+        # Navigate to parent of target
+        parent = self._get_path(parts[:-1])
+        if parent is None:
+            return False
+
+        # Replace the final attribute
+        if hasattr(parent, parts[-1]):
+            setattr(parent, parts[-1], new_value)
+            return True
+
+        return False
+
+    def find_and_add(self, path: str, value: Any) -> bool:
+        """ Adds a new path with the given value. """
+        parts = path.split('.')
+        self._set_path(parts, value)
+        return True
+
     def attributes(self):
         """ Creates a dictionary of direct attributes"""
         return {
@@ -60,12 +99,18 @@ class DynamicLoader:
         }
 
     def keys(self):
-        """ Returns a list of keys within that node """
-        return list(self.attributes().keys())
+        """ Returns the single key or list of keys within that node """
+        keys_list = list(self.attributes().keys())
+        if len(keys_list) == 1:
+            return keys_list[0]
+        return keys_list
 
     def values(self):
-        """ Returns a list of values within that node """
-        return list(self.attributes().values())
+        """ Returns the single value object directly """
+        values_list = list(self.attributes().values())
+        if len(values_list) == 1:
+            return values_list[0]
+        return values_list
 
     def __repr__(self):
         """ Returns the loaders direct members """
