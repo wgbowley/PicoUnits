@@ -187,6 +187,21 @@ class VectorPacket(Packet, ABC):
         """ Allows indexing like packet[0] """
         return Factory.create(self.value[index], self.unit)
 
+    def __setitem__(self, index: int | slice, other: Any) -> None:
+        """ 
+        Allows item assignment like packet[0] = value 
+        """
+        if isinstance(other, Packet):
+            if not isinstance(other.value, complex):
+                self.unit_check(other)
+                value_to_set = other.value
+
+                self.value[index] = value_to_set
+                return
+
+        msg = f"{type(other)!r} is an unsupported type for item assignment"
+        raise TypeError(msg)
+
     def __iter__(self) -> Generator[Packet, None, None]:
         """ Returns an iterator for the array. """
         for val in self.value:

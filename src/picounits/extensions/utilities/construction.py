@@ -100,7 +100,7 @@ class Construct:
         return result
 
     @classmethod
-    def _tokenize_unit(cls, unit_str: str) -> Unit:
+    def tokenize_unit(cls, unit_str: str) -> Unit:
         """ Constructs unit from parsed unit strings """
         if not unit_str:
             # Handles dimensionless values
@@ -193,7 +193,7 @@ class Construct:
         prefix = Construct._construct_prefix(prefix)
 
         unit_str = unit[0] if isinstance(unit, list) else unit
-        unit_obj = cls._tokenize_unit(unit_str)
+        unit_obj = cls.tokenize_unit(unit_str)
 
         return Factory.create(value, unit_obj, prefix)
 
@@ -215,6 +215,6 @@ class Construct:
 
         # Finds and creates the unit
         unit_str = unit if isinstance(unit, str) else ""
-        unit_obj = cls._tokenize_unit(unit_str)
+        unit_obj = cls.tokenize_unit(unit_str)
 
         return Factory.create(value, unit_obj, prefix)

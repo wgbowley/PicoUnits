@@ -19,3 +19,6 @@ keywords = ["units", "si", "high-performance", "minimal", "physics"]
 [project.urls]
 "Homepage" = "https://github.com/wgbowley/picounits"
 "Bug Tracker" = "https://github.com/wgbowley/picounits/issues"
+
+[project.scripts]
+picounits = "picounits.configuration.cli:main"

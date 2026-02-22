@@ -14,7 +14,7 @@ from __future__ import annotations
 from typing import Any
 
 from picounits.core.dimensions import Dimension
-from picounits.lazy_imports import import_factory
+from picounits.lazy_imports import import_factory, lazy_import
 
 
 class Unit:
@@ -107,11 +107,19 @@ class Unit:
 
     @property
     def name(self) -> str:
-        """ Returns the units name as dimensions and prefixscale"""
+        """ Returns the units name as dimensions """
         if self._name_cache is None:
-            # Avoid constructing multiple's times through using cache
-            self._name_cache = "·".join(str(d.name) for d in self.dimensions)
+            # Imports the custom derived units into the system
+            get_derived_units = lazy_import(
+                "picounits.configuration.config", "get_derived_units", "Unit.name"
+            )
 
+            derived = get_derived_units()
+            for symbol, unit in derived.items():
+                if self == unit:
+                    self._name_cache = symbol
+                    return self._name_cache
+            self._name_cache = "·".join(str(d.name) for d in self.dimensions)
         return self._name_cache
 
     @property

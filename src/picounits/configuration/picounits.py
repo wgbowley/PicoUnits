@@ -68,7 +68,7 @@ DEFAULT_ORDER = {
     "LENGTH":           1,
     "TIME":             2,
     "CURRENT":          3,
-    "TEMPERATURE":          4,
+    "TEMPERATURE":      4,
     "AMOUNT":           5,
     "LUMINOSITY":       6,
     "DIMENSIONLESS":    7,

@@ -15,7 +15,7 @@ from dataclasses import dataclass
 
 from numpy import (
     array, ndarray, floating, integer, ceil, linalg, floor,
-    log10, unique, argmax, any as NpAny
+    log10, isfinite, abs as np_abs, max as np_max, append as np_append
 )
 
 from picounits.core.unit import Unit
@@ -89,39 +89,39 @@ class ArrayPacket(VectorPacket):
 
     @property
     def magnitude(self) -> float:
-        return float(linalg.norm(self.value))
+        """ Returns the magnitude of vector with units """
+        factory = import_factory("ArrayPacket.magnitude")
+
+        value = float(linalg.norm(self.value))
+        return factory.create(value, self.unit)
+
+    def append(self, item: Packet) -> None:
+        """ Appends a Packet to the array. """
+        if not isinstance(item, Packet):
+            raise TypeError(f"append() argument must be a Packet, not {type(item).__name__}")
+
+        if isinstance(item.value, complex):
+            raise TypeError(f"Vectors cannot element thats a complex number, got {item}")
+
+        self.unit_check(item)
+        self.value = np_append(self.value, item.value)
 
     def _normalize(self) -> tuple[complex, PrefixScale]:
         """ Normalizes the value for packet name representation """
-        if self.value.size == 0:
-            # Handles division by zero edge case
+        if self.value.size == 0 or self.unit == Unit.dimensionless():
             return self.value, PrefixScale.BASE
 
-        if self.unit == Unit.dimensionless():
-            # Handles dimensionless values via non-normalization
+        # Focus on the 'peak' magnitude to define the scale
+        max_mag = np_max(np_abs(self.value))
+
+        if max_mag == 0 or not isfinite(max_mag):
             return self.value, PrefixScale.BASE
 
-        # Uses log10 to approximate power
-        magnitudes = abs(self.value)
-        mask = magnitudes > 0
+        # Get the prefix for the largest element
+        peak_power = int(floor(log10(max_mag)))
+        closest = PrefixScale.from_value(peak_power)
 
-        if not NpAny(mask):
-            return self.value, PrefixScale.BASE
-
-        # Uses log10 to approximate power
-        powers = floor(log10(magnitudes[mask])).astype(int)
-
-        # Finds the most common power of the set
-        vals, counts = unique(powers, return_counts=True)
-        most_common_power = vals[argmax(counts)]
-
-        # O(n) prefix lookup & calculation of new value
-        closest = PrefixScale.from_value(int(most_common_power))
-
-        # Uses most common power to scale the set
-        normalized_values = self.value / (10 ** closest.value)
-
-        return normalized_values, closest
+        return self.value / (10 ** closest.value), closest
 
     def __format__(self, format_spec: str) -> str:
         """ Formats the string based on user input through 'format_spec'"""

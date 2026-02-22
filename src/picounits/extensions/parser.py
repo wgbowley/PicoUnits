@@ -17,7 +17,7 @@ from picounits.extensions.utilities.converter import Converter
 from picounits.extensions.parser_errors import ParserError
 
 from picounits.extensions.loader import DynamicLoader
-
+from picounits.core.unit import Unit
 
 class Parser:
     """ Parser for .uiv (unit informed values) file format """
@@ -183,3 +183,19 @@ class Parser:
             with open(filepath_or_file, 'r', encoding='utf-8') as f:
                 lines = f.readlines()
                 return loader_class(cls._parse_lines(lines))
+
+    @classmethod
+    def open_derived(cls, filepath) -> dict[str, Unit]:
+        """ Parses a units.uiv file into a symbol -> Unit registry """
+        with open(filepath, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+
+        registry = {}
+        for line in lines:
+            result = Tokenizer.split_key_value_pairs(line.strip())
+            if not result:
+                continue
+            symbol, unit_str = result
+            registry[symbol] = Construct.tokenize_unit(unit_str)
+
+        return registry

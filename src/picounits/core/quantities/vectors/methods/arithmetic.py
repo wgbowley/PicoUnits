@@ -63,10 +63,10 @@ def multiplication_logic(q1: Packet, q2: Packet | Unit) -> Packet:
 @Factory.reallocate("__truediv__")
 def true_division_logic(q1: Packet, q2: Packet) -> Packet:
     """ Defines the logic for true division between two quantities """
-    if q2.value == 0:
-        m1, m2 = q1.value, q2.value  # inline length to long
-        msg = f'True Division failed due to division by zero: {m1} / {m2}'
-        raise ValueError(msg)
+    # if q2.value == 0:
+    #     m1, m2 = q1.value, q2.value  # inline length to long
+    #     msg = f'True Division failed due to division by zero: {m1} / {m2}'
+    #     raise ValueError(msg)
 
     # Calculates new value and unit, than returns packet
     new_value = q1.value / q2.value

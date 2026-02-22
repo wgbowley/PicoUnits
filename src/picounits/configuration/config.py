@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from configparser import ConfigParser
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Any
 from warnings import warn
 
 from picounits.configuration.picounits import (
@@ -23,6 +23,30 @@ from picounits.configuration.picounits import (
 # Cache effective preferences after first load
 _effective_symbols: Dict[str, str] | None = None
 _effective_order: Dict[str, int] | None = None
+_effective_derived: Dict[str, Any] | None = None
+
+
+def _find_derived_units_file() -> Path | None:
+    """ Search upwards from cwd for units.ut """
+    cwd = Path.cwd()
+    for path in [cwd, *cwd.parents]:
+        candidate = path / "units.ut"
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+def get_derived_units():
+    """ Gets the derived unit registry if units.uiv exists """
+    global _effective_derived
+    if _effective_derived is None:
+        derived_file = _find_derived_units_file()
+        if derived_file:
+            from picounits.extensions.parser import Parser
+            _effective_derived = Parser.open_derived(derived_file)
+        else:
+            _effective_derived = {}
+    return _effective_derived
 
 
 def _find_picounits_file() -> Path | None:
@@ -91,7 +115,9 @@ def _load_config() -> None:
             symbols, order = _load_from_file(local_file)
             _effective_symbols = {**DEFAULT_SYMBOLS, **symbols}
             _effective_order = order
-            print(f"picounits: Loaded project config from {local_file}")
+
+            """NOTE: print(f"picounits: Loaded project config from {local_file}") """
+
             return
         except Exception as e:
             warn(
