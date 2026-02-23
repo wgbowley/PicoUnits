@@ -115,8 +115,9 @@ class Unit:
             )
 
             derived = get_derived_units()
+
             for symbol, unit in derived.items():
-                if self == unit:
+                if self.dimensions == unit.dimensions:
                     self._name_cache = symbol
                     return self._name_cache
             self._name_cache = "·".join(str(d.name) for d in self.dimensions)
