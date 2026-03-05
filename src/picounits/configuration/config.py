@@ -127,7 +127,7 @@ def _load_config() -> None:
     # No file or failed use defaults
     _effective_symbols = DEFAULT_SYMBOLS.copy()
     _effective_order = DEFAULT_ORDER.copy()
-    print("picounits: No .picounits found, using standard SI units")
+    """ NOTE: print("picounits: No .picounits found, using standard SI units") """
 
 
 def get_base_symbols() -> Dict[str, str]:

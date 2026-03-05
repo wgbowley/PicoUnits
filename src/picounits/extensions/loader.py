@@ -50,10 +50,12 @@ class DynamicLoader:
             results = []
         if hasattr(self, key):
             results.append({key: getattr(self, key)})
+
         # Recursion find
         for attr_value in self.__dict__.values():
             if isinstance(attr_value, self.__class__):
                 attr_value.find(key, results)
+    
         # Rebuilds a dict to reinsert into a loader structure
         items = {}
         for sub_results in results:
