@@ -114,7 +114,7 @@ class Unit:
                 "picounits.configuration.config", "get_derived_units", "Unit.name"
             )
 
-            derived = get_derived_units()
+            derived, _ = get_derived_units()
 
             for symbol, unit in derived.items():
                 if self.dimensions == unit.dimensions:

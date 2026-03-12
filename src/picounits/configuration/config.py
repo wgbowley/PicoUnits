@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Dict, Any
 from warnings import warn
 
+from picounits.lazy_imports import lazy_import
 from picounits.configuration.picounits import (
     DEFAULT_ORDER, DEFAULT_SYMBOLS
 )
@@ -39,15 +40,21 @@ def _find_derived_units_file() -> Path | None:
 def get_derived_units():
     """ Gets the derived unit registry if units.uiv exists """
     global _effective_derived
+
     if _effective_derived is None:
+        _effective_derived = {}
+
         derived_file = _find_derived_units_file()
         if derived_file:
-            from picounits.extensions.parser import Parser
-            _effective_derived = Parser.open_derived(derived_file)
-        else:
-            _effective_derived = {}
-    return _effective_derived
+            Parser = lazy_import(
+                "picounits.extensions.parser", "Parser", "get_derived_units"
+            )
 
+            data = Parser.open_derived(derived_file)
+            _effective_derived.update(data)
+
+    _reverse_lookup = {v: k for k, v in _effective_derived.items()}
+    return _effective_derived, _reverse_lookup
 
 def _find_picounits_file() -> Path | None:
     """Search upwards from cwd for .picounits"""

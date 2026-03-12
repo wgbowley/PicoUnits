@@ -21,6 +21,8 @@ from picounits.core.quantities.factory import Factory
 from picounits.extensions.parser_errors import ParserError
 from picounits.extensions.utilities.operations import Operations
 
+from picounits.configuration.config import get_derived_units
+
 class Construct:
     """ Stateless construction utility for unit and quantity construction """
 
@@ -35,13 +37,21 @@ class Construct:
         pending_unit: Unit | None = None
         pending_power: int | None = None
 
+        # Validate unicode usage & imports of derived units
         Operations.validate_unicode_usage(tokens)
+        _effective_derived, _ = get_derived_units()
 
         for token in tokens:
             symbol = FBase.from_symbol(token)
             if symbol:
                 pending_unit = Unit(Dimension(symbol))
                 continue
+
+            # Uses a lookup table for custom unit types.
+            if token in _effective_derived:
+                    pending_unit = _effective_derived[token]
+                    print("test")
+                    continue
 
             # Not a base symbol → try operation
             try:
@@ -115,13 +125,19 @@ class Construct:
         if len(tokens) == 1:
             # Handles case of a single dimension within the unit
             dim = FBase.from_symbol(tokens[0])
+
             if not dim:
-                symbols = FBase.all_symbols()
-                msg = (
-                    f"'{tokens[0]}' is an unknown dimension. "
-                    f"Supported dimensions are {symbols}"
-                )
-                raise ParserError(cls.__name__, msg)
+                try:
+                    _effective_derived, _ = get_derived_units()
+                    return _effective_derived[tokens[0]]
+
+                except KeyError:
+                    symbols = FBase.all_symbols()
+                    msg = (
+                        f"'{tokens[0]}' is an unknown dimension. "
+                        f"Supported dimensions are {symbols}"
+                    )
+                    raise ParserError(cls.__name__, msg) from None
 
             return Unit(Dimension(dim))
 

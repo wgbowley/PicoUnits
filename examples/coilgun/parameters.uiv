@@ -9,7 +9,7 @@ unit_frame: SI_METRIC_NON_DERIVED
 [model]
 number_stages: 10
 stage_gap: 10 m(m)
-voltage: 18 (kg*m^2*s^-3*A^-1)  # volts
+voltage: 18 (V)  # volts
 current_limit: 40 (A) 
 time_steps: 50 u(s)
 atmospheric_density: 1.225 (kg/m^3)
@@ -20,7 +20,7 @@ axial_length: 45 m(m)
 density: 7850 (kg/m^3)
 coefficient_drag: 0.82
 relative_permeability: 100
-magnetic_saturation: 1.8 (kg*s^-2*A^-1) # Tesla
+magnetic_saturation: 1.8 (T) # Tesla
 
 [coil]
 axial_length: 50 m(m)
@@ -28,4 +28,4 @@ outer_radius: 17.5 m(m)
 inner_radius: 6.25 m(m)
 wire_diameter: 1.25 m(m)
 fill_factor: 0.7
-resistivity: 16.8 n(kg*m^3*s^-3*A^-2)   # ohms-meter 
+resistivity: 16.8 n(Ω*m)   # ohms-meter 
