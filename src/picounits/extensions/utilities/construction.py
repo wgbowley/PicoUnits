@@ -49,11 +49,10 @@ class Construct:
 
             # Uses a lookup table for custom unit types.
             if token in _effective_derived:
-                    pending_unit = _effective_derived[token]
-                    print("test")
-                    continue
+                pending_unit = _effective_derived[token]
+                continue
 
-            # Not a base symbol → try operation
+            # Not a base symbol -> try operation
             try:
                 operation = Operations.from_symbol(token)
             except ParserError:

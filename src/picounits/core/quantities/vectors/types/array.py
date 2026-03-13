@@ -119,7 +119,10 @@ class ArrayPacket(VectorPacket):
 
         # Get the prefix for the largest element
         peak_power = int(floor(log10(max_mag)))
-        closest = PrefixScale.from_value(peak_power)
+
+        # Snaps prefix power to multiple of 3 & performs O(n) prefix lookup
+        prefix_power = 3 * (peak_power // 3)
+        closest = PrefixScale.from_value(prefix_power)
 
         return self.value / (10 ** closest.value), closest
 

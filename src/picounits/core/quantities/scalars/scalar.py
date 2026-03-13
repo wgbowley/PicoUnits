@@ -126,7 +126,7 @@ class ScalarPacket(Packet, ABC):
 
     def __abs__(self) -> Packet:
         """ Defines the absolute value operator """
-        return Factory.create(self.magnitude, self.unit)
+        return Factory.create(abs(self.value), self.unit)
 
     def __neg__(self) -> Packet:
         """ Defines behavior for negation operator (-quantity) """

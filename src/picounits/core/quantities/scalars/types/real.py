@@ -68,7 +68,8 @@ class RealPacket(ScalarPacket):
     @property
     def magnitude(self) -> int | float:
         """ Returns the mathematical absolute value """
-        return abs(self.value)
+        factory = import_factory("RealPacket.magnitude")
+        return factory.create(abs(self.value), self.unit)
 
     @property
     def sign(self) -> int:
@@ -83,21 +84,17 @@ class RealPacket(ScalarPacket):
     def _normalize(self) -> tuple[float | int, PrefixScale]:
         """ Normalizes the value for packet name representation """
         value = self.value
-        if value == 0:
-            # Handles division by zero edge case
-            return 0, PrefixScale.BASE
 
-        if self.unit == Unit.dimensionless():
-            # Handles dimensionless values via non-normalization
-            return self.value, PrefixScale.BASE
+        if value == 0 or self.unit == Unit.dimensionless():
+            # Handles division by zero or dimensionless values
+            return value, PrefixScale.BASE
 
-        # Uses log10 to approximate power
+        # Extraction of exponent
         magnitude = abs(value)
         prefix_power = int(log10(magnitude))
-        test_value = magnitude / (10 ** prefix_power)
 
-        if test_value <= 1.0:
-            prefix_power -= 1
+        # Snaps prefix power to multiple of 3
+        prefix_power = 3 * (prefix_power // 3)
 
         # O(n) prefix lookup & calculation of new value
         closest = PrefixScale.from_value(prefix_power)
