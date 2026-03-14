@@ -31,21 +31,21 @@ def _valid_input_for_transcendental(q: Packet, method: str) -> None:
 
 
 def _valid_input_for_inverse(q: Packet, method: str) -> None:
-    """ If -1 > q.magnitude or q.magnitude > 1, raises a value error """
-    if -1 <= q.magnitude <= 1:
+    """ If -1 > q.value or q.value > 1, raises a value error """
+    if -1 <= q.value <= 1:
         return
 
-    m = q.magnitude
+    m = q.value
     msg = f"Method '{method}' requires input in range [-1, 1], got {m}"
     raise ValueError(msg)
 
 
 def _valid_input_for_inverse_reciprocal(q: Packet, method: str) -> None:
-    """ If |q.magnitude| < 1, raises a value error (for asec, acsc) """
-    if abs(q.magnitude) >= 1:
+    """ If |q.value| < 1, raises a value error (for asec, acsc) """
+    if abs(q.value) >= 1:
         return
 
-    m = q.magnitude
+    m = q.value
     msg = f"Method '{method}' requires |x| >= 1, got {m}"
     raise ValueError(msg)
 
@@ -53,14 +53,14 @@ def _valid_input_for_inverse_reciprocal(q: Packet, method: str) -> None:
 def _valid_input_for_logarithms(
     q: Packet, n: float | int, method: str
 ) -> None:
-    """ If q.magnitude <= 0 or n <= 0 or n == 1, raises value error """
+    """ If q.value <= 0 or n <= 0 or n == 1, raises value error """
     if not isinstance(n, (float, int)):
-        mag = type(q.magnitude)
+        mag = type(q.value)
         msg = f"Method '{method}' requires a float or int, got {mag}"
         raise TypeError(msg)
 
-    if q.magnitude <= 0:
-        msg = f"Method '{method}' requires magnitude > 0, got {q.magnitude}"
+    if q.value <= 0:
+        msg = f"Method '{method}' requires magnitude > 0, got {q.value}"
         raise ValueError(msg)
 
     if n <= 0 or n == 1:
@@ -76,7 +76,7 @@ def _valid_input_for_logarithms(
 def to_radians_logic(q: Packet) -> Packet:
     """ Defines the logic for converting to radians with Quantities"""
     _valid_input_for_transcendental(q, to_radians_logic.__name__)
-    new_magnitude = radians(q.magnitude)
+    new_magnitude = radians(q.value)
 
     return Factory.create(new_magnitude, q.unit)
 
@@ -84,7 +84,7 @@ def to_radians_logic(q: Packet) -> Packet:
 def to_degrees_logic(q: Packet) -> Packet:
     """ Defines the logic for converting to degrees with Quantities """
     _valid_input_for_transcendental(q, to_degrees_logic.__name__)
-    new_magnitude = degrees(q.magnitude)
+    new_magnitude = degrees(q.value)
 
     return Factory.create(new_magnitude, q.unit)
 
@@ -95,7 +95,7 @@ def to_degrees_logic(q: Packet) -> Packet:
 def sin_logic(q: Packet) -> Packet:
     """ Defines the logic for performing the sine operation on a Quantity """
     _valid_input_for_transcendental(q, sin_logic.__name__)
-    new_magnitude = sin(q.magnitude)
+    new_magnitude = sin(q.value)
 
     return Factory.create(new_magnitude, q.unit)
 
@@ -103,7 +103,7 @@ def sin_logic(q: Packet) -> Packet:
 def cos_logic(q: Packet) -> Packet:
     """ Defines the logic for performing the cosine operation on a Quantity """
     _valid_input_for_transcendental(q, cos_logic.__name__)
-    new_magnitude = cos(q.magnitude)
+    new_magnitude = cos(q.value)
 
     return Factory.create(new_magnitude, q.unit)
 
@@ -113,7 +113,7 @@ def tan_logic(q: Packet) -> Packet:
     Defines the logic for performing the tangent operation on a Quantity
     """
     _valid_input_for_transcendental(q, tan_logic.__name__)
-    new_magnitude = tan(q.magnitude)
+    new_magnitude = tan(q.value)
 
     return Factory.create(new_magnitude, q.unit)
 
@@ -123,7 +123,7 @@ def csc_logic(q: Packet) -> Packet:
     Defines the logic for performing the cosecant operation on a Quantity
     """
     _valid_input_for_transcendental(q, csc_logic.__name__)
-    new_magnitude = 1 / sin(q.magnitude)
+    new_magnitude = 1 / sin(q.value)
 
     return Factory.create(new_magnitude, q.unit)
 
@@ -133,7 +133,7 @@ def sec_logic(q: Packet) -> Packet:
     Defines the logic for performing the secant operation on a Quantity
     """
     _valid_input_for_transcendental(q, sec_logic.__name__)
-    new_magnitude = 1 / cos(q.magnitude)
+    new_magnitude = 1 / cos(q.value)
 
     return Factory.create(new_magnitude, q.unit)
 
@@ -143,7 +143,7 @@ def cot_logic(q: Packet) -> Packet:
     Defines the logic for performing the cotangent operation on a Quantity
     """
     _valid_input_for_transcendental(q, cot_logic.__name__)
-    new_magnitude = 1 / tan(q.magnitude)
+    new_magnitude = 1 / tan(q.value)
 
     return Factory.create(new_magnitude, q.unit)
 
@@ -157,7 +157,7 @@ def asin_logic(q: Packet) -> Packet:
     """
     _valid_input_for_transcendental(q, asin_logic.__name__)
     _valid_input_for_inverse(q, asin_logic.__name__)
-    new_magnitude = asin(q.magnitude)
+    new_magnitude = asin(q.value)
 
     return Factory.create(new_magnitude, q.unit)
 
@@ -168,7 +168,7 @@ def acos_logic(q: Packet) -> Packet:
     """
     _valid_input_for_transcendental(q, acos_logic.__name__)
     _valid_input_for_inverse(q, acos_logic.__name__)
-    new_magnitude = acos(q.magnitude)
+    new_magnitude = acos(q.value)
 
     return Factory.create(new_magnitude, q.unit)
 
@@ -178,7 +178,7 @@ def atan_logic(q: Packet) -> Packet:
     Defines the logic for performing the arc tan operation on a Quantity
     """
     _valid_input_for_transcendental(q, atan_logic.__name__)
-    new_magnitude = atan(q.magnitude)
+    new_magnitude = atan(q.value)
 
     return Factory.create(new_magnitude, q.unit)
 
@@ -191,7 +191,7 @@ def atan2_logic(q_y: Packet, q_x: Packet) -> Packet:
     q_y.unit_check(q_x)
 
     # Calculates the new magnitude, unit is always dimensionless
-    new_magnitude = atan2(q_y.magnitude, q_x.magnitude)
+    new_magnitude = atan2(q_y.value, q_x.value)
 
     return Factory.create(new_magnitude, Unit.dimensionless())
 
@@ -203,7 +203,7 @@ def acsc_logic(q: Packet) -> Packet:
     _valid_input_for_transcendental(q, acsc_logic.__name__)
     _valid_input_for_inverse_reciprocal(q, acsc_logic.__name__)
 
-    new_magnitude = asin(1 / q.magnitude)
+    new_magnitude = asin(1 / q.value)
     return Factory.create(new_magnitude, q.unit)
 
 
@@ -214,7 +214,7 @@ def asec_logic(q: Packet) -> Packet:
     _valid_input_for_transcendental(q, asec_logic.__name__)
     _valid_input_for_inverse_reciprocal(q, asec_logic.__name__)
 
-    new_magnitude = acos(1 / q.magnitude)
+    new_magnitude = acos(1 / q.value)
     return Factory.create(new_magnitude, q.unit)
 
 
@@ -227,12 +227,12 @@ def acot_logic(q: Packet) -> Packet:
     """
     Specific function check: If magnitude == 0, raises a ZeroDivisionError
     """
-    if q.magnitude == 0:
-        mag = q.magnitude
+    if q.value == 0:
+        mag = q.value
         msg = f"Method '{acot_logic.__name__}' requires q != 0, got {mag}"
         raise ZeroDivisionError(msg)
 
-    new_magnitude = atan(1 / q.magnitude)
+    new_magnitude = atan(1 / q.value)
 
     return Factory.create(new_magnitude, q.unit)
 
@@ -243,7 +243,7 @@ def acot_logic(q: Packet) -> Packet:
 def sinh_logic(q: Packet) -> Packet:
     """ Defines the logic for performing the hyperbolic sine operation """
     _valid_input_for_transcendental(q, sinh_logic.__name__)
-    new_magnitude = sinh(q.magnitude)
+    new_magnitude = sinh(q.value)
 
     return Factory.create(new_magnitude, q.unit)
 
@@ -251,7 +251,7 @@ def sinh_logic(q: Packet) -> Packet:
 def cosh_logic(q: Packet) -> Packet:
     """ Defines the logic for performing the hyperbolic cosine operation """
     _valid_input_for_transcendental(q, cosh_logic.__name__)
-    new_magnitude = cosh(q.magnitude)
+    new_magnitude = cosh(q.value)
 
     return Factory.create(new_magnitude, q.unit)
 
@@ -259,7 +259,7 @@ def cosh_logic(q: Packet) -> Packet:
 def tanh_logic(q: Packet) -> Packet:
     """ Defines the logic for performing the hyperbolic tangent operation """
     _valid_input_for_transcendental(q, tanh_logic.__name__)
-    new_magnitude = tanh(q.magnitude)
+    new_magnitude = tanh(q.value)
 
     return Factory.create(new_magnitude, q.unit)
 
@@ -267,7 +267,7 @@ def tanh_logic(q: Packet) -> Packet:
 def csch_logic(q: Packet) -> Packet:
     """ Defines the logic for performing the hyperbolic cosecant operation """
     _valid_input_for_transcendental(q, csch_logic.__name__)
-    new_magnitude = 1 / sinh(q.magnitude)
+    new_magnitude = 1 / sinh(q.value)
 
     return Factory.create(new_magnitude, q.unit)
 
@@ -275,7 +275,7 @@ def csch_logic(q: Packet) -> Packet:
 def sech_logic(q: Packet) -> Packet:
     """ Defines the logic for performing the hyperbolic secant operation """
     _valid_input_for_transcendental(q, sech_logic.__name__)
-    new_magnitude = 1 / cosh(q.magnitude)
+    new_magnitude = 1 / cosh(q.value)
 
     return Factory.create(new_magnitude, q.unit)
 
@@ -283,7 +283,7 @@ def sech_logic(q: Packet) -> Packet:
 def coth_logic(q: Packet) -> Packet:
     """ Defines the logic for performing the hyperbolic cotangent operation """
     _valid_input_for_transcendental(q, coth_logic.__name__)
-    new_magnitude = 1 / tanh(q.magnitude)
+    new_magnitude = 1 / tanh(q.value)
 
     return Factory.create(new_magnitude, q.unit)
 
@@ -296,7 +296,7 @@ def asinh_logic(q: Packet) -> Packet:
     Defines the logic for performing the inverse hyperbolic sine operation
     """
     _valid_input_for_transcendental(q, asinh_logic.__name__)
-    new_magnitude = asinh(q.magnitude)
+    new_magnitude = asinh(q.value)
 
     return Factory.create(new_magnitude, q.unit)
 
@@ -310,12 +310,12 @@ def acosh_logic(q: Packet) -> Packet:
     """
     Specific function check: If magnitude < 1, raises a value error
     """
-    if q.magnitude < 1:
-        mag = q.magnitude
+    if q.value < 1:
+        mag = q.value
         msg = f"Method '{acosh_logic.__name__}' requires q >= 1, got {mag}"
         raise ValueError(msg)
 
-    new_magnitude = acosh(q.magnitude)
+    new_magnitude = acosh(q.value)
 
     return Factory.create(new_magnitude, q.unit)
 
@@ -330,12 +330,12 @@ def atanh_logic(q: Packet) -> Packet:
     Specific function check: If -1 >= magnitude or magnitude >= 1,
     raises a value error
     """
-    if -1 >= q.magnitude or q.magnitude >= 1:
-        mag = q.magnitude
+    if -1 >= q.value or q.value >= 1:
+        mag = q.value
         msg = f"Method '{atanh_logic.__name__}' requires -1 < q < 1, got {mag}"
         raise ValueError(msg)
 
-    new_magnitude = atanh(q.magnitude)
+    new_magnitude = atanh(q.value)
 
     return Factory.create(new_magnitude, q.unit)
 
@@ -349,12 +349,12 @@ def acsch_logic(q: Packet) -> Packet:
     """
     Specific function check: If magnitude equals 0, raises a value error
     """
-    if q.magnitude == 0:
-        mag = q.magnitude
+    if q.value == 0:
+        mag = q.value
         msg = f"Method '{acsch_logic.__name__}' requires q != 0, got {mag}"
         raise ValueError(msg)
 
-    new_magnitude = asinh(1 / q.magnitude)
+    new_magnitude = asinh(1 / q.value)
     return Factory.create(new_magnitude, q.unit)
 
 
@@ -368,14 +368,14 @@ def asech_logic(q: Packet) -> Packet:
     Specific function check: If magnitude < 0 or magnitude > 1,
     raise a value error
     """
-    if q.magnitude > 1 or q.magnitude <= 0:
-        mag = q.magnitude
+    if q.value > 1 or q.value <= 0:
+        mag = q.value
         msg = (
             f"Method '{asech_logic.__name__}' requires 0 < q <= 1, got {mag}"
         )
         raise ValueError(msg)
 
-    new_magnitude = acosh(1 / q.magnitude)
+    new_magnitude = acosh(1 / q.value)
     return Factory.create(new_magnitude, q.unit)
 
 
@@ -386,12 +386,12 @@ def acoth_logic(q: Packet) -> Packet:
     _valid_input_for_transcendental(q, acoth_logic.__name__)
 
     """ Specific function check: If |magnitude| <= 1, raise value error """
-    if abs(q.magnitude) <= 1:
-        mag = q.magnitude
+    if abs(q.value) <= 1:
+        mag = q.value
         msg = f"Method '{acoth_logic.__name__}' requires |q| > 1, got {mag}"
         raise ValueError(msg)
 
-    new_magnitude = atanh(1 / q.magnitude)
+    new_magnitude = atanh(1 / q.value)
     return Factory.create(new_magnitude, q.unit)
 
 
@@ -401,7 +401,7 @@ def acoth_logic(q: Packet) -> Packet:
 def exp_logic(q: Packet) -> Packet:
     """ Defines the logic for performing the exponential operation """
     _valid_input_for_transcendental(q, exp_logic.__name__)
-    new_magnitude = exp(q.magnitude)
+    new_magnitude = exp(q.value)
 
     return Factory.create(new_magnitude, q.unit)
 
@@ -411,7 +411,7 @@ def log_logic(q: Packet, n: float | int) -> Packet:
     _valid_input_for_transcendental(q, log_logic.__name__)
     _valid_input_for_logarithms(q, n, log_logic.__name__)
 
-    new_magnitude = log(q.magnitude, n)
+    new_magnitude = log(q.value, n)
     return Factory.create(new_magnitude, q.unit)
 
 
@@ -420,7 +420,7 @@ def log2_logic(q: Packet) -> Packet:
     _valid_input_for_transcendental(q, log2_logic.__name__)
     _valid_input_for_logarithms(q, 2, log2_logic.__name__)
 
-    new_magnitude = log2(q.magnitude)
+    new_magnitude = log2(q.value)
     return Factory.create(new_magnitude, q.unit)
 
 
@@ -429,7 +429,7 @@ def log10_logic(q: Packet) -> Packet:
     _valid_input_for_transcendental(q, log10_logic.__name__)
     _valid_input_for_logarithms(q, 10, log10_logic.__name__)
 
-    new_magnitude = log10(q.magnitude)
+    new_magnitude = log10(q.value)
     return Factory.create(new_magnitude, q.unit)
 
 
@@ -438,5 +438,5 @@ def nlog_logic(q: Packet) -> Packet:
     _valid_input_for_transcendental(q, nlog_logic.__name__)
     _valid_input_for_logarithms(q, e, nlog_logic.__name__)
 
-    new_magnitude = log(q.magnitude)
+    new_magnitude = log(q.value)
     return Factory.create(new_magnitude, q.unit)

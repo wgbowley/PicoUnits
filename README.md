@@ -44,22 +44,26 @@ As expected, it returns 10.01 meters, but what is a unit? A more exotic feature 
 >>> 10.012 (ly)
 ```
 
-All depends on the users `.picounit` file, which can be generated via the command `picounits generate`. Another feature is the ability to use the `.uiv` (unit-informed values) format, which picounits loads in via recursive attribute injection. So instead of a nested list, you get a wonderful object-based loader.
+All depends on the users `.picounit` file, which can be generated via the command `picounits generate`. Another feature is the ability to use the `.ut` (unit types) and `.uiv` (unit-informed values) formats, which picounits loads in via recursive attribute injection. So instead of a nested list, you get a wonderful object-based loader.
 
 ```yaml
+[version]
+format: 0.1.0
+unit_frame: units.ut
+
 [model]
-voltage: 18 (kg*m^2*s^-3*A^-1)  # volts
+voltage: 18 (V)  # volts
 current_limit: 40 (A) 
 time_steps: 50 u(s)
 ```
 
-Your `.picounit` file defines both your Unit Frame *and* what units your `.uiv` files can parse. This ensures consistency-you can't accidentally load a config file expecting SI metric when your code is running in natural units.
+Your `.picounit` file defines your Unit Frame, your `.ut` defines any derived units and your `.uiv` files defines value:unit pairs. This ensures consistency-you can't accidentally load a config file expecting SI metric when your code is running in natural units.
 
 ```py
 >>> from picounits.parser import Parser
 >>> p = Parser(parameters.uiv)
 >>> p.model.voltage
->>> 18 (kg·m²·s⁻³·A⁻¹)
+>>> 18 (V)
 ```
 
 Well, we’ve looked at simple calculations, changing unit frames, and importing units. But what about dimensional checks? Well, the main one is the `unit_validator`, which is a decorator that checks dimensionally out of a function. Let's intentionally pass wrong units to see what happens:

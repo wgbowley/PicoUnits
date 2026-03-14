@@ -33,7 +33,7 @@ from picounits.constants import (
     PERMEABILITY, FLUX_DENSITY
 )
 
-p = Parser.open("examples/coilgun/parameters.uiv")
+p = Parser.open("examples/coilgun/parameters.uiv", derived_units="examples/coilgun/units.ut")
 
 # Set calculations
 permeability = 4 * pi * 1e-7 * PERMEABILITY
@@ -53,6 +53,13 @@ mass = projectile_mass(
     p.projectile.axial_length, p.projectile.radius, p.projectile.density
 )
 
+# Prints calculated parameters such as projectile mass, inductance, resistance
+print("=== Coil Gun derived parameters ===")
+print(f"Number of turns @{p.coil.fill_factor:.3f}: {turns:.3f}")
+print(f"Coil Resistance: {resistance:.3f}")
+print(f"Coil Inductance: {inductance:.3f}")
+print("=== Dynamic launch results ===")
+
 # Global accumulators for plotting
 total_time_data = []
 total_force_data = []
@@ -64,6 +71,7 @@ cumulative_position = 0.0 * LENGTH
 
 initial_velocity = 0.0 * VELOCITY
 results = []
+test = 0
 
 for stage in range(p.model.number_stages.stripped):
     time = 0.0 * TIME
@@ -80,6 +88,7 @@ for stage in range(p.model.number_stages.stripped):
 
     simulation_length = p.coil.axial_length + p.model.stage_gap
     while position < simulation_length:
+        test += 1
         supply_voltage = 0.0 * VOLTAGE
         direction = 1 * DIMENSIONLESS
 
@@ -168,7 +177,6 @@ for stage in range(p.model.number_stages.stripped):
     # Update cumulative time and initial velocity for next stage
     initial_velocity = velocity_exit
 
-# Plot combined velocity vs time for all stages
-plot(
-    total_time_data, total_current_data, total_force_data, total_velocity_data
-)
+# Close off terminal print & plot current, force and velocity against time
+print("==============================")
+plot(total_time_data, total_current_data, total_force_data, total_velocity_data)

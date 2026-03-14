@@ -1,4 +1,6 @@
 # Coilgun Units - Derived from Base Dimensions (kg, m, s, etc)
+[version]
+format: 0.1.0
 
 [units]
 # Mechanics

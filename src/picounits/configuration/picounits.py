@@ -76,3 +76,4 @@ DEFAULT_ORDER = {
 
 # Dimension maximum exponent size
 MAX_EXPONENT = 10
+STANDARD_DISPLAY = 3

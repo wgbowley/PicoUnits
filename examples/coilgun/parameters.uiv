@@ -1,6 +1,6 @@
 [version]
 format: 0.1.0
-unit_frame: SI_METRIC_NON_DERIVED
+unit_frame: units.ut
 
 [notes]
 # Analytical model for a multi-stage coil-gun

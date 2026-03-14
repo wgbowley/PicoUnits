@@ -10,17 +10,44 @@ Description:
 
 from __future__ import annotations
 from typing import Any
+from pathlib import Path
+
 
 from picounits.extensions.utilities.tokenizer import Tokenizer
 from picounits.extensions.utilities.construction import Construct
 from picounits.extensions.utilities.converter import Converter
 from picounits.extensions.parser_errors import ParserError
 
+from picounits.configuration.config import get_derived_units
+
 from picounits.extensions.loader import DynamicLoader
 from picounits.core.unit import Unit
 
+
 class Parser:
     """ Parser for .uiv (unit informed values) file format """
+
+    @classmethod
+    def _back_compatibility(cls, status: bool, filepath: str) -> None:
+        """ Displays a back compatibility message to the user """
+        if status:
+            return
+
+        print(
+            f"Tip: {Path(filepath).name} lacks 'format' key; "
+            "use 'version.format: 0.1.0' for better compatibility."
+        )
+
+    @classmethod
+    def _unit_frame_compatibility(cls, status: bool, filepath: str) -> None:
+        """ Display a unit frame compatibility message to the user """
+        if status:
+            return
+
+        print(
+            f"Tip: {Path(filepath).name} lacks 'unit_frame' key; "
+            "use 'version.unit_frame: '(your_derived_units).ut' for better compatibility."
+        )
 
     @classmethod
     def _is_section(cls, line: str) -> tuple[bool, str | None]:
@@ -65,9 +92,6 @@ class Parser:
 
                 if len(units) > 1:
                     # Multiple units (column-wise)
-
-                    """ TODO: Add support for per-column prefixes """
-
                     prefixes = [""] * len(units)
                     return list_value, prefixes, units
 
@@ -113,10 +137,18 @@ class Parser:
         return Converter.cast(value_str), "", ""
 
     @classmethod
-    def _parse_lines(cls, lines: list[str]) -> dict:
+    def _parse_lines(cls, lines: list[str], filepath: str, derived_file: str) -> dict:
         """ Extract logic from raw_open into reusable method """
         data = {}
+        current_status = False
         current_section = None
+
+        # Compatibility status checks
+        format_status = False
+        unit_frame_status = False
+        if derived_file is None:
+            # Due to no derived units being used hence no compatibility issues
+            unit_frame_status = True
 
         i = 0
         while i < len(lines):
@@ -132,6 +164,12 @@ class Parser:
             if is_section:
                 current_section = section_name
                 data[section_name] = {}
+
+                if section_name.lower() == "version":
+                    current_status = True
+                else:
+                    current_status = False
+
                 continue
 
             # Parse key-value pair
@@ -162,27 +200,71 @@ class Parser:
             # Extract value, prefix, and unit
             value, prefix, unit = cls._extract_qualities(raw_value)
 
-            # Construct the quantity
+            # Checks for 'format & unit frame' to verify back_compatibility
+            if current_status:
+                if key.lower() == "format":
+                    format_status = True
+
+                if key.lower() == "unit_frame" and unit_frame_status == False:
+                    if value != derived_file:
+                        msg = (
+                            f"Failed to load {filepath!r} due to unit frame mismatch "
+                            f"{value!r} != {derived_file}"
+                        )
+                        raise ValueError(msg)
+
+                    unit_frame_status = True
+
+            # Constructs array of quantity (value_1: unit_1, ..., value_n: unit_n)
+            if isinstance(unit, list) and isinstance(value, list):
+                valid = False
+
+                for entry in value:
+                    if isinstance(entry, (complex, int, float)):
+                        valid = True
+                    else:
+                        valid = False
+
+                if valid:
+                    array = []
+                    for index, value in enumerate(value):
+                        quantity = Construct.quantity(value, prefix[index], unit[index])
+                        array.append(quantity)
+
+                    data[current_section][key] = array
+                    continue
+
+            # Construct the quantity (Arrays, single value unit pairs)
             quantity = Construct.quantity(value, prefix, unit)
             data[current_section][key] = quantity
 
+        cls._back_compatibility(format_status, filepath)
+        cls._unit_frame_compatibility(unit_frame_status, filepath)
         return data
 
     @classmethod
-    def open(cls, filepath_or_file, loader_class=None) -> DynamicLoader:
+    def open(
+        cls, filepath_or_file, loader_class=None, derived_units=None
+    ) -> DynamicLoader:
         """ Parse .uiv file into structured data via attribute injection. """
         if loader_class is None:
             loader_class = DynamicLoader
 
+        # Loads .ut derived units
+        if derived_units:
+            _, derived_file = get_derived_units(Path(derived_units))
+        else:
+            _, derived_file = get_derived_units()
+
         # If it's a file-like object, read lines directly
         if hasattr(filepath_or_file, "read"):
             lines = filepath_or_file.readlines()
-            return loader_class(cls._parse_lines(lines))
+            return loader_class(cls._parse_lines(lines, filepath_or_file, derived_file))
 
         else:
             with open(filepath_or_file, 'r', encoding='utf-8') as f:
                 lines = f.readlines()
-                return loader_class(cls._parse_lines(lines))
+                return loader_class(cls._parse_lines(lines, filepath_or_file, derived_file))
 
     @classmethod
     def open_derived(cls, filepath) -> dict[str, Unit]:
@@ -190,12 +272,23 @@ class Parser:
         with open(filepath, 'r', encoding='utf-8') as f:
             lines = f.readlines()
 
+        status = False
         registry = {}
         for line in lines:
+            if cls._should_skip(line):
+                continue
+
             result = Tokenizer.split_key_value_pairs(line.strip())
             if not result:
                 continue
+
             symbol, unit_str = result
+
+            if symbol.lower() == "format":
+                status = True
+                continue
+
             registry[symbol] = Construct.tokenize_unit(unit_str)
 
+        cls._back_compatibility(status, filepath)
         return registry

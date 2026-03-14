@@ -15,7 +15,8 @@ from dataclasses import dataclass
 
 from numpy import (
     array, ndarray, floating, integer, ceil, linalg, floor,
-    log10, isfinite, abs as np_abs, max as np_max, append as np_append
+    log10, isfinite, abs as np_abs, max as np_max, append as np_append,
+    round as np_round
 )
 
 from picounits.core.unit import Unit
@@ -25,7 +26,7 @@ from picounits.core.quantities.packet import Packet
 from picounits.core.quantities.vectors.vector import VectorPacket
 
 from picounits.lazy_imports import import_factory
-
+from picounits.configuration.picounits import STANDARD_DISPLAY
 
 @dataclass(slots=True, repr=False, unsafe_hash=True)
 class ArrayPacket(VectorPacket):
@@ -85,7 +86,7 @@ class ArrayPacket(VectorPacket):
     def name(self) -> str:
         """ Returns the packet name as value + prefix(unit) """
         value, prefix = self._normalize()
-        return f"{value} {prefix}({self.unit.name})"
+        return f"{np_round(value, STANDARD_DISPLAY)} {prefix}({self.unit.name})"
 
     @property
     def magnitude(self) -> float:

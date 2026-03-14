@@ -37,7 +37,7 @@ class Converter:
             return float(text)
         except ValueError:
             pass
-        
+
         # Try complex
         try:
             return complex(text)

@@ -25,36 +25,45 @@ from picounits.configuration.picounits import (
 _effective_symbols: Dict[str, str] | None = None
 _effective_order: Dict[str, int] | None = None
 _effective_derived: Dict[str, Any] | None = None
+_derived_unit_file_name: Path | None = None
 
 
 def _find_derived_units_file() -> Path | None:
     """ Search upwards from cwd for units.ut """
     cwd = Path.cwd()
     for path in [cwd, *cwd.parents]:
-        candidate = path / "units.ut"
-        if candidate.is_file():
-            return candidate
+        exact = path / "units.ut"
+        if exact.is_file():
+            return Path(exact)
+
+        fallback = next(path.glob("*.ut"), None)
+        if fallback:
+            return Path(fallback)
+
     return None
 
-
-def get_derived_units():
-    """ Gets the derived unit registry if units.uiv exists """
+def get_derived_units(derived_file: Path | None = None):
+    """Gets the derived unit registry if a .ut file exists."""
     global _effective_derived
+    global _derived_unit_file_name
 
     if _effective_derived is None:
         _effective_derived = {}
 
-        derived_file = _find_derived_units_file()
+        if derived_file is None:
+            derived_file = _find_derived_units_file()
+
         if derived_file:
+            _derived_unit_file_name = derived_file.name
+
             Parser = lazy_import(
                 "picounits.extensions.parser", "Parser", "get_derived_units"
             )
 
             data = Parser.open_derived(derived_file)
             _effective_derived.update(data)
-
-    _reverse_lookup = {v: k for k, v in _effective_derived.items()}
-    return _effective_derived, _reverse_lookup
+    
+    return _effective_derived, _derived_unit_file_name
 
 def _find_picounits_file() -> Path | None:
     """Search upwards from cwd for .picounits"""

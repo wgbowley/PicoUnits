@@ -21,7 +21,7 @@ from picounits.core.quantities.packet import Packet
 from picounits.core.quantities.scalars.scalar import ScalarPacket
 
 from picounits.lazy_imports import import_factory
-
+from picounits.configuration.picounits import STANDARD_DISPLAY
 
 # Import transcendental logic functions
 from picounits.core.quantities.scalars.methods import transcendental as tlops
@@ -63,7 +63,7 @@ class RealPacket(ScalarPacket):
     def name(self) -> str:
         """ Returns the packet name as value + prefix(unit) """
         value, prefix = self._normalize()
-        return f"{value} {prefix}({self.unit.name})"
+        return f"{round(value, STANDARD_DISPLAY)} {prefix}({self.unit.name})"
 
     @property
     def magnitude(self) -> int | float:
