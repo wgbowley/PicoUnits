@@ -20,7 +20,6 @@ T: kg*s^-2*A^-1
 H: kg*m^2*s^-2*A^-2
 
 # Other
-Hz: s^-1
 lm: cd
 lx: cd*m^-2
 Gy: m^2*s^-2

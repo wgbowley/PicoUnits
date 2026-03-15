@@ -1,7 +1,6 @@
 """
 Filename: basic.py
 Author: William Bowley
-Version: 0.1
 
 Description:
     SUVAT and kinetic energy script showing
@@ -34,3 +33,4 @@ if __name__ == "__main__":
     final_velocity = suvat(Initial_Velocity, Acceleration, Displacement)
     kinetic = kinetic_energy(Projectile_Mass, final_velocity)
     print(f"Velocity: {final_velocity:.3f}", f"Energy: {kinetic:.3f}")
+    

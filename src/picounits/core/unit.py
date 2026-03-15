@@ -1,7 +1,6 @@
 """
 Filename: units.py
 Author: William Bowley
-Version: 0.6
 Clear: Y
 
 Description:
@@ -28,9 +27,7 @@ class Unit:
     __slots__ = ('dimensions', '_hash_cache', '_name_cache')
 
     def __init__(self, *dimensions: Dimension) -> None:
-        """
-        Initialize the unit; assume dimensionless if no dimensions are given
-        """
+        """ Initialize the unit; assume dimensionless if no dimensions are given """
         if not dimensions:
             dimensions = [Dimension.dimensionless()]
 
@@ -47,8 +44,8 @@ class Unit:
         self._name_cache = None
 
         # Performs checks for consistent representation
-        self._remove_dimensionless()
         self._duplicated_bases_check()
+        self._remove_dimensionless()
         self._sort_order()
 
     def _remove_dimensionless(self) -> None:
@@ -109,25 +106,39 @@ class Unit:
     def name(self) -> str:
         """ Returns the units name as dimensions """
         if self._name_cache is None:
-            # Imports the custom derived units into the system
             get_derived_units = lazy_import(
                 "picounits.configuration.config", "get_derived_units", "Unit.name"
             )
-
             derived, _ = get_derived_units()
 
+            # Primary: Check exact match first
             for symbol, unit in derived.items():
                 if self.dimensions == unit.dimensions:
                     self._name_cache = symbol
                     return self._name_cache
-            self._name_cache = "·".join(str(d.name) for d in self.dimensions)
+
+            # Secondary: Try partial substitution
+            remaining = list(self.dimensions)
+            result_parts = []
+
+            for symbol, unit in derived.items():
+                derived_dims = list(unit.dimensions)
+                if all(d in remaining for d in derived_dims):
+                    # Remove matched dimensions from remaining
+                    for d in derived_dims:
+                        remaining.remove(d)
+
+                    result_parts.append(symbol)
+
+            # Fallback: Append non-substituted dimensions
+            result_parts.extend(str(d.name) for d in remaining)
+            self._name_cache = "·".join(result_parts)
+
         return self._name_cache
 
     @property
     def length(self) -> int:
-        """
-        Number of distinct dimension bases (e.g., kg·m·s⁻² has length 3)
-        """
+        """ Number of distinct dimension bases (e.g., kg·m·s⁻² has length 3) """
         return len(self.dimensions)
 
     @classmethod

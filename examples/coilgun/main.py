@@ -1,7 +1,6 @@
 """
 Filename: main.py
 Author: William Bowley
-Version: 0.1
 
 Description:
     Analytical lumped-parameter coil-gun
@@ -18,6 +17,7 @@ Description:
 """
 
 from math import pi
+from pathlib import Path
 
 from matplot import plot
 from equations import (
@@ -33,7 +33,11 @@ from picounits.constants import (
     PERMEABILITY, FLUX_DENSITY
 )
 
-p = Parser.open("examples/coilgun/parameters.uiv", derived_units="examples/coilgun/units.ut")
+BASE_DIR = Path(__file__).parent.parent.parent
+p = Parser.open(
+    BASE_DIR / "examples/coilgun/parameters.uiv", 
+    derived_units= BASE_DIR / "examples/coilgun/units.ut"
+)
 
 # Set calculations
 permeability = 4 * pi * 1e-7 * PERMEABILITY

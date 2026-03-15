@@ -19,13 +19,13 @@ from picounits import (
     IMPEDANCE, VOLTAGE, TEMPERATURE, DIMENSIONLESS, KILO, MILLI
 )
 
-""" Thermistor Steinhart-Hart Inverse Coefficients """
+# Thermistor Steinhart-Hart Inverse Coefficients
 A1 = -14.6337
 B1 = 4791.84
 C1 = -115334
 D1 = -3.7305e+06
 
-""" Circuit Variables """
+# Circuit Variables
 SUPPLY = 3.3 * VOLTAGE
 V_OUT_MAX = 3.2 * VOLTAGE
 V_OUT_MIN = 100 * MILLI * VOLTAGE
@@ -35,7 +35,7 @@ MIN_TEMPERATURE = 25 * TEMPERATURE
 
 NTC100AT25C = 100 * KILO * IMPEDANCE
 
-""" Standard value for the feedback resistor """
+# Standard value for the feedback resistor
 FEEDBACK = 1.5 * KILO * IMPEDANCE
 
 
@@ -48,7 +48,7 @@ def calculate_ntc_resistance(temp_celsius: q) -> q:
     return NTC100AT25C * exp(exponent_value)
 
 
-""" Calculated values for resistance at max temp and min temp """
+# Calculated values for resistance at max temp and min temp 
 R_NTC_MAX = calculate_ntc_resistance(MAX_TEMPERATURE)
 R_NTC_MIN = calculate_ntc_resistance(MIN_TEMPERATURE)
 
@@ -96,7 +96,7 @@ def actual_gain(parallel: q) -> q:
     return (parallel + FEEDBACK) / parallel
 
 
-""" Calculations and outputs """
+# Calculations and outputs
 ntc_low = ntc_low_side_resistor()
 v_in_min, v_in_max = voltage_range(ntc_low)
 ideal_gain = ideal_operational_gain(v_in_min, v_in_max)

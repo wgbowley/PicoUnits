@@ -1,6 +1,5 @@
 [version]
 format: 0.1.0
-unit_frame: units.ut
 
 [stc_air.meta]
 tag: "environmental_material"
@@ -9,7 +8,6 @@ humidity_assumption: "Dry (Percentage Unknown)"
 last_updated: "2026-01-19"
 
 [stc_air.physical]
-test: 10 + 1j k(kg)
 pressure: 101.325 k(kg*m^-1*s^-2)
 density: 1.225 (kg*m^-3)
 

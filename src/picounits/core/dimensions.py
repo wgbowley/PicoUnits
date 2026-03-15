@@ -2,7 +2,7 @@
 Filename: dimensions.py
 Author: William Bowley
 Version: 0.4
-Clear: Y
+Clear: N
 
 Description:
     Defines the Dimension dataclass,
@@ -20,9 +20,7 @@ from enum import Enum, auto
 from functools import lru_cache
 from dataclasses import dataclass, field
 from fractions import Fraction
-from math import isfinite
 
-from picounits.configuration.picounits import MAX_EXPONENT
 
 try:
     # Ensures picounits works even with preferences issues
@@ -82,9 +80,7 @@ class FBase(Enum):
 
     @classmethod
     def from_symbol(cls, reference: str) -> FBase | None:
-        """
-        Compares reference symbol with symbol lookup, if not found returns none
-        """
+        """ Compares reference symbol with symbol lookup, if not found returns none """
         if not isinstance(reference, str):
             return None
 
@@ -119,7 +115,7 @@ class Dimension:
 
     Args:
         base: The fundamental unit type (FBase Enum)
-        exponent: Integer power, limited to +/- 10
+        exponent: Integer or float power
     """
     base: FBase = FBase.DIMENSIONLESS
     exponent: int | float = 1
@@ -140,25 +136,10 @@ class Dimension:
             )
             raise TypeError(msg)
 
-        # Handles non finite exponent values to ensure fraction works
-        if not isfinite(self.exponent):
-            msg = f"Exponent must be a finite number, not {self.exponent}"
-            raise ValueError(msg)
-
-        # Handle exponent limit
-        if abs(self.exponent) > MAX_EXPONENT:
-            msg = f"Exponent {self.exponent}>{MAX_EXPONENT}, exceeded limit"
-            raise ValueError(msg)
-
         # Handle zero exponent: x^0 = 1 (dimensionless)
-        if self.exponent == 0:
+        if self.exponent == 0 or self.base == FBase.DIMENSIONLESS:
             # NOTE: Mutates only during init to ensure correctness
             object.__setattr__(self, "base", FBase.DIMENSIONLESS)
-            object.__setattr__(self, "exponent", 1)
-
-        # Dimensionless quantities have no meaningful exponent
-        if self.base == FBase.DIMENSIONLESS:
-            # NOTE: Mutates only during init to ensures correctness
             object.__setattr__(self, "exponent", 1)
 
         name = (

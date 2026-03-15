@@ -1,7 +1,6 @@
 """
 Filename: main.py
 Author: William Bowley
-Version: 0.1
 
 Description:
     Example of using picounits to import a material 
@@ -11,6 +10,7 @@ Description:
     dimensional pipelines such as FEM or lumped parameter models.
 """
 
+from pathlib import Path
 from picounits.extensions.parser import Parser
 from picounits.extensions.loader import DynamicLoader
 
@@ -49,7 +49,8 @@ def print_loader_tree(
             print(f"{new_indent}{leaf_connector}{key}: {value}")
 
 if __name__ == "__main__":
-    materials = Parser.open("examples/libraries/materials.uiv")
+    BASE_DIR = Path(__file__).parent.parent.parent
+    materials = Parser.open(BASE_DIR / "examples/library/materials.uiv")
     print_loader_tree(materials, "materials.uiv")
 
     # Iron/Copper mix 70%/30%

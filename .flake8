@@ -1,7 +1,0 @@
-[flake8]
-ignore = E221, E241, W503
-
-[flake8]
-exclude = 
-    *.pyi,
-    .git,
