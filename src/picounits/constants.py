@@ -77,6 +77,7 @@ SPECIFIC_HEAT               = ENERGY / (MASS * TEMPERATURE)
 THERMAL_CONDUCTIVITY        = POWER / (LENGTH * TEMPERATURE)
 VOLUMETRIC_HEAT_CAPACITY    = HEAT_CAPACITY / VOLUME
 VOLUMETRIC_HEATING          = POWER / LENGTH ** 3
+DIFFUSIVITY                 = LENGTH**2 * TIME**-1
 
 """ =============== Electromagnetism =============== """
 

@@ -56,7 +56,7 @@ class Mesher:
 
         # Build grid around geometry
         bl, tr = domain[0], domain[1]
-        x_coords, y_coords = np.linspace(bl[0], tr[0], 20), np.linspace(bl[1], tr[1], 20)
+        x_coords, y_coords = np.linspace(bl[0], tr[0], 30), np.linspace(bl[1], tr[1], 30)
         points = MultiPoint([(x, y) for x in x_coords for y in y_coords])
 
         # Meshes the geometry
@@ -74,6 +74,7 @@ class solver:
     def __init__(self, mesher: Mesher) -> None:
         """ Initializes the solver """
         self.mesh = mesher.mesh
+        self.domain = mesher.domain
         self.heat_box = mesher.heat_box
         self.heat_source = 0
         self.boundary_temperature = 0
@@ -89,9 +90,15 @@ class solver:
         self.load_vector = np.zeros(self.num_nodes)
         self.K_global = np.zeros((self.num_nodes, self.num_nodes))
         self.M_global = np.zeros((self.num_nodes, self.num_nodes))
+
+        self.A_matrix = None
         self.connectivity = None
 
-    def build(self, heat_source: Q, boundary_temperature: Q) -> None:
+    def build(
+        self,
+        heat_source: Q,
+        boundary_temperature: Q,
+    ) -> None:
         """ Builds the domain for solving """
         if (
             heat_source.unit != MASS * TIME ** -3 or
@@ -103,6 +110,50 @@ class solver:
 
         self.heat_source = heat_source.stripped
         self.boundary_temperature = boundary_temperature.stripped
+        self._build_matrixes()  
+
+    def solve_frame(
+        self,
+        time_step: Q,
+        alpha: Q,
+        last_frame: np.ndarray | None = None,
+        penalty: float = 1e12, tolerance: float = 1e-9
+    ) -> Q:
+        """ Solves a frame of the thermal problem """
+        if time_step.unit != TIME or alpha.unit != (LENGTH ** 2 / TIME):
+            raise ValueError("Please use correct units for time_step and alpha")
+
+        time_step = time_step.stripped
+        alpha = alpha.stripped
+
+        # Configures the boundary conditions
+        x_min, y_min = self.domain[0]
+        x_max, y_max = self.domain[1]
+
+        unique_nodes = self.unique_nodes
+        boundary_indices = np.where(
+            (np.abs(unique_nodes[:, 0] - x_min) < tolerance) |
+            (np.abs(unique_nodes[:, 0] - x_max) < tolerance) |
+            (np.abs(unique_nodes[:, 1] - y_min) < tolerance) |
+            (np.abs(unique_nodes[:, 1] - y_max) < tolerance)
+        )[0]
+
+        if last_frame is None:
+            u_old = np.full(self.num_nodes, self.boundary_temperature)
+        else:
+            u_old = last_frame
+
+        self.A_matrix = self.M_global + time_step * alpha * self.K_global
+        b_rhs = self.M_global @ u_old + time_step * self.load_vector
+
+        for index in boundary_indices:
+            self.A_matrix[index, index] += penalty
+            b_rhs[index] += penalty * self.boundary_temperature
+
+        temperatures = self._conjugate_gradient(self.A_matrix, b_rhs, u_old, tolerance)
+
+        return temperatures
+
 
     def _build_matrixes(self) -> None:
         """ Builds the stiffness and mass matrixes from mesh """
@@ -149,19 +200,16 @@ class solver:
 
         self.connectivity = np.array(con_map)
 
-    def conjugate_gradient(
+    def _conjugate_gradient(
         self,
         A: np.ndarray,
         B: np.ndarray,
-        initial: Q | None = None, 
-        tolerance: float =1e-9,
+        sol: np.ndarray | None = None, 
+        tolerance: float = 1e-9,
         max_iter: int =1000
-    ) -> Q:
+    ) -> np.ndarray:
         " Conjugate gradient solver for Ax = B linear system "
-        sol = (
-            initial.stripped if hasattr(initial, 'stripped')
-            else np.zeros_like(B)
-        )
+        sol = sol if sol is not None else np.zeros_like(B)
 
         # Setup Initial Residuals
         r = B - np.dot(A, sol)
@@ -187,4 +235,4 @@ class solver:
             p = r + (rs_new / r_sold) * p
             r_sold = rs_new
 
-        return sol * TEMPERATURE
+        return sol

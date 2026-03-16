@@ -87,5 +87,11 @@
     "coercivity",
     "WAVENUMBER",
     "mesher",
+    "gouraud",
+    "cmap",
+    "vmin",
+    "vmax",
+    "tripcolor",
+    "colorbar",
   ]
 }
