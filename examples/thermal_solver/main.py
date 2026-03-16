@@ -1,61 +1,38 @@
 """
 Filename: main.py
+Author: William Bowley
 
 Description:
-    Thermostatic solver for the 2D heat equation PDE
-    using picounits for correctness, shapely for topology
-    and matplotlib for display.
+    Transient thermal solver for the 2D heat equation PDE
+    using picounits to show unit-boundary abstractions.
     
     NOTE:
-    This is a demonstration model and is not intended to match
-    finite element solver. Its purpose is to demonstrate safe
-    unit-aware input at boundaries into PDE loops.
+    This is a demonstration model and is not intended to 
+    match a refined finite element solver
+    
+    NOTE:
+    This example uses these dependencies matplotlib and shapely.
+    To install run the command: pip install matplotlib shapely
 """
 
-import numpy as np
-import matplotlib.pyplot as plt
+from solver import Builder, Mesher
+from picounits import LENGTH, MILLI, POWER
 
-from shapely.geometry import Polygon, MultiPoint
-from shapely.ops import triangulate
+# Redefine sematic to SI metric naming
+mm = 1 * MILLI * LENGTH
+watt = POWER
 
+# Parameters
+boundary = 100 * mm
+heat_length = 35 * mm
+heat_height = 35 * mm
+power_density = 10 * watt / mm ** 2
+print(power_density)
+# Builds the domain and the central heat-source
+heat_location = ((boundary-heat_length) / 2, (boundary-heat_height) / 2)
 
-coords = [(0, 0), (5, 0), (5, 5), (0, 5), (0, 0)]
-boundary = Polygon(coords)
+domain = Builder.create_rectangle((0 * mm, 0 * mm), boundary, boundary)
+heat_source = Builder.create_rectangle(heat_location, heat_length, heat_height)
 
-x_coords, y_coords = np.linspace(0, 5, 10), np.linspace(0, 5, 10)
-points = MultiPoint([(x, y) for x in x_coords for y in y_coords])
-
-triangles = triangulate(points)
-
-clipped_mesh = [t for t in triangles if t.within(boundary)]
-
-# Finds nodes within the mesh
-nodes = []
-for triangles in clipped_mesh:
-    nodes.extend(list(triangles.exterior.coords))
-
-unique_nodes = np.unique(nodes, axis=0)
-num_nodes = len(unique_nodes)
-
-# Finds the elements from number of triangles
-num_elements = len(clipped_mesh)
-
-# Load vector due to 0 heat source its all zeros
-load_vector = np.zeros(num_nodes)
-
-# TO DO:
-# Need to calculate the global stiffness matrix ke=a*(B^t*B)
-# Need to inform boundary conditions such as u=400k and u=273.15k
-# Solve using conjugate gradient solver.
-
-
-# 5. Plotting with Matplotlib
-fig, ax = plt.subplots(figsize=(6, 6))
-
-for tri in clipped_mesh:
-    x, y = tri.exterior.xy
-    ax.fill(x, y, alpha=0.3, fc='cyan', ec='blue', lw=0.5)
-
-ax.set_aspect('equal')
-plt.title("Thermal Mesh")
-plt.show()
+# Meshes geometry and than solves it
+mesh = Mesher(domain, heat_source)

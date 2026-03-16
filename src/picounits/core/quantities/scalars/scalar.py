@@ -114,6 +114,23 @@ class ScalarPacket(Packet, ABC):
         """ Defines in-place division (/=) """
         return self.__truediv__(other)
 
+    def __floordiv__(self, other: Any) -> Packet:
+        """ Defines behavior for the forward floor division (//) """
+        if isinstance(other, Unit):
+            q2 = Factory.create(1, other)
+        else:
+            q2 = self._get_other_packet(other)
+        return acops.floor_division_logic(self, q2)
+
+    def __rfloordiv__(self, other: float | int) -> Packet:
+        """ Defines behavior for the reverse floor division """
+        q1 = self._get_other_packet(other)
+        return q1.__floordiv__(self)
+
+    def __ifloordiv__(self, other: Any) -> Packet:
+        """ Defines in-place floor division (//=) """
+        return self.__floordiv__(other)
+
     def __pow__(self, other: Any) -> Packet:
         """ Defines behavior for the forward power operator (**) """
         q2 = self._get_other_packet(other)

@@ -75,6 +75,20 @@ def true_division_logic(q1: Packet, q2: Packet) -> Packet:
     return Factory.create(new_value, new_unit)
 
 
+@Factory.reallocate("__floordiv__")
+def floor_division_logic(q1: Packet, q2: Packet) -> Packet:
+    """ Defines the logic for floor division between two quantities """
+    if q2.value == 0:
+        msg = f'Floor Division failed due to division by zero: {q1.value} // {q2.value}'
+        raise ValueError(msg)
+
+    # Performs floor division (//) on values and standard division (/) on units
+    new_value = q1.value // q2.value
+    new_unit = q1.unit / q2.unit
+
+    return Factory.create(new_value, new_unit)
+
+
 @Factory.reallocate("__pow__")
 def power_logic(q1: Packet, q2: Packet) -> Packet:
     """ Defines the logic for power between two quantities """
