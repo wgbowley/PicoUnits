@@ -1,7 +1,6 @@
 """
 Filename: parser.py
 Author: William Bowley
-Version: 0.2
 
 Description:
     High-level parser for .uiv (Unit-Informed Values) files.
@@ -244,7 +243,7 @@ class Parser:
 
     @classmethod
     def open(
-        cls, filepath_or_file, loader_class=None, derived_units=None
+        cls, filepath_or_file, derived_units=None, loader_class=None
     ) -> DynamicLoader:
         """ Parse .uiv file into structured data via attribute injection. """
         if loader_class is None:

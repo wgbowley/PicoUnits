@@ -1,7 +1,6 @@
 """
 Filename: tokenizer.py
 Author: William Bowley
-Version: 0.2
 
 Description:
     Low-level tokenization for .uiv format.

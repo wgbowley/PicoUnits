@@ -1,7 +1,6 @@
 """
 Filename: operations.py
 Author: William Bowley
-Version: 0.2
 
 Description:
     Defines the mathematical operators for

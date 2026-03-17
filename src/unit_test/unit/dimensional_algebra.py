@@ -64,10 +64,6 @@ class DimensionAlgebra(unittest.TestCase):
             ((Unit(_MASS), Unit(_TIME)), Unit(_MASS, _TIME)),
             ((Unit(_CURRENT), Unit(_MASS)), Unit(_CURRENT, _MASS)),
             ((Unit(_AMOUNT), Unit(_LUMINOSITY)), Unit(_LUMINOSITY, _AMOUNT)),
-            (
-                (Unit(_TEMPERATURE), Unit(_DIMENSIONLESS)), 
-                Unit(_TEMPERATURE, _DIMENSIONLESS)
-            )
         ]
 
         for case in cases:

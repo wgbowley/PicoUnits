@@ -1,0 +1,21 @@
+# Library Units - Derived from Base Dimensions (kg, m, s, etc) (si_metric)
+
+[version]
+format: 0.1.0
+
+[units.physical]
+ρ: kg*m^-3
+pa: kg*m^-1*s^-2
+
+[units.magnetic]
+μ: kg*m*s^-2*A^-2
+Br: kg*s^-2*A^-1
+Hc: A*m^-1
+
+[units.electrical]
+ε: kg^-1*m^-3*s^4*A^2
+σ: kg^-1*m^-3*s^3*A^2
+Ω·m: kg*m^3*s^-3*A^-2
+
+[units.thermal]
+k: kg*m*s^-3*K^-1

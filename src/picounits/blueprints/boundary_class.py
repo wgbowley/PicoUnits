@@ -9,8 +9,9 @@ Description:
 """
 
 from abc import ABC, abstractmethod
+from numpy import ndarray
 
-from picounits import Quantity as Q
+from picounits import Quantity as Q, Unit
 
 
 class UnitError(TypeError):
@@ -56,6 +57,20 @@ class ValidBoundary(ABC):
             super().__setattr__(name, float(value.stripped))
         else:
             super().__setattr__(name, value)
+
+    def _check_to_raw(
+        self, caller: str, reference: Unit, value: Q
+    ) -> float | int | complex | ndarray:
+        """ Checks and converts a quantity to its raw values """
+        if isinstance(reference, Q):
+            # Extracts unit from reference if quantity
+            reference = reference.unit
+
+        if value.unit == reference:
+            return input.stripped
+
+        msg = f"{caller!r} got {value.unit!r} expected {reference!r}"
+        raise UnitError(msg)
 
     @property
     @abstractmethod

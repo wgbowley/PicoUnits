@@ -1,48 +1,6 @@
 [version]
 format: 0.1.0
-
-[stc_air.meta]
-tag: "environmental_material"
-note: "Dry air at STC: Standard Test Conditions (25 °C / 298.15 K, 101.325 kPa, 1 atm)"
-humidity_assumption: "Dry (Percentage Unknown)"
-last_updated: "2026-01-19"
-
-[stc_air.physical]
-pressure: 101.325 k(kg*m^-1*s^-2)
-density: 1.225 (kg*m^-3)
-
-[stc_air.magnetic]
-relative_permeability: [1.0, 1.0] (kg*m*s^-2*A^-2)
-coercivity: 0.0 k(A*m^-1)
-remanence: 0.0 (kg*s^-2*A^-1)
-
-[stc_air.electrical]
-relative_permittivity: [1.0006, 1.0006] (A^2*s^4*kg^-1*m^-3)
-conductivity: 5e-15 (kg^-1*m^-3*s^3*A^2)
-
-[stc_air.thermal]
-conductivity: [0.0261, 0.0261] (kg*m*s^-3*K^-1)
-temp_dependence: [
-  [200.0, 0.0181],
-  [250.0, 0.0223],
-  [300.0, 0.0261],
-  [350.0, 0.0297],
-  [400.0, 0.0331],
-  [450.0, 0.0363],
-  [500.0, 0.0395],
-  [550.0, 0.0426],
-  [600.0, 0.0456],
-  [700.0, 0.0513],
-  [800.0, 0.0569],
-  [900.0, 0.0625],
-  [1000.0, 0.0672],
-  [1200.0, 0.0759],
-  [1400.0, 0.0835],
-  [1600.0, 0.0904],
-  [1800.0, 0.097],
-  [2000.0, 0.1032]
-] (K), (kg*m*s^-3*K^-1)
-
+unit_frame: si_metric.ut
 
 [pure_iron.meta]
 tag: "material"
@@ -50,19 +8,19 @@ note: "It is assumed to be 99%+ Pure Iron without an oxide layer"
 last_updated: "2026-01-20"
 
 [pure_iron.physical]
-density: 7872 (kg*m^-3)
+density: 7872 (ρ)
 
 [pure_iron.magnetic]
-relative_permeability: [14872, 14872] (kg*m*s^-2*A^-2)
-coercivity: 0.0 k(A*m^-1)
-remanence: 0.0 (kg*s^-2*A^-1)
+relative_permeability: [14872, 14872] (μ)
+coercivity: 0.0 k(Hc)
+remanence: 0.0 (Br)
 
 [pure_iron.electrical]
-relative_permittivity: [1, 1] (A^2*s^4*kg^-1*m^-3)
-conductivity: 1.044e6 (kg^-1*m^-3*s^3*A^2)
+relative_permittivity: [1, 1]
+conductivity: 1.044e6 (σ)
 
 [pure_iron.thermal]
-conductivity: [83, 83] (kg*m*s^-3*K^-1)
+conductivity: [83, 83] (k)
 temp_dependence: [
   [273.0, 83.0],
   [473.0, 66.0],
@@ -70,7 +28,7 @@ temp_dependence: [
   [873.0, 41.0],
   [1073.0, 32.0],
   [1273.0, 30.0]
-] (K), (kg*m*s^-3*K^-1)
+] (K), (k)
 
 
 [pure_copper.meta]
@@ -79,19 +37,19 @@ note: "It is assumed to be 99%+ Pure copper"
 last_updated: "2026-01-20"
 
 [pure_copper.physical]
-density: 8960 (kg*m^-3)
+density: 8960 (ρ)
 
 [pure_copper.magnetic]
-relative_permeability: [1.0, 1.0] (kg*m*s^-2*A^-2)
-coercivity: 0.0 k(A*m^-1)
-remanence: 0.0 (kg*s^-2*A^-1)
+relative_permeability: [1.0, 1.0]
+coercivity: 0.0 k(Hc)
+remanence: 0.0 (Br)
 
 [pure_copper.electrical]
-relative_permittivity: [0, 0] (A^2*s^4*kg^-1*m^-3)
-conductivity: 5.8e7 (kg^-1*m^-3*s^3*A^2)
+relative_permittivity: [0, 0]
+conductivity: 5.8e7 (σ)
 
 [pure_copper.thermal]
-conductivity: [401, 401] (kg*m*s^-3*K^-1)
+conductivity: [401, 401] (k)
 temp_dependence: [
   [273.0, 401.0],
   [473.0, 389.0],
@@ -99,7 +57,7 @@ temp_dependence: [
   [873.0, 366.0],
   [1073.0, 352.0],
   [1273.0, 336.0]
-] (K), (kg*m*s^-3*K^-1)
+] (K), (k)
 
 
 [NdFeB.meta]
@@ -108,35 +66,35 @@ note: ""
 last_updated: "2026-01-20"
 
 [NdFeB.physical]
-density: 7600 (kg*m^-3)
+density: 7600 (ρ)
 
 [NdFeB.magnetic]
-relative_permeability: [1.05, 1.05] (kg*m*s^-2*A^-2)
-remanence: 1.104 (kg*s^-2*A^-1)
+relative_permeability: [1.05, 1.05]
+remanence: 1.104 (Br)
 
 [NdFeB.grades]
-N30: [836420, 1.104] k(A*m^-1), (kg*s^-2*A^-1)
-N33: [878619, 1.104] k(A*m^-1), (kg*s^-2*A^-1)
-N35: [905659,1.104] k(A*m^-1), (kg*s^-2*A^-1)
-N38: [944771, 1.104] k(A*m^-1), (kg*s^-2*A^-1)
-N40: [969969, 1.104] k(A*m^-1), (kg*s^-2*A^-1)
-N42: [994529, 1.104] k(A*m^-1), (kg*s^-2*A^-1)
-N45: [1030272, 1.104] k(A*m^-1), (kg*s^-2*A^-1)
-N48: [1014538, 1.104] k(A*m^-1), (kg*s^-2*A^-1)
-N50: [987837, 1.104] k(A*m^-1), (kg*s^-2*A^-1)
-N52: [956180, 1.104] k(A*m^-1), (kg*s^-2*A^-1)
-N55: [922850, 1.104] k(A*m^-1), (kg*s^-2*A^-1)
+N30: [836420, 1.104] k(Hc), (Br)
+N33: [878619, 1.104] k(Hc), (Br)
+N35: [905659,1.104] k(Hc), (Br)
+N38: [944771, 1.104] k(Hc), (Br)
+N40: [969969, 1.104] k(Hc), (Br)
+N42: [994529, 1.104] k(Hc), (Br)
+N45: [1030272, 1.104] k(Hc), (Br)
+N48: [1014538, 1.104] k(Hc), (Br)
+N50: [987837, 1.104] k(Hc), (Br)
+N52: [956180, 1.104] k(Hc), (Br)
+N55: [922850, 1.104] k(Hc), (Br)
 
 [NdFeB.electrical]
-relative_permittivity: [0, 0] (A^2*s^4*kg^-1*m^-3)
-conductivity: 0.667e6 (kg^-1*m^-3*s^3*A^2)
+relative_permittivity: [0, 0]
+conductivity: 0.667e6 (σ)
 
 [NdFeB.thermal]
-conductivity: [16.5, 16.5] (kg*m*s^-3*K^-1)
+conductivity: [16.5, 16.5] (k)
 temp_dependence: [
   [273.0, 3.36],
   [323.0, 3.64],
   [373.0, 3.91],
   [423.0, 4.17],
   [473.0, 4.42]
-] (K), (kg*m*s^-3*K^-1)
+] (K), (k)

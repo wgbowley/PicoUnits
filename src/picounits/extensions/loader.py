@@ -1,7 +1,7 @@
 """
 Filename: loader.py
 Author: William Bowley
-Version: 0.1
+
 Description:
     Defines the dynamic loader for .uiv
     (Unit-Informed Values) files.
@@ -92,6 +92,40 @@ class DynamicLoader:
         parts = path.split('.')
         self._set_path(parts, value)
         return True
+
+    def tree(
+        self, name="Root", indent="", is_last=True, inline_limit: int = 4
+    ) -> None:
+        """ Recursively prints the structure of the loader as a tree. """
+        connector = "└── " if is_last else "├── "
+        print(f"{indent}{connector}{name}")
+
+        new_indent = indent + ("    " if is_last else "│   ")
+        attrs = self.attributes()
+        items = list(attrs.items())
+        for index, (key, value) in enumerate(items):
+            last_item = index == len(items) - 1
+            leaf_connector = "└── " if last_item else "├── "
+
+            if isinstance(value, self.__class__):
+                # Continues the recursion via entering the next loader structure
+                value.tree(key, new_indent, last_item)
+
+            elif isinstance(value, (list, tuple)):
+                if len(value) <= inline_limit:
+                    # Print inline result
+                    print(f"{new_indent}{leaf_connector}{key}: {value}")
+
+                else:
+                    # Print result vertically according to inline limit
+                    print(f"{new_indent}{leaf_connector}{key}: [")
+                    for i, v in enumerate(value):
+                        item_connector = "└── " if i == len(value) - 1 else "├── "
+                        print(f"{new_indent}    {item_connector}{v}")
+                    print(f"{new_indent}    ]")
+
+            else:
+                print(f"{new_indent}{leaf_connector}{key}: {value}")
 
     def attributes(self):
         """ Creates a dictionary of direct attributes"""

@@ -11,51 +11,46 @@ Description:
 """
 
 from pathlib import Path
+
+from picounits import Quantity as Q, unit_validator, PRESSURE
 from picounits.extensions.parser import Parser
-from picounits.extensions.loader import DynamicLoader
+
+# File paths
+BASE_DIR = Path(__file__).parent.parent.parent
+library = BASE_DIR / "examples/library/materials.uiv"
+library_units = BASE_DIR / "examples/library/si_metric.ut"
+
+materials = Parser.open(library, library_units)
+
+# Shows library ontology
+materials.tree("materials.uiv")
+print("=== Derived parameters from library ===")
 
 
-def print_loader_tree(
-    loader: DynamicLoader, name="Root", indent="", is_last=True
-) -> None:
-    """ Recursively prints the structure of the .uiv file as a tree. """
-    connector = "└── " if is_last else "├── "
-    print(f"{indent}{connector}{name}")
-    new_indent = indent + ("    " if is_last else "│   ")
+# Calculate mixture density of Iron/Copper mix 70%/30%
+iron_density = materials.pure_iron.physical.density
+copper_density = materials.pure_copper.physical.density
 
-    attrs = loader.attributes()
-    items = list(attrs.items())
+density = iron_density * 7/10 + copper_density * 3 / 10
+print(f"70 % Iron 30% Copper density: {density!r}")
 
-    for index, (key, value) in enumerate(items):
-        last_item = index == len(items) - 1
-        leaf_connector = "└── " if last_item else "├── "
 
-        if isinstance(value, DynamicLoader):
-            print_loader_tree(value, key, new_indent, last_item)
+# Extract NdFeB grades for usage
+@unit_validator(PRESSURE)
+def _magnet_energy(br_hc: list[Q]) -> Q:
+    """ Calculates the energy density of the magnet """
+    remanence, coercivity = br_hc
+    return 1/2 * remanence * coercivity
 
-        elif isinstance(value, (list, tuple)):
-            # Format lists nicely
-            if len(value) <= 4:
-                print(f"{new_indent}{leaf_connector}{key}: {value}")
-            else:
-                print(f"{new_indent}{leaf_connector}{key}: [")
+NdFeB = materials.NdFeB
+n33, n35, = NdFeB.grades.N33, NdFeB.grades.N35
+n33_d, n35_d = _magnet_energy(n33), _magnet_energy(n35)
 
-                for i, v in enumerate(value):
-                    item_connector = "└── " if i == len(value) - 1 else "├── "
-                    print(f"{new_indent}    {item_connector}{v}")
-                print(f"{new_indent}    ]")
+print(f"Energy Density | N33: {n33_d:.3f}; N35: {n35_d:.3f}")
 
-        else:
-            print(f"{new_indent}{leaf_connector}{key}: {value}")
 
-if __name__ == "__main__":
-    BASE_DIR = Path(__file__).parent.parent.parent
-    materials = Parser.open(BASE_DIR / "examples/library/materials.uiv")
-    print_loader_tree(materials, "materials.uiv")
+# Calculates the electrical resistivity of copper
+resistivity = 1/materials.pure_copper.electrical.conductivity
+print(f"Copper resistivity: {resistivity:.3f}")
 
-    # Iron/Copper mix 70%/30%
-    iron_density = materials.pure_iron.physical.density
-    copper_density = materials.pure_copper.physical.density
-
-    density = iron_density * 7/10 + copper_density * 3 / 10
-    print(f"70 % Iron 30% Copper density: {density!r}")
+print("=======================================")

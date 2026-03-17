@@ -34,7 +34,7 @@ heat_length = 35 * mm
 heat_height = 35 * mm
 time_step = 1 * ms
 power_density = 10 * MILLI * watt / mm ** 2
-diffusion = 1.11e-3 * DIFFUSIVITY
+diffusion = 1.11e-2 * DIFFUSIVITY
 
 # Builds the domain and the central heat-source
 heat_location = ((boundary-heat_length) / 2, (boundary-heat_height) / 2)
