@@ -17,7 +17,6 @@ from shapely import box, MultiPoint
 from shapely.ops import triangulate
 
 from picounits import Quantity as Q, LENGTH, MASS, TIME, TEMPERATURE
-from picounits.blueprints.boundary_class import ValidBoundary
 
 
 class Builder:

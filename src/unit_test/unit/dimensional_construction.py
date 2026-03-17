@@ -4,7 +4,11 @@ Author: William Bowley
 
 Description:
     Tests for the fundamental unit 'FBASE' and dataclass 'Dimension'
-    to ensure that the dimensional construction is correct for the application.
+    to ensure that the dimensional construction 
+    is correct for the application.
+    
+    NOTE:
+    Testing for string representation should be added.
 """
 
 import unittest
@@ -73,4 +77,4 @@ class DimensionConstruction(unittest.TestCase):
         self.assertEqual(dim, Dimension(FBase.DIMENSIONLESS, 1))
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(verbosity=2)
