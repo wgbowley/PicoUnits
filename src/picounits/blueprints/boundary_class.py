@@ -9,9 +9,9 @@ Description:
 """
 
 from abc import ABC, abstractmethod
-from numpy import ndarray
+from dataclasses import fields
 
-from picounits import Quantity as Q, Unit
+from picounits import Quantity as Q
 
 
 class UnitError(TypeError):
@@ -23,56 +23,39 @@ class UnitError(TypeError):
 
 
 class ValidBoundary(ABC):
-    """ Serves as a boundary layer filter between unit values to raw values """
-    def __init_subclass__(cls, **kwargs):
-        """ Initialization wrapper for validation """
-        super().__init_subclass__(**kwargs)
-        original_init = cls.__init__
+    """ Unit boundary checking for dataclass construction""" 
+    def validate_units(self) -> None:
+        """ Generic validator that uses field metadata """
+        for f in fields(self):
+            required_unit = f.metadata.get(Q)
+            if required_unit is None:
+                continue
 
-        def wrapped_init(self, *args, **kwargs):
-            original_init(self, *args, **kwargs)
-            self.validate_units()
-            self.strip_units()
+            attribute = getattr(self, f.name)
+            if attribute is None:
+                return
 
-        cls.__init__ = wrapped_init
-
-    def __setattr__(self, name: str, value) -> None:
-        """ Intercepts all attribute setting, validates and strips if in requirements """
-        requirements = (
-            self.__class__.__dict__.get('_unit_requirements') or 
-            getattr(self, '_unit_requirements', {})
-        )
-
-        if name in requirements:
-            required_unit = requirements[name]
-
-            if not isinstance(value, Q):
-                msg = f"{name!r} must be a quantity, not {type(value)}"
+            if not isinstance(attribute, Q):
+                msg = f"{f.name!r} must be a quantity, not {type(attribute)}"
                 raise TypeError(msg)
 
-            if value.unit != required_unit:
-                msg = f"{name!r} must be {required_unit} not {value.unit}"
+            if attribute.unit != required_unit:
+                msg = f"{f.name!r} must be {required_unit} not {attribute.unit}"
                 raise UnitError(msg)
-
-            super().__setattr__(name, float(value.stripped))
-        else:
-            super().__setattr__(name, value)
-
-    def _check_to_raw(
-        self, caller: str, reference: Unit, value: Q
-    ) -> float | int | complex | ndarray:
-        """ Checks and converts a quantity to its raw values """
-        if isinstance(reference, Q):
-            # Extracts unit from reference if quantity
-            reference = reference.unit
-
-        if value.unit == reference:
-            return input.stripped
-
-        msg = f"{caller!r} got {value.unit!r} expected {reference!r}"
-        raise UnitError(msg)
 
     @property
     @abstractmethod
-    def _unit_requirements(self) -> dict:
-        """ Returned units for initialization """
+    def _name(self) -> str:
+        """ Constructs a name based on attributes """
+
+    def __post_init__(self) -> None:
+        """ Pipes users input variables into validation schema """
+        self.validate_units()
+
+    def __repr__(self) -> str:
+        """ Returns the dataclasses name """""
+        return self._name
+
+    def __str__(self) -> str:
+        """ Returns the dataclasses name """
+        return self._name
