@@ -45,7 +45,7 @@ class Mesher:
 
         return raw_geometry
 
-    def __init__(self, domain: list, heat_source: list) -> list:
+    def __init__(self, domain: list, heat_source: list) -> None:
         """ Validates units and than builds domain """
         domain = self._validate_geometry(domain)
         heat = self._validate_geometry(heat_source)
@@ -110,7 +110,7 @@ class solver:
 
         self.heat_source = heat_source.stripped
         self.boundary_temperature = boundary_temperature.stripped
-        self._build_matrixes()  
+        self._build_matrixes()
 
     def solve_frame(
         self,
