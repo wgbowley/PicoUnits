@@ -21,7 +21,8 @@ from picounits.extensions.loader import DynamicLoader
 
 from picounits.constants import (
     LENGTH, TEMPERATURE, TIME, VOLUMETRIC_HEATING,
-    VOLUMETRIC_HEAT_CAPACITY, THERMAL_CONDUCTIVITY
+    VOLUMETRIC_HEAT_CAPACITY, THERMAL_CONDUCTIVITY,
+    CONVECTION_COEFFICIENT, DIMENSIONLESS
 )
 
 
@@ -42,7 +43,7 @@ class PreProcessor:
 
         return [x.value, y.value, (x + length).value, (y + height).value]
 
-    def __init__(self, domain: list, source: list, density: int = 20) -> None:
+    def __init__(self, domain: list, source: list, density: int = 30) -> None:
         """ Constructs mesh based on geometry built via static methods """
         # Saves raw coordinates
         self.domain_coordinates = domain
@@ -91,29 +92,55 @@ class Solver:
         self.m_mass = np.zeros((self.num_nodes, self.num_nodes))
 
         # Post init variables
-        self.source_material = None
-        self.domain_material = None
+        self.constructed = False
+        self.source_capacity = None
+        self.convection = None
+        self.source_dependence = None
+
+        self.domain_capacity = None
+        self.domain_dependence = None
 
         self.time_step = 0
         self.axial_length = 0
         self.boundary_temp = 0
         self.heating = 0
+        self.tolerance = 0
 
         self.system = None
         self.connectivity = None
+        self.boundary_edges = None
+        self.interface_edges = None
         self.boundary_indices: np.ndarray = None
 
     def build(self, params: DynamicLoader) -> None:
         """ Builds the simulation domain via assembly of stiffness and mass matrixes """
         # Extracts materials properties
-        self.domain_material = params.air
-        self.source_material = params.copper
+        def _decompile(material: DynamicLoader) -> tuple[list, float]:
+            """ Validates and decompile's dependence table """
+            temp, k_vals = [], []
+            for group in material.temp_dependence:
+                temperature = strip_quantity(group[0], TEMPERATURE)
+                conductivity = strip_quantity(group[1], THERMAL_CONDUCTIVITY)
+
+                temp.append(temperature)
+                k_vals.append(conductivity)
+
+            capacity = material.volumetric_heat_capacity
+            capacity = strip_quantity(capacity, VOLUMETRIC_HEAT_CAPACITY)
+            return (temp, k_vals), capacity
+
+        # Decompile's materials
+        self.source_dependence, self.source_capacity = _decompile(params.copper)
+        self.domain_dependence, self.domain_capacity = _decompile(params.air)
+        convection = params.problem.convection
 
         # Extracts and strips away units after validation
         self.time_step = strip_quantity(params.problem.time_step, TIME)
         self.axial_length = strip_quantity(params.problem.axial_length, LENGTH)
+        self.convection = strip_quantity(convection, CONVECTION_COEFFICIENT)
         self.boundary_temp = strip_quantity(params.problem.temperature, TEMPERATURE)
         self.heating = strip_quantity(params.source.power_density, VOLUMETRIC_HEATING)
+        self.tolerance = strip_quantity(params.problem.tolerance, DIMENSIONLESS)
 
         self._matrix_assembly()
 
@@ -121,8 +148,6 @@ class Solver:
         self,
         current_solution: np.ndarray | None = None,
         max_iterations: int = 1000,
-        tolerance: float = 1e-9,
-        penalty: float = 1e12
     ) -> np.ndarray:
         """" Solves the thermal problem for the current time step """
         # Configures the boundary conditions
@@ -132,10 +157,10 @@ class Solver:
         if self.boundary_indices is None:
             unique_nodes = self.unique_nodes
             self.boundary_indices = np.where(
-                (np.abs(unique_nodes[:, 0] - x_min) < tolerance) |
-                (np.abs(unique_nodes[:, 0] - x_max) < tolerance) |
-                (np.abs(unique_nodes[:, 1] - y_min) < tolerance) |
-                (np.abs(unique_nodes[:, 1] - y_max) < tolerance)
+                (np.abs(unique_nodes[:, 0] - x_min) < self.tolerance) |
+                (np.abs(unique_nodes[:, 0] - x_max) < self.tolerance) |
+                (np.abs(unique_nodes[:, 1] - y_min) < self.tolerance) |
+                (np.abs(unique_nodes[:, 1] - y_max) < self.tolerance)
             )[0]
 
         if current_solution is None:
@@ -146,7 +171,6 @@ class Solver:
         u_crr = u_old.copy()
         for _ in range(max_iterations):
             self.m_stiffness.fill(0)
-            self.m_mass.fill(0)
             self.load_vector.fill(0)
             self._matrix_assembly(u_crr)
 
@@ -154,78 +178,117 @@ class Solver:
             self.system = self.m_mass + self.time_step * self.m_stiffness
             b_rhs = self.m_mass @ u_old + self.time_step * self.load_vector
 
-            # Apply boundary conditions via penalty
-            for index in self.boundary_indices:
-                self.system[index, index] += penalty
-                b_rhs[index] += penalty * self.boundary_temp
+            u_next = self._gradient_solver(self.system, b_rhs, u_crr, self.tolerance)
 
-            u_next = self._gradient_solver(self.system, b_rhs, u_crr, tolerance)
-
-            if np.linalg.norm(u_next - u_crr) < tolerance:
+            if np.linalg.norm(u_next - u_crr) < self.tolerance:
                 return u_next
 
         return u_next
 
     def _matrix_assembly(self, current_solution: np.ndarray | None = None) -> None:
-        """ Constructs the conductivity array, stiffness and mass matrix"""
-        conductivity_map = []
+        """ Constructs the conductivity array, stiffness and mass matrix """
+        if not self.constructed:
+            conductivity_map = []
+            self.boundary_edges = []
+            self.interface_edges = []
+            x_min, y_min, x_max, y_max = self.domain
+            s_xmin, s_ymin, s_xmax, s_ymax = self.source.bounds
+            tol = self.tolerance
+
         for index, triangle in enumerate(self.mesh):
             triangle_coordinates = np.array(triangle.exterior.coords)[:3]
 
-            # Only solves the conductivity if is none
-            if self.connectivity is None:
-                # # Map triangle nodes to their indices within the unique nodes
+            # --- PRE-PROCESSING MESH DATA (Run once) ---
+            if not self.constructed:
                 indices = []
                 for point in triangle_coordinates:
-                    # Finds the nodal place via minimal distance across the array
+                    # Map triangle nodes to unique nodes
                     distance = np.linalg.norm(self.unique_nodes - point, axis=1)
                     indices.append(np.argmin(distance))
                 conductivity_map.append(indices)
+
+                # Identify Edges for Convection
+                for i, j in [(0, 1), (1, 2), (2, 0)]:
+                    p1, p2 = triangle_coordinates[i], triangle_coordinates[j]
+                    edge_len = np.linalg.norm(p1 - p2)
+
+                    # 1. Domain Boundary Edges
+                    on_boundary = (
+                        (np.abs(p1[0] - x_min) < tol and np.abs(p2[0] - x_min) < tol) or
+                        (np.abs(p1[0] - x_max) < tol and np.abs(p2[0] - x_max) < tol) or
+                        (np.abs(p1[1] - y_min) < tol and np.abs(p2[1] - y_min) < tol) or
+                        (np.abs(p1[1] - y_max) < tol and np.abs(p2[1] - y_max) < tol)
+                    )
+                    if on_boundary:
+                        self.boundary_edges.append(([indices[i], indices[j]], edge_len))
+
+                    # 2. Source Interface Edges (Where copper meets air)
+                    on_source = (
+                        (np.abs(p1[0] - s_xmin) < tol and np.abs(p2[0] - s_xmin) < tol 
+                         and s_ymin-tol <= p1[1] <= s_ymax+tol) or
+                        (np.abs(p1[0] - s_xmax) < tol and np.abs(p2[0] - s_xmax) < tol 
+                         and s_ymin-tol <= p1[1] <= s_ymax+tol) or
+                        (np.abs(p1[1] - s_ymin) < tol and np.abs(p2[1] - s_ymin) < tol 
+                         and s_xmin-tol <= p1[0] <= s_xmax+tol) or
+                        (np.abs(p1[1] - s_ymax) < tol and np.abs(p2[1] - s_ymax) < tol 
+                         and s_xmin-tol <= p1[0] <= s_xmax+tol)
+                    )
+                    if on_source:
+                        self.interface_edges.append(([indices[i], indices[j]], edge_len))
             else:
                 indices = self.connectivity[index]
 
-            # Calculates basis and triangle area
+            # --- ELEMENTAL CALCULATIONS ---
             axial = self.axial_length
             b, c, area = self._calculate_triangle(triangle_coordinates)
+            grid = np.ix_(indices, indices)
 
-            # Adds heat source to local vector
-            temp_dependence = self.domain_material.temp_dependence
-            heat_capacity = self.domain_material.volumetric_heat_capacity
-            if triangle.intersects(self.source):
-                # Updates thermal conductivity and heat capacity
-                temp_dependence = self.source_material.temp_dependence
-                heat_capacity = self.source_material.volumetric_heat_capacity
+            # Determine Material Properties
+            is_source = triangle.intersects(self.source)
+            temp_dep = self.source_dependence if is_source else self.domain_dependence
+            h_cap = self.source_capacity if is_source else self.domain_capacity
 
-                heat_per_node = self.heating * self.axial_length * area / 3
+            # 1. Heat Generation & Face Cooling (Out-of-Plane)
+            if is_source:
+                # Volumetric Heating
+                heat_per_node = self.heating * axial * area / 3
                 for i in indices:
                     self.load_vector[i] += heat_per_node
 
-            # Finds local conductivity from current_solution
-            if current_solution is not None:
-                temp_average = np.mean(current_solution[indices]) * TEMPERATURE
-                conductivity = self._interpolate(temp_dependence, temp_average)
-            else:
-                boundary = self.boundary_temp * TEMPERATURE
-                conductivity = self._interpolate(temp_dependence, boundary)
+                # Face Cooling (simulates 10mm thickness cooling into the 3rd dimension)
+                # h * Area * (T - T_inf)
+                h_conv = self.convection
+                ke_face = (h_conv * area / 12) * np.array([[2, 1, 1], [1, 2, 1], [1, 1, 2]])
+                fe_face = (h_conv * self.boundary_temp * area / 3) * np.array([1, 1, 1])
+                self.m_stiffness[grid] += ke_face
+                self.load_vector[indices] += fe_face
 
-            # Extracts values
-            conductivity = strip_quantity(conductivity, THERMAL_CONDUCTIVITY)
-            heat_capacity = strip_quantity(heat_capacity, VOLUMETRIC_HEAT_CAPACITY)
-
-            # Calculates local stiffness & local mass [3, 3] matrixes
+            # 2. Stiffness Matrix (Conduction)
+            u_elem = current_solution[indices] if current_solution is not None else self.boundary_temp
+            k_temp = np.interp(np.mean(u_elem), temp_dep[0], temp_dep[1])
+            
             local_b = np.array([b, c]) / (2 * area)
-            ke_local = conductivity * axial * area * np.dot(local_b.T, local_b)
+            ke_cond = k_temp * axial * area * np.dot(local_b.T, local_b)
+            self.m_stiffness[grid] += ke_cond
 
-            a, b, c = [2, 1, 1], [1, 2, 1], [1, 1, 2]
-            me_local = heat_capacity * axial * (area / 12) * np.array([a, b, c])
+            # 3. Mass Matrix (Thermal Inertia) - Only once
+            if not self.constructed:
+                me_local = h_cap * axial * (area / 12) * np.array([[2, 1, 1], [1, 2, 1], [1, 1, 2]])
+                self.m_mass[grid] += me_local
 
-            for i in range(3):
-                for j in range(3):
-                    self.m_stiffness[indices[i], indices[j]] += ke_local[i, j]
-                    self.m_mass[indices[i], indices[j]] += me_local[i, j]
+        # --- GLOBAL CONVECTION ASSEMBLY (Boundary + Interface) ---
+        h, T_inf = self.convection, self.boundary_temp
+        for edge_indices, length in (self.boundary_edges + self.interface_edges):
+            ke_conv = (h * length * axial / 6) * np.array([[2, 1], [1, 2]])
+            fe_conv = (h * T_inf * length * axial / 2) * np.array([1, 1])
 
-        if self.connectivity is None:
+            grid_edge = np.ix_(edge_indices, edge_indices)
+            self.m_stiffness[grid_edge] += ke_conv
+            self.load_vector[edge_indices] += fe_conv
+
+        if not self.constructed:
             self.connectivity = np.array(conductivity_map)
+            self.constructed = True
 
     def _calculate_triangle(self, coords: np.ndarray) -> tuple[list, list, float]:
         """ Calculates piecewise linear basis and triangle area via Shoelace Formula """
@@ -240,20 +303,6 @@ class Solver:
         area = 0.5 * abs(x1*b[0] + x2*b[1] + x3*b[2])
 
         return b, c, area
-
-    def _interpolate(self, points: Q, value: Q) -> Q:
-        """ Linear interpolates a quantity list from a specific linked value """
-        if value <= points[0][0]:
-            return points[0][1]
-        if value >= points[-1][0]:
-            return points[-1][1]
-
-        for index in range(len(points) - 1):
-            x0, x1 = points[index][0], points[index + 1][0]
-            y0, y1 = points[index][1], points[index + 1][1]
-
-            if x0 <= value <= x1:
-                return y0 + (y1 - y0) / (x1 - x0) * (value - x0)
 
     def _gradient_solver(
         self,

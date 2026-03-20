@@ -11,3 +11,6 @@ disable =
     
 [MASTER]
 ignore-paths=^.*\.pyi$
+
+[FORMAT]
+max-line-length=90 # Maximum number of characters on a single line.

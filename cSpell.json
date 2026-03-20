@@ -94,6 +94,7 @@
     "tripcolor",
     "colorbar",
     "blit",
-    "plt"
+    "plt",
+    "interp",
   ]
 }

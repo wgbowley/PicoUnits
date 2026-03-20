@@ -61,6 +61,11 @@ ax.set_ylabel(f"Height ({params.problem.height.unit})")
 ax.set_aspect('equal')
 ax.set_title("Transient Heat Diffusion")
 
+# Draws the source to the plot
+xs, ys = problem_solver.source.exterior.xy
+ax.plot(xs, ys, 'k', lw=1.5, label='Heat Source')
+ax.legend(loc='upper right')
+
 current_time_val = 0 * s
 ax.set_title(f"Transient Heat Diffusion - Time : {current_time_val:.3f}")
 
