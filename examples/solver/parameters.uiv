@@ -3,22 +3,22 @@ format: 0.1.0
 note: "This example using .uiv has no derived units"
 
 [problem]
-time_step: 1 m(s)
+time_step: 100 m(s)
 axial_length: 10 m(m)
 length: 250 m(m)
 height: 250 m(m)
 
 temperature: 273.15 (K)
-
+convection: 20 (kg*s^-3*k^-1)
 
 [source]
-origin: [30, 30] m(m)
+origin: [150, 150] m(m)
 length: 35 m(m)
 height: 35 m(m)
 
 # Volumetric heat source
-power_density: 10 u(kg*s^-3)
-
+power_density: 100 M(kg*m^-1*s^-3)
+convection:
 
 [air]
 volumetric_heat_capacity: 1.30e6 (kg*m^-1*s^-2*K^-1)
@@ -47,7 +47,7 @@ temp_dependence: [
 
 [copper]
 volumetric_heat_capacity: 3.45e6 (kg*m^-1*s^-2*K^-1)
-conductivity: 5.8e7 (kg^-1*m^-3*s^3*A^2)
+conductivity: 5.8e7 (kg*m*s^-3*K^-1)
 temp_dependence: [
 [273.0, 6.3e7],
 [473.0, 3.4e7],
@@ -55,4 +55,4 @@ temp_dependence: [
 [873.0, 1.7e7],
 [1073.0, 1.4e7],
 [1273.0, 1.1e7]
-] (K), (kg^-1*m^-3*s^3*A^2)
+] (K), (kg*m*s^-3*K^-1)

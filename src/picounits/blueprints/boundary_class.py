@@ -11,15 +11,7 @@ Description:
 from abc import ABC, abstractmethod
 from dataclasses import fields
 
-from picounits import Quantity as Q
-
-
-class UnitError(TypeError):
-    """ Exception for Unit Error """
-    def __init__(self, error: str):
-        """ Returns a custom error message """
-        msg = f"raised error: {error}. "
-        super().__init__(msg)
+from picounits import Quantity as Q, UnitError
 
 
 class ValidBoundary(ABC):

@@ -16,10 +16,14 @@ Description:
 """
 
 
-from pathlib import Path
-from engine import PreProcessor
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
-from picounits import LENGTH as m
+from typing import Any
+from pathlib import Path
+from engine import PreProcessor, Solver
+
+from picounits import LENGTH as m, TIME as s
 from picounits.extensions.parser import Parser
 
 
@@ -36,4 +40,43 @@ source = PreProcessor.rectangle((s_x, s_y), params.source.length, params.source.
 
 # Meshes the geometry
 preprocessor = PreProcessor(domain, source)
+problem_solver = Solver(preprocessor)
+problem_solver.build(params)
 
+fig, ax = plt.subplots(figsize=(6, 6))
+
+# Initial frame solve
+solution_now = problem_solver.solve()
+
+# Initial plot
+nodes, triangles = problem_solver.unique_nodes, problem_solver.connectivity
+tpc = ax.tripcolor(
+    nodes[:, 0], nodes[:, 1], triangles, solution_now,
+    shading='gouraud', cmap='RdYlBu_r', vmin=273.15, vmax=1000
+)
+fig.colorbar(tpc, label='Temperature (K)')
+
+ax.set_xlabel(f"Length ({params.problem.length.unit})")
+ax.set_ylabel(f"Height ({params.problem.height.unit})")
+ax.set_aspect('equal')
+ax.set_title("Transient Heat Diffusion")
+
+current_time_val = 0 * s
+ax.set_title(f"Transient Heat Diffusion - Time : {current_time_val:.3f}")
+
+def update(frame: Any):
+    """ Updates the Transient solution over time"""
+    global solution_now, current_time_val
+    _ = frame
+
+    solution_now = problem_solver.solve(solution_now)
+    current_time_val += params.problem.time_step
+    ax.set_title(f"Thermal Diffusion | Time: {current_time_val:.3f}")
+
+    tpc.set_array(solution_now)
+    return tpc, ax.title
+
+ani = animation.FuncAnimation(
+    fig, update, frames=100, interval=params.problem.time_step.value, blit=False
+)
+plt.show()
