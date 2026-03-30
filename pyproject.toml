@@ -3,19 +3,41 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "picounits"
-version = "0.0.1"
-description = "SI Based Unit System With Minimal Overhead And Maximal Speed"
+name = "PicoUnits"
+version = "0.1.0"
+description = "Explicit Units and Dimensional Analysis for Scientific Python"
+
 readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+keywords = ["units", "si", "minimal", "physics", "error-checking"]
+
 authors = [
   { name = "William Bowley", email = "wgrantbowley@gmail.com" },
 ]
 maintainers = [
   { name = "William Bowley", email = "wgrantbowley@gmail.com" },
 ]
-license = { file = "LICENSE" }
-keywords = ["units", "si", "high-performance", "minimal", "physics"]
+
+dependencies = ["numpy"]
+
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Intended Audience :: Developers",
+  "Topic :: Scientific/Engineering",
+]
 
 [project.urls]
 "Homepage" = "https://github.com/wgbowley/picounits"
 "Bug Tracker" = "https://github.com/wgbowley/picounits/issues"
+
+[project.scripts]
+picounits = "picounits.configuration.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/picounits"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"src/picounits/py.typed" = "picounits/py.typed"
