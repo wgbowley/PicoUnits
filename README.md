@@ -23,7 +23,7 @@ Picounits is a lightweight dimensional analysis library and DSL for writing dime
 Picounit is a single dependency (numpy) Python package that does dimensional analysis at runtime. Key features:
 
 - **Pluggable unit systems**:  Define custom "Unit Frames" for your domain
-- **Configuration format**:  `.uiv` files with embedded, validated units  
+- **Configuration format**:  `.uiv` files with embedded, validated units & `.ut` for unit types
 - **Boundary validation**:  `@unit_validator` decorators catch errors at function interfaces
 - **Full numeric support**:  Real, complex, and array-based vectors
 
@@ -90,7 +90,7 @@ Full documentation is available at <a style="color: #861211" href="/docs/">docs<
 ### Installation
 To install, simply:
 ```bash
-pip install picounits
+pip install PicoUnits 
 ```
 or use setuptools locally:
 

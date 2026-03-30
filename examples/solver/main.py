@@ -15,12 +15,12 @@ Description:
     To install run the command: pip install matplotlib shapely
 """
 
+from typing import Any
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-from typing import Any
-from pathlib import Path
 from engine import PreProcessor, Solver
 
 from picounits import LENGTH as m, TIME as s
@@ -52,7 +52,7 @@ solution_now = problem_solver.solve()
 nodes, triangles = problem_solver.unique_nodes, problem_solver.connectivity
 tpc = ax.tripcolor(
     nodes[:, 0], nodes[:, 1], triangles, solution_now,
-    shading='gouraud', cmap='RdYlBu_r', vmin=273.15, vmax=1000
+    shading='gouraud', cmap='RdYlBu_r', vmin=273.15, vmax=500
 )
 fig.colorbar(tpc, label='Temperature (K)')
 

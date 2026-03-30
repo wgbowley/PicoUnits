@@ -129,6 +129,10 @@ class RealPacket(ScalarPacket):
         factory = import_factory("RealPacket.__round__")
         return factory.create(round(self.value, ndigits), self.unit)
 
+    def __int__(self) -> int:
+        """ Returns the integer representation of the packet value """
+        return int(self.value)
+
     def __eq__(self, other: Any) -> bool:
         """ Defines the behavior for equality comparison """
         q2 = self._get_other_packet(other)

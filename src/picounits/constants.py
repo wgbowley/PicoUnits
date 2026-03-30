@@ -33,7 +33,7 @@ TEMPERATURE             = Unit(Dimension(base=FBase.TEMPERATURE))
 AMOUNT                  = Unit(Dimension(base=FBase.AMOUNT))
 LUMINOSITY              = Unit(Dimension(base=FBase.LUMINOSITY))
 DIMENSIONLESS           = Unit(Dimension(base=FBase.DIMENSIONLESS))
-
+NULLSET                  = DIMENSIONLESS
 
 """ =============== Geometric quantities =============== """
 

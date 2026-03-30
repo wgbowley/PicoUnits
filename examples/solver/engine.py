@@ -185,110 +185,137 @@ class Solver:
 
         return u_next
 
-    def _matrix_assembly(self, current_solution: np.ndarray | None = None) -> None:
-        """ Constructs the conductivity array, stiffness and mass matrix """
+    def _matrix_assembly(self, current_solution=None):
+        """ Constructs the initial matrix and updates elements per time step"""
         if not self.constructed:
-            conductivity_map = []
-            self.boundary_edges = []
-            self.interface_edges = []
-            x_min, y_min, x_max, y_max = self.domain
-            s_xmin, s_ymin, s_xmax, s_ymax = self.source.bounds
-            tol = self.tolerance
+            # Assembles the mesh for first solve
+            self._preprocess_mesh()
 
+        # Adds the heat source per time step
         for index, triangle in enumerate(self.mesh):
-            triangle_coordinates = np.array(triangle.exterior.coords)[:3]
+            indices = self.connectivity[index] if self.constructed else None
+            self._assemble_element(index, triangle, indices, current_solution)
 
-            # --- PRE-PROCESSING MESH DATA (Run once) ---
-            if not self.constructed:
-                indices = []
-                for point in triangle_coordinates:
-                    # Map triangle nodes to unique nodes
-                    distance = np.linalg.norm(self.unique_nodes - point, axis=1)
-                    indices.append(np.argmin(distance))
-                conductivity_map.append(indices)
+        # Applies convection to mass matrix per time step
+        self._apply_convection()
 
-                # Identify Edges for Convection
-                for i, j in [(0, 1), (1, 2), (2, 0)]:
-                    p1, p2 = triangle_coordinates[i], triangle_coordinates[j]
-                    edge_len = np.linalg.norm(p1 - p2)
+        if not self.constructed:
+            self.constructed = True
 
-                    # 1. Domain Boundary Edges
-                    on_boundary = (
-                        (np.abs(p1[0] - x_min) < tol and np.abs(p2[0] - x_min) < tol) or
-                        (np.abs(p1[0] - x_max) < tol and np.abs(p2[0] - x_max) < tol) or
-                        (np.abs(p1[1] - y_min) < tol and np.abs(p2[1] - y_min) < tol) or
-                        (np.abs(p1[1] - y_max) < tol and np.abs(p2[1] - y_max) < tol)
-                    )
-                    if on_boundary:
-                        self.boundary_edges.append(([indices[i], indices[j]], edge_len))
+    def _preprocess_mesh(self):
+        """ Builds the connectivity map and edge lists based on mesh"""
+        x_min, y_min, x_max, y_max = self.domain
+        s_xmin, s_ymin, s_xmax, s_ymax = self.source.bounds
+        tol = self.tolerance
 
-                    # 2. Source Interface Edges (Where copper meets air)
-                    on_source = (
-                        (np.abs(p1[0] - s_xmin) < tol and np.abs(p2[0] - s_xmin) < tol 
-                         and s_ymin-tol <= p1[1] <= s_ymax+tol) or
-                        (np.abs(p1[0] - s_xmax) < tol and np.abs(p2[0] - s_xmax) < tol 
-                         and s_ymin-tol <= p1[1] <= s_ymax+tol) or
-                        (np.abs(p1[1] - s_ymin) < tol and np.abs(p2[1] - s_ymin) < tol 
-                         and s_xmin-tol <= p1[0] <= s_xmax+tol) or
-                        (np.abs(p1[1] - s_ymax) < tol and np.abs(p2[1] - s_ymax) < tol 
-                         and s_xmin-tol <= p1[0] <= s_xmax+tol)
-                    )
-                    if on_source:
-                        self.interface_edges.append(([indices[i], indices[j]], edge_len))
-            else:
-                indices = self.connectivity[index]
+        conductivity_map = []
+        self.boundary_edges = []
+        self.interface_edges = []
+        for triangle in self.mesh:
+            coords = np.array(triangle.exterior.coords)[:3]
+            indices = [
+                np.argmin(np.linalg.norm(self.unique_nodes - p, axis=1)) for p in coords
+            ]
 
-            # --- ELEMENTAL CALCULATIONS ---
-            axial = self.axial_length
-            b, c, area = self._calculate_triangle(triangle_coordinates)
-            grid = np.ix_(indices, indices)
+            # Checks if coords of the triangle is on the boundary of source or domain
+            for i, j in [(0, 1), (1, 2), (2, 0)]:
+                p1, p2 = coords[i], coords[j]
+                edge_len = np.linalg.norm(p1 - p2)
 
-            # Determine Material Properties
-            is_source = triangle.intersects(self.source)
-            temp_dep = self.source_dependence if is_source else self.domain_dependence
-            h_cap = self.source_capacity if is_source else self.domain_capacity
+                on_boundary = (
+                    self._on_line(p1, p2, 'x', x_min, y_min, y_max, tol) or
+                    self._on_line(p1, p2, 'x', x_max, y_min, y_max, tol) or
+                    self._on_line(p1, p2, 'y', y_min, x_min, x_max, tol) or
+                    self._on_line(p1, p2, 'y', y_max, x_min, x_max, tol)
+                )
+                if on_boundary:
+                    self.boundary_edges.append(([indices[i], indices[j]], edge_len))
 
-            # 1. Heat Generation & Face Cooling (Out-of-Plane)
-            if is_source:
-                # Volumetric Heating
-                heat_per_node = self.heating * axial * area / 3
-                for i in indices:
-                    self.load_vector[i] += heat_per_node
+                on_source = (
+                    self._on_line(p1, p2, 'x', s_xmin, s_ymin, s_ymax, tol) or
+                    self._on_line(p1, p2, 'x', s_xmax, s_ymin, s_ymax, tol) or
+                    self._on_line(p1, p2, 'y', s_ymin, s_xmin, s_xmax, tol) or
+                    self._on_line(p1, p2, 'y', s_ymax, s_xmin, s_xmax, tol)
+                )
+                if on_source:
+                    self.interface_edges.append(([indices[i], indices[j]], edge_len))
 
-                # Face Cooling (simulates 10mm thickness cooling into the 3rd dimension)
-                # h * Area * (T - T_inf)
-                h_conv = self.convection
-                ke_face = (h_conv * area / 12) * np.array([[2, 1, 1], [1, 2, 1], [1, 1, 2]])
-                fe_face = (h_conv * self.boundary_temp * area / 3) * np.array([1, 1, 1])
-                self.m_stiffness[grid] += ke_face
-                self.load_vector[indices] += fe_face
+            conductivity_map.append(indices)
+        self.connectivity = np.array(conductivity_map)
 
-            # 2. Stiffness Matrix (Conduction)
-            u_elem = current_solution[indices] if current_solution is not None else self.boundary_temp
-            k_temp = np.interp(np.mean(u_elem), temp_dep[0], temp_dep[1])
-            
-            local_b = np.array([b, c]) / (2 * area)
-            ke_cond = k_temp * axial * area * np.dot(local_b.T, local_b)
-            self.m_stiffness[grid] += ke_cond
+    def _assemble_element(self, index, triangle, indices, current_solution):
+        """ Assembles stiffness, mass, and load contributions for a single element """
+        coords = np.array(triangle.exterior.coords)[:3]
+        indices = self.connectivity[index]
 
-            # 3. Mass Matrix (Thermal Inertia) - Only once
-            if not self.constructed:
-                me_local = h_cap * axial * (area / 12) * np.array([[2, 1, 1], [1, 2, 1], [1, 1, 2]])
-                self.m_mass[grid] += me_local
+        b, c, area = self._calculate_triangle(coords)
+        grid = np.ix_(indices, indices)
+        is_source = triangle.intersects(self.source)
 
-        # --- GLOBAL CONVECTION ASSEMBLY (Boundary + Interface) ---
-        h, T_inf = self.convection, self.boundary_temp
+        if is_source:
+            self._add_heating(indices, area)
+            self._add_face_cooling(indices, grid, area)
+
+        self._add_conduction(indices, grid, area, b, c, current_solution, is_source)
+
+        if not self.constructed:
+            self._add_mass(grid, area, is_source)
+
+    def _add_heating(self, indices, area):
+        """ Adds volumetric heat generation to load vector """
+        heat_per_node = self.heating * self.axial_length * area / 3
+        for i in indices:
+            self.load_vector[i] += heat_per_node
+
+    def _add_face_cooling(self, indices, grid, area):
+        """ Adds out-of-plane convective cooling on source faces """
+        h = self.convection
+        ke_face = (h * area / 12) * np.array([[2, 1, 1], [1, 2, 1], [1, 1, 2]])
+        fe_face = (h * self.boundary_temp * area / 3) * np.array([1, 1, 1])
+        self.m_stiffness[grid] += ke_face
+        self.load_vector[indices] += fe_face
+
+    def _add_conduction(self, indices, grid, area, b, c, current_solution, is_source):
+        """ Adds temperature-dependent conduction to stiffness matrix """
+        temp_dep = self.source_dependence if is_source else self.domain_dependence
+        u_elem = (
+            current_solution[indices]
+            if current_solution is not None else self.boundary_temp
+        )
+
+        k_temp = np.interp(np.mean(u_elem), temp_dep[0], temp_dep[1])
+        local_b = np.array([b, c]) / (2 * area)
+        ke_cond = k_temp * self.axial_length * area * np.dot(local_b.T, local_b)
+        self.m_stiffness[grid] += ke_cond
+
+    def _add_mass(self, grid, area, is_source):
+        """ Adds thermal inertia to mass matrix (first assembly only) """
+        h_cap = self.source_capacity if is_source else self.domain_capacity
+
+        me_map = np.array([[2, 1, 1], [1, 2, 1], [1, 1, 2]])
+        me_local = h_cap * self.axial_length * (area / 12) * me_map
+        self.m_mass[grid] += me_local
+
+    def _apply_convection(self):
+        """ Applies convective boundary conditions to stiffness matrix and load vector """
+        h, T_inf, axial = self.convection, self.boundary_temp, self.axial_length
+
         for edge_indices, length in (self.boundary_edges + self.interface_edges):
             ke_conv = (h * length * axial / 6) * np.array([[2, 1], [1, 2]])
             fe_conv = (h * T_inf * length * axial / 2) * np.array([1, 1])
-
-            grid_edge = np.ix_(edge_indices, edge_indices)
-            self.m_stiffness[grid_edge] += ke_conv
+            grid = np.ix_(edge_indices, edge_indices)
+            self.m_stiffness[grid] += ke_conv
             self.load_vector[edge_indices] += fe_conv
 
-        if not self.constructed:
-            self.connectivity = np.array(conductivity_map)
-            self.constructed = True
+    def _on_line(self, p1, p2, axis, value, lo, hi, tol):
+        """ Checks if both points lie on an axis-aligned edge within bounds """
+        a, b = (0, 1) if axis == 'x' else (1, 0)
+        return (
+            np.abs(p1[a] - value) < tol and 
+            np.abs(p2[a] - value) < tol and
+            lo - tol <= p1[b] <= hi + tol and
+            lo - tol <= p2[b] <= hi + tol
+        )
 
     def _calculate_triangle(self, coords: np.ndarray) -> tuple[list, list, float]:
         """ Calculates piecewise linear basis and triangle area via Shoelace Formula """

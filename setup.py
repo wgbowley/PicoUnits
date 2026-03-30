@@ -12,9 +12,9 @@ from setuptools import setup, find_packages
 
 setup(
     name='picounits',
-    version='0.1.1',
+    version='0.1.0',
     description=(
-        'SI Based Unit System With Minimal Overhead And Maximal Speed'
+        'Explicit Units and Dimensional Analysis for Scientific Python'
     ),
     author='William Bowley',
     author_email='wgrantbowley@gmail.com',
@@ -36,7 +36,6 @@ setup(
     include_package_data=True,
     entry_points={
         "console_scripts": [
-            # Correct path: package.configuration.cli:main
             "picounits = picounits.configuration.cli:main",
         ],
     },

@@ -4,7 +4,7 @@ note: "This example using .uiv has no derived units"
 
 [problem]
 tolerance: 1e-10
-time_step: 1 (s)
+time_step: 10 (s)
 axial_length: 10 m(m)
 length: 250 m(m)
 height: 250 m(m)
@@ -18,7 +18,7 @@ length: 50 m(m)
 height: 50 m(m)
 
 # Volumetric heat source
-power_density: 10 M(kg*m^-1*s^-3)
+power_density: 500 k(kg*m^-1*s^-3)
 
 [air]
 volumetric_heat_capacity: 1.185 k(kg*m^-1*s^-2*K^-1)
