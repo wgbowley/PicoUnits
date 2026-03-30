@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="media/picounit_logo.png" alt="PicoUnits" style="max-width:600px;">
+  <img src="https://raw.githubusercontent.com/wgbowley/PicoUnits/refs/heads/main/media/picounit_logo.png" alt="PicoUnits" style="max-width:600px;">
   <br>
   <br>
-  <em>Explicit units and dimensional analysis for scientific Python – Built with Correctness by <a style="color: #861211" href="https://github.com/wgbowley">William Bowley</a></em>
+  <em>Explicit units and dimensional analysis for scientific Python – Built with care by <a style="color: #861211" href="https://github.com/wgbowley">William Bowley</a></em>
   
 </p>
 
@@ -52,7 +52,7 @@ format: 0.1.0
 unit_frame: units.ut
 
 [model]
-voltage: 18 (V)  # volts
+voltage: 18 (V)
 current_limit: 40 (A) 
 time_steps: 50 u(s)
 ```
