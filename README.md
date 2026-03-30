@@ -9,13 +9,13 @@
 ---
 
 
-Writing experimental physics models? Need to check dimensions at boundaries? Annoyed by vague configuration files? Picounits might be what you're looking for. 
+Writing experimental physics models? Need to check dimensions at boundaries? Annoyed by vague configuration files? PicoUnits might be what you're looking for. 
 
-Picounits is a lightweight dimensional analysis library and DSL for writing dimensionally explicit Python code.  Picounits support real numbers, complex numbers, and arrays based vectors. It is also a custom DSL called `.uiv` (unit-informed values), which allows for explicit units in configuration or reference libraries.
+PicoUnits is a lightweight dimensional analysis library and DSL for writing dimensionally explicit Python code.  PicoUnits support real numbers, complex numbers, and arrays based vectors. It is also a custom DSL called `.uiv` (unit-informed values), which allows for explicit units in configuration or reference libraries.
 
 
 
-## Picounits: Usage
+## PicoUnits: Usage
 <!-- NOTE: Python version needs to checked before release, I am not sure the specific version  -->
 ![Python Version](https://img.shields.io/badge/python-3.10+-red)
 ![License](https://img.shields.io/badge/license-MIT-white)
@@ -30,21 +30,21 @@ Picounit is a single dependency (numpy) Python package that does dimensional ana
 But instead of talking about it, let's see some examples:
 
 ```py
->>> from picounits import MILLI, LENGTH
+>>> from PicoUnits import MILLI, LENGTH
 >>> 12 * MILLI * LENGTH + 10 * LENGTH
 >>> 10.012 (m)
 ```
 
-As expected, it returns 10.01 meters, but what is a unit? A more exotic feature of Picounits is that its fundamental units are fully abstract. We call this the user's "Unit Frame"; by default, it's SI metric, but it could be astronomical units:
+As expected, it returns 10.01 meters, but what is a unit? A more exotic feature of PicoUnits is that its fundamental units are fully abstract. We call this the user's "Unit Frame"; by default, it's SI metric, but it could be astronomical units:
 
 ```py
 # With a custom .picounit file defining light-years as LENGTH:
->>> from picounits import MILLI, LENGTH
+>>> from PicoUnits import MILLI, LENGTH
 >>> 12 * MILLI * LENGTH + 10 * LENGTH
 >>> 10.012 (ly)
 ```
 
-All depends on the users `.picounit` file, which can be generated via the command `picounits generate`. Another feature is the ability to use the `.ut` (unit types) and `.uiv` (unit-informed values) formats, which picounits loads in via recursive attribute injection. So instead of a nested list, you get a wonderful object-based loader.
+All depends on the users `.picounit` file, which can be generated via the command `PicoUnits generate`. Another feature is the ability to use the `.ut` (unit types) and `.uiv` (unit-informed values) formats, which PicoUnits loads in via recursive attribute injection. So instead of a nested list, you get a wonderful object-based loader.
 
 ```yaml
 [version]
@@ -60,7 +60,7 @@ time_steps: 50 u(s)
 Your `.picounit` file defines your Unit Frame, your `.ut` defines any derived units and your `.uiv` files defines value:unit pairs. This ensures consistency-you can't accidentally load a config file expecting SI metric when your code is running in natural units.
 
 ```py
->>> from picounits.parser import Parser
+>>> from PicoUnits.parser import Parser
 >>> p = Parser(parameters.uiv)
 >>> p.model.voltage
 >>> 18 (V)
@@ -69,7 +69,7 @@ Your `.picounit` file defines your Unit Frame, your `.ut` defines any derived un
 Well, we’ve looked at simple calculations, changing unit frames, and importing units. But what about dimensional checks? Well, the main one is the `unit_validator`, which is a decorator that checks dimensionally out of a function. Let's intentionally pass wrong units to see what happens:
 
 ```py
->>> from picounits import unit_validator, VOLTAGE, IMPEDANCE, CURRENT
+>>> from PicoUnits import unit_validator, VOLTAGE, IMPEDANCE, CURRENT
 >>> @unit_validator(VOLTAGE)
 >>> def calculate_voltage(current, impedance):
 >>>   return current * impedance
@@ -90,12 +90,12 @@ Full documentation is available at <a style="color: #861211" href="/docs/">docs<
 ### Installation
 To install, simply:
 ```bash
-pip install PicoUnits 
+pip install PicoUnits
 ```
 or use setuptools locally:
 
 ```bash
-git clone https://github.com/wgbowley/picounits.git
-cd picounits
+git clone https://github.com/wgbowley/PicoUnits.git
+cd PicoUnits
 pip install -e .
 ```

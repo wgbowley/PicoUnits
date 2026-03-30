@@ -5,7 +5,8 @@ build-backend = "hatchling.build"
 [project]
 name = "PicoUnits"
 version = "0.1.0"
-description = "Explicit Units and Dimensional Analysis for Scientific Python "
+description = "Explicit Units and Dimensional Analysis for Scientific Python"
+
 readme = "README.md"
 requires-python = ">=3.8"
 license = { file = "LICENSE" }
