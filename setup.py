@@ -9,7 +9,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="PicoUnits",
-    version="0.1.0",
+    version="1.0.3",
     description="Explicit Units and Dimensional Analysis for Scientific Python",
     author="William Bowley",
     author_email="wgrantbowley@gmail.com",
