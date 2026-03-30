@@ -3,7 +3,7 @@
 from typing import Any
 
 from picounits.constants import *
-from picounits.core.quantities.scalars.methods.validators import (
+from picounits.core.quantities.validators import (
     unit_validator, Quantity
 )
 
