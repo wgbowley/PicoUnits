@@ -70,7 +70,7 @@ class ArrayPacket(VectorPacket):
                 new_value.append(item.value * factor)
 
             elif isinstance(item, (int, float, integer, floating)):
-                new_value.append(item)
+                new_value.append(item * factor)
 
             else:
                 if isinstance(item, complex):
@@ -79,9 +79,8 @@ class ArrayPacket(VectorPacket):
 
                 msg = f"Cannot convert {type(item)} to ArrayPacket value"
                 raise TypeError(msg)
-        
-        ### FLAG: * FACTOR is that
-        self.value = array(new_value) * factor
+
+        self.value = array(new_value)
 
     @property
     def name(self) -> str:

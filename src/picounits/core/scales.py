@@ -9,10 +9,11 @@ Description
 """
 
 from __future__ import annotations
-from typing import Any
+from typing import Any, Callable
 from enum import Enum
 
 from picounits.lazy_imports import import_factory, lazy_import
+
 
 class PrefixScale(Enum):
     """
@@ -105,9 +106,10 @@ class PrefixScale(Enum):
         Acts as a syntactic bridge to Quantity to allow for a cleaner API.
         Example: 10 * kilo * LENGTH => Quantity(10, LENGTH, kilo)
         """
-        if isinstance(other, (int, float)): 
+        if not isinstance(other, Callable):
             return PrefixedValue(other, self)
 
+        return NotImplemented
 
 
 class PrefixedValue:
@@ -117,23 +119,28 @@ class PrefixedValue:
         self.prefix = prefix
 
     def __mul__(self, other):
-        from picounits.core.unit import Unit
-        if isinstance(other, Unit):
+        """ Constructs the quantity with value pair """
+        unit = lazy_import(
+            "picounits.core.unit", "Unit", 'PrefixScale.__rmul__'
+        )
+        if isinstance(other, unit):
             factory = import_factory('PrefixedValue.__mul__')
             return factory.create(self.value, other, self.prefix)
-        
-        if isinstance(other, (int, float)):
+
+        if not isinstance(other, Callable):
             return PrefixedValue(self.value * other, self.prefix)
 
         return NotImplemented
 
     def __rmul__(self, other):
         """ Syntactic bridge 10 * kilo """
-        if isinstance(other, (int, float)):
+        if not isinstance(other, Callable):
             return PrefixedValue(other * self.value, self.prefix)
+
         return NotImplemented
 
     def __repr__(self):
+        """ Returns name for __repr__ dunder method """
         return f"<PrefixedValue: {self.value} @ {self.prefix}>"
 
 # Fast mapping for enums and ensure o(1) lookup

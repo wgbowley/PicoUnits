@@ -66,7 +66,14 @@ class ComplexPacket(ScalarPacket):
     def name(self) -> str:
         """ Returns the packet name as value + prefix(unit) """
         value, prefix = self._normalize()
-        return f"{round(value, STANDARD_DISPLAY)} {prefix}({self.unit.name})"
+        if isinstance(value, complex):
+            real = round(value.real, STANDARD_DISPLAY)
+            imag = round(value.imag, STANDARD_DISPLAY)
+            value = complex(real, imag)
+        else:
+            value = round(value, STANDARD_DISPLAY)
+
+        return f"{value} {prefix}({self.unit.name})"
 
     @property
     def magnitude(self) -> int | float:

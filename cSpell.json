@@ -96,6 +96,7 @@
     "blit",
     "plt",
     "interp",
-    "nullset"
+    "nullset",
+    "BODMAS"
   ]
 }
