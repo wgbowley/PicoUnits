@@ -1,7 +1,5 @@
 """
 Filename: validators.py
-Author: William Bowley
-Version: 0.2
 Clear: X
 
 Description:

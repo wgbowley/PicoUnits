@@ -1,7 +1,5 @@
 """
 Filename: priority.py
-Author: William Bowley
-Version: 0.1
 
 Description:
     Builds the domain priority dictionary for

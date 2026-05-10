@@ -1,6 +1,5 @@
 """
 Filename: parser.py
-Author: William Bowley
 
 Description:
     High-level parser for .uiv (Unit-Informed Values) files.

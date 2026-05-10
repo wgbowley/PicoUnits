@@ -1,6 +1,5 @@
 """
 Filename: lazy_imports.py
-Author: William Bowley
 
 Description:
     This file defines a generic lazy import

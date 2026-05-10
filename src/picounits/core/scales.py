@@ -1,7 +1,5 @@
 """
 Filename: scales.py
-Author: William Bowley
-Version: 0.6
 Clear: Y
 
 Description

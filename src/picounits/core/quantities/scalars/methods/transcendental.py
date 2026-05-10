@@ -1,7 +1,5 @@
 """
 Filename: transcendental.py
-Author: William Bowley
-Version: 0.3
 
 Description:
     Defines the methods for transcendental mathematical

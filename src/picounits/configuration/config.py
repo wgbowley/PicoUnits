@@ -1,7 +1,5 @@
 """
 Filename: config.py
-Author: William Bowley
-Version: 0.1
 Clean: N
 
 Description:

@@ -1,7 +1,5 @@
 """
 Filename: arithmetic.py
-Author: William Bowley
-Version: 0.2
 
 Description:
     Defines the methods for arithmetic dunder

@@ -1,6 +1,5 @@
 """
 Filename: main.py
-Author: William Bowley
 
 Description:
     Analytical lumped-parameter coil-gun

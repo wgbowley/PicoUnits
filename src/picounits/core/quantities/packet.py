@@ -1,7 +1,5 @@
 """
 Filename: packet.py
-Author: William Bowley
-Version: 0.8
 Clear: X
 
 Description:

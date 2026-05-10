@@ -1,6 +1,5 @@
 """
 Filename: main.py
-Author: William Bowley
 
 Description:
     Example of using picounits to import a material 

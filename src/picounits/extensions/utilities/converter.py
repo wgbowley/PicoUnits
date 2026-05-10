@@ -1,6 +1,5 @@
 """
 Filename: converter.py
-Author: William Bowley
 
 Description:
     Type conversion for .uiv format values.

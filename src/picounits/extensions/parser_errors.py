@@ -1,6 +1,5 @@
 """
 Filename: parser_errors.py
-Author: William Bowley
 
 Description:
     Holds the parser error class to ensure

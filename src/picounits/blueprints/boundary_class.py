@@ -1,6 +1,5 @@
 """
 Filename: boundary_class
-Author: William Bowley
 
 Description:
     This blueprint serves as a boundary layer

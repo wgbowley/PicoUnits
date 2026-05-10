@@ -1,7 +1,5 @@
 """
 Filename: factory.pyi
-Author: William Bowley
-Version: 0.1
 Clear: X
 
 Description:

@@ -1,7 +1,5 @@
 """
 Filename: equations.py
-Author: William Bowley
-Version: 0.1
 
 Description:
     Equations for a analytical coil-gun model

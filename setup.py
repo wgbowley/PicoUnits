@@ -1,6 +1,5 @@
 """
 Filename: setup.py
-Author: William Bowley
 
 Description: Local development / editable install for PicoUnits
 """

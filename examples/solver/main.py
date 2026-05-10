@@ -1,6 +1,5 @@
 """
 Filename: main.py
-Author: William Bowley
 
 Description:
     Transient thermal solver for the 2D heat equation PDE

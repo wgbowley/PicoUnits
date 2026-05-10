@@ -1,7 +1,5 @@
 """
 Filename: vectors.py
-Author: William Bowley
-Version: 0.1
 Clear: X
 
 Description:

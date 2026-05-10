@@ -1,6 +1,5 @@
 """
 Filename: dimensional_algebra.py
-Author: William Bowley
 
 Description:
     Tests for the Unit class to ensure that the 

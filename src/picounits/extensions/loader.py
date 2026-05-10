@@ -1,6 +1,5 @@
 """
 Filename: loader.py
-Author: William Bowley
 
 Description:
     Defines the dynamic loader for .uiv

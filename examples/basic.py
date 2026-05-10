@@ -1,6 +1,5 @@
 """
 Filename: basic.py
-Author: William Bowley
 
 Description:
     SUVAT and kinetic energy script showing

@@ -1,6 +1,5 @@
 """
 Filename: constants.py
-Author: William Bowley
 
 Description:
     Defines semantic physical quantities and their

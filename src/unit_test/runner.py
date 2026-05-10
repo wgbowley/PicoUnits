@@ -1,6 +1,5 @@
 """
 File: runner.py
-Author: William Bowley
 
 Description:
     Main script to run all unit test modules within

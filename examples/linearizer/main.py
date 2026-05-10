@@ -1,6 +1,5 @@
 """
 Filename: main.py
-Author: William Bowley
 
 Description:
     Example of a thermistor linearizer based on 

@@ -1,7 +1,5 @@
 """
 Filename: picounits.py
-Author: William Bowley
-Version: 0.1
 """
 
 DEFAULT_CONFIG = """

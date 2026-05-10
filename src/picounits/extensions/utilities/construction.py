@@ -1,6 +1,5 @@
 """
 Filename: construction.py
-Author: William Bowley
 
 Description:
     Handles unit and quantity construction 

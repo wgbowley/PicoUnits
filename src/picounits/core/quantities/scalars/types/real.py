@@ -1,7 +1,5 @@
 """
 Filename: real.py
-Author: William Bowley
-Version: 0.9
 Clear: X
 
 Description:

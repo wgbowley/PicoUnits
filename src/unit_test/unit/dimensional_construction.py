@@ -1,6 +1,5 @@
 """
 Filename: dimensional_construction.py
-Author: William Bowley
 
 Description:
     Tests for the fundamental unit 'FBASE' and dataclass 'Dimension'

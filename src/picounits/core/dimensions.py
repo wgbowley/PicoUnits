@@ -1,7 +1,5 @@
 """
 Filename: dimensions.py
-Author: William Bowley
-Version: 0.4
 Clear: N
 
 Description:

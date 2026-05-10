@@ -1,7 +1,5 @@
 """
 Filename: matplot.py
-Author: William Bowley
-Version: 0.1
 
 Description:
     Graphing script for the analytical lumped

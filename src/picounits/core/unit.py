@@ -1,6 +1,5 @@
 """
 Filename: units.py
-Author: William Bowley
 Clear: Y
 
 Description:
