@@ -1,21 +1,34 @@
-# Library Units - Derived from Base Dimensions (kg, m, s, etc) (si_metric)
+# PyFEA System Units - Derived from Base Dimensions (kg, m, s, etc)
 
 [version]
 format: 0.1.0
 
-[units.physical]
-ρ: kg*m^-3
-pa: kg*m^-1*s^-2
+[Mechanics]
+N:      kg*m*s^-2
+J:      kg*m^2*s^-2
+W:      kg*m^2*s^-3
+Pa:     kg*m^-1*s^-2
 
-[units.magnetic]
-μ: kg*m*s^-2*A^-2
-Br: kg*s^-2*A^-1
-Hc: A*m^-1
+[Electricity]
+V:      kg*m^2*s^-3*A^-1
+F:      kg^-1*m^-2*s^4*A^2
+Ω:      kg*m^2*s^-3*A^-2
+S:      kg^-1*m^-2*s^3*A^2
+S_m:    kg^-1*m^-3*s^3*A^2
 
-[units.electrical]
-ε: kg^-1*m^-3*s^4*A^2
-σ: kg^-1*m^-3*s^3*A^2
-Ω·m: kg*m^3*s^-3*A^-2
+[magnetic]
+Wb:     kg*m^2*s^-2*A^-1
+T:      kg*s^-2*A^-1
+H:      kg*m^2*s^-2*A^-2
+A_m:    A*m^-1
 
-[units.thermal]
-k: kg*m*s^-3*K^-1
+[Heat]
+k:      kg*m*s^-3*K^-1
+c:      m^2*s^-2*K^-1
+
+[Other]
+lm:     cd
+lx:     cd*m^-2
+Gy:     m^2*s^-2
+Sv:     m^2*s^-2
+kat:    mol*s^-1

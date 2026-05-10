@@ -105,13 +105,36 @@ class PrefixScale(Enum):
         Acts as a syntactic bridge to Quantity to allow for a cleaner API.
         Example: 10 * kilo * LENGTH => Quantity(10, LENGTH, kilo)
         """
-        factory = import_factory('PrefixScale.__rmul__')
-        unit = lazy_import(
-            "picounits.core.unit", "Unit", 'PrefixScale.__rmul__'
-        )
+        if isinstance(other, (int, float)): 
+            return PrefixedValue(other, self)
 
-        return factory.create(other, unit(), self)
 
+
+class PrefixedValue:
+    """ Carries prefix information """
+    def __init__(self, value: int | float, prefix: PrefixScale) -> None:
+        self.value = value
+        self.prefix = prefix
+
+    def __mul__(self, other):
+        from picounits.core.unit import Unit
+        if isinstance(other, Unit):
+            factory = import_factory('PrefixedValue.__mul__')
+            return factory.create(self.value, other, self.prefix)
+        
+        if isinstance(other, (int, float)):
+            return PrefixedValue(self.value * other, self.prefix)
+
+        return NotImplemented
+
+    def __rmul__(self, other):
+        """ Syntactic bridge 10 * kilo """
+        if isinstance(other, (int, float)):
+            return PrefixedValue(other * self.value, self.prefix)
+        return NotImplemented
+
+    def __repr__(self):
+        return f"<PrefixedValue: {self.value} @ {self.prefix}>"
 
 # Fast mapping for enums and ensure o(1) lookup
 # Scale symbols dictionary only uses ASCII to ensure easy usage in .uiv files

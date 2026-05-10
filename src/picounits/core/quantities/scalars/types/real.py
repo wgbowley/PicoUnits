@@ -54,7 +54,13 @@ class RealPacket(ScalarPacket):
 
         # Ex.  Kilo (3) - BASE (0) = 3 Hence scaling of 10^3
         prefix_difference = prefix.value - PrefixScale.BASE.value
-        factor = 10 ** prefix_difference
+        exponent_sum = sum(
+            dim.exponent for dim in self.unit.dimensions if len(self.unit.dimensions) == 1
+        )
+        if exponent_sum <= 1: 
+            exponent_sum = 1
+
+        factor = 10 ** (prefix_difference * exponent_sum)
         self.value *= factor
 
     @property

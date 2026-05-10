@@ -52,10 +52,12 @@ class ArrayPacket(VectorPacket):
         # Mutates prefix to PrefixScale.BASE and scales value
         factor = 1
         if prefix != PrefixScale.BASE:
-            # Ex.  Kilo (3) - BASE (0) = 3 Hence scaling of 10^3
             prefix_difference = prefix.value - PrefixScale.BASE.value
-            factor = 10 ** prefix_difference
+            exponent_sum = sum(dim.exponent for dim in self.unit.dimensions)
+            if exponent_sum <= 1:
+                exponent_sum = 1
 
+            factor = 10 ** (prefix_difference * exponent_sum)
         # Converts the input to a non-scaled ndarry
         self._quantity_conversion(factor)
 
@@ -77,7 +79,8 @@ class ArrayPacket(VectorPacket):
 
                 msg = f"Cannot convert {type(item)} to ArrayPacket value"
                 raise TypeError(msg)
-
+        
+        ### FLAG: * FACTOR is that
         self.value = array(new_value) * factor
 
     @property

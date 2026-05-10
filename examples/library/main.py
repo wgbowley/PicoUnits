@@ -27,8 +27,8 @@ print("=== Derived parameters from library ===")
 
 
 # Calculate mixture density of Iron/Copper mix 70%/30%
-iron_density = materials.pure_iron.physical.density
-copper_density = materials.pure_copper.physical.density
+iron_density = materials.iron.physical.density
+copper_density = materials.copper.physical.density
 
 density = iron_density * 7/10 + copper_density * 3 / 10
 print(f"70 % Iron 30% Copper density: {density!r}")
@@ -48,8 +48,8 @@ n33_d, n35_d = _magnet_energy(n33), _magnet_energy(n35)
 print(f"Energy Density | N33: {n33_d:.3f}; N35: {n35_d:.3f}")
 
 
-# Calculates the electrical resistivity of copper
-resistivity = 1/materials.pure_copper.electrical.conductivity
+# Calculates the electrical resistivity of copper @ 273 k
+resistivity = 1/materials.copper.electrical.temperature_conductivity[0][1]
 print(f"Copper resistivity: {resistivity:.3f}")
 
 print("=======================================")
