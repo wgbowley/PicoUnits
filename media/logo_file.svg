@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="1200"
+   height="320"
+   viewBox="0 0 317.49999 84.666667"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="logo_file.svg"
+   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+   inkscape:export-filename="PicoUnits\media\picounit_logo.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#0d1117"
+     bordercolor="#000000"
+     borderopacity="0.27058824"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#ffffff"
+     inkscape:document-units="px"
+     showguides="false"
+     showborder="true"
+     inkscape:antialias-rendering="true"
+     showgrid="true"
+     inkscape:zoom="0.99105737"
+     inkscape:cx="601.88241"
+     inkscape:cy="86.271494"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <rect
+       x="858.67885"
+       y="50.451166"
+       width="244.18364"
+       height="216.94001"
+       id="rect4" />
+    <linearGradient
+       id="swatch1"
+       inkscape:swatch="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop1" />
+    </linearGradient>
+    <color-profile
+       name="Agfa-:-Swop-Standard"
+       xlink:href="file:///WINDOWS/system32/spool/drivers/color/RSWOP.icm"
+       id="color-profile2" />
+    <mask
+       maskUnits="userSpaceOnUse"
+       id="mask8">
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:34.7599px;font-family:Romantic;-inkscape-font-specification:Romantic;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.28838;stroke-dasharray:none;stroke-opacity:1"
+         x="154.32803"
+         y="55.379704"
+         id="text9"
+         transform="scale(1.0150491,0.98517402)"><tspan
+           sodipodi:role="line"
+           id="tspan8"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Romantic;-inkscape-font-specification:Romantic;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.28838"
+           x="154.32803"
+           y="55.379704">LSM</tspan><tspan
+           sodipodi:role="line"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Romantic;-inkscape-font-specification:Romantic;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.28838"
+           x="154.32803"
+           y="98.829582"
+           id="tspan9" /></text>
+    </mask>
+  </defs>
+  <g
+     inkscape:groupmode="layer"
+     id="layer1"
+     inkscape:label="Layer 1"
+     style="display:inline">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:50.6923px;font-family:Romantic;-inkscape-font-specification:Romantic;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#e8e8e8;fill-opacity:1;stroke:#005f73;stroke-width:1.23454;stroke-dasharray:none;stroke-opacity:1"
+       x="39.132545"
+       y="63.306129"
+       id="text3"
+       transform="scale(1.0601447,0.94326744)"><tspan
+         sodipodi:role="line"
+         id="tspan3"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:50.6923px;font-family:Romantic;-inkscape-font-specification:Romantic;fill:#d7dfe1;fill-opacity:1;stroke:none;stroke-width:1.23454"
+         x="39.132545"
+         y="63.306129">Pico</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-weight:bold;font-size:48.4779px;font-family:Romantic;-inkscape-font-specification:'Romantic Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#900001;stroke-width:2.43248;stroke-opacity:0.509804;fill-opacity:1"
+       x="136.21082"
+       y="62.647133"
+       id="text1"
+       transform="scale(1.046407,0.9556511)"><tspan
+         sodipodi:role="line"
+         id="tspan1"
+         style="font-size:48.4779px;stroke-width:2.43248;fill:#900001;fill-opacity:1"
+         x="136.21082"
+         y="62.647133">Units</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-weight:bold;font-size:28.2223px;font-family:Romantic;-inkscape-font-specification:'Romantic Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#861211;stroke-width:2.549;stroke-opacity:0.509804"
+       x="214.37752"
+       y="51.525349"
+       id="text2"><tspan
+         sodipodi:role="line"
+         style="fill:#ffffff;stroke-width:2.549"
+         x="214.37752"
+         y="51.525349"
+         id="tspan5" /><tspan
+         sodipodi:role="line"
+         style="stroke-width:2.549"
+         x="214.37752"
+         y="86.803223"
+         id="tspan4" /></text>
+    <text
+       xml:space="preserve"
+       transform="scale(0.26458333)"
+       id="text4"
+       style="font-weight:bold;font-size:106.667px;font-family:Romantic;-inkscape-font-specification:'Romantic Bold';text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect4);display:inline;fill:#ffffff;stroke-width:9.634;stroke-opacity:0.509804" />
+    <text
+       xml:space="preserve"
+       style="font-weight:bold;font-size:50.8px;font-family:Romantic;-inkscape-font-specification:'Romantic Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#d7dfe1;fill-opacity:1;stroke-width:2.549;stroke-opacity:0.509804"
+       x="320.89883"
+       y="2.135766"
+       id="text7"><tspan
+         sodipodi:role="line"
+         id="tspan7"
+         style="stroke-width:2.549"
+         x="320.89883"
+         y="2.135766" /></text>
+  </g>
+</svg>

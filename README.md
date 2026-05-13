@@ -1,31 +1,22 @@
 <p align="center">
   <img src="media/picounit_logo.png" alt="PicoUnits" style="max-width:600px;">
-  <br>
-  <br>
-  <em>Explicit units and dimensional analysis for scientific Python – Built with Correctness by <a style="color: #861211" href="https://github.com/wgbowley">William Bowley</a></em>
-  
 </p>
 
----
-
-
-Writing experimental physics models? Need to check dimensions at boundaries? Annoyed by vague configuration files? PicoUnits might be what you're looking for. 
-
-PicoUnits is a lightweight dimensional analysis library and DSL for writing dimensionally explicit Python code.  PicoUnits support real numbers, complex numbers, and arrays based vectors. It is also a custom DSL called `.uiv` (unit-informed values), which allows for explicit units in configuration or reference libraries.
-
+<p align="center">A runtime dimensional environment and unit-aware DSL for scientific computing in Python</p>
 
 
 ## PicoUnits: Usage
 <!-- NOTE: Python version needs to checked before release, I am not sure the specific version  -->
-![Python Version](https://img.shields.io/badge/python-3.10+-red)
-![License](https://img.shields.io/badge/license-MIT-white)
+![Python Version](https://img.shields.io/badge/python-3.10+-900001)
+![License](https://img.shields.io/badge/license-MIT-D7DFE1)
 
-Picounit is a single dependency (numpy) Python package that does dimensional analysis at runtime. Key features:
+Picounit is a dimensional environment designed for scientific computing specifically computational science. Key features:
 
-- **Pluggable unit systems**:  Define custom "Unit Frames" for your domain
+- **Pluggable unit systems**:  Define custom base dimensions `(Unit Frames)` for your domain
 - **Configuration format**:  `.uiv` files with embedded, validated units & `.ut` for unit types
 - **Boundary validation**:  `@unit_validator` decorators catch errors at function interfaces
 - **Full numeric support**:  Real, complex, and array-based vectors
+
 
 But instead of talking about it, let's see some examples:
 
