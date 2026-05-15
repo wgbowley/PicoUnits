@@ -1,8 +1,7 @@
 <p align="center">
   <a href="https://github.com/wgbowley/PicoUnits">
     <img src="https://raw.githubusercontent.com/wgbowley/PicoUnits/main/media/picounit_logo.png" 
-         alt="PicoUnits" 
-         style="max-width: 800px; background-color: #0d1117; padding: 20px; border-radius: 12px;">
+         alt="PicoUnits">
   </a>
 </p>
 
