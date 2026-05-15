@@ -57,7 +57,8 @@ class RealPacket(ScalarPacket):
         exponent_sum = sum(
             dim.exponent for dim in self.unit.dimensions if len(self.unit.dimensions) == 1
         )
-        if exponent_sum <= 1: 
+
+        if exponent_sum == 0: 
             exponent_sum = 1
 
         factor = 10 ** (prefix_difference * exponent_sum)

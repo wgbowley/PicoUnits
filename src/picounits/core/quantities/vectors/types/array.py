@@ -54,7 +54,7 @@ class ArrayPacket(VectorPacket):
         if prefix != PrefixScale.BASE:
             prefix_difference = prefix.value - PrefixScale.BASE.value
             exponent_sum = sum(dim.exponent for dim in self.unit.dimensions)
-            if exponent_sum <= 1:
+            if exponent_sum == 0: 
                 exponent_sum = 1
 
             factor = 10 ** (prefix_difference * exponent_sum)
