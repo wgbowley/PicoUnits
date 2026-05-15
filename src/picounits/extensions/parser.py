@@ -90,7 +90,12 @@ class Parser:
 
                 if len(units) > 1:
                     # Multiple units (column-wise)
-                    prefixes = [""] * len(units)
+                    prefixes = []
+                    for item in remainder.split(','):
+                        paren_idx = item.find('(')
+                        prefix = item[:paren_idx].strip()
+                        prefixes.append(prefix)
+
                     return list_value, prefixes, units
 
                 elif len(units) == 1:
@@ -203,7 +208,7 @@ class Parser:
                 if key.lower() == "format":
                     format_status = True
 
-                if key.lower() == "unit_frame" and unit_frame_status == False:
+                if key.lower() == "unit_frame" and unit_frame_status is False:
                     if value != derived_file:
                         msg = (
                             f"Failed to load {filepath!r} due to unit frame mismatch "
