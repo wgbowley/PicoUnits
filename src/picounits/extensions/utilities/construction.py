@@ -16,7 +16,7 @@ from picounits.core.dimensions import FBase, Dimension
 from picounits.core.quantities.packet import Packet
 from picounits.core.quantities.factory import Factory
 
-from picounits.extensions.parser_errors import ParserError
+from picounits.extensions.utilities.parser_errors import ParserError
 from picounits.extensions.utilities.operations import Operations
 
 from picounits.configuration.config import get_derived_units

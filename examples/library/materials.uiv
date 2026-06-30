@@ -11,6 +11,8 @@ note: "Standard lab conditions - unless overwritten by material"
 
 
 
+
+
 [vacuum.meta]
 type: "empty_space"
 

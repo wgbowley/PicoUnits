@@ -1,5 +1,5 @@
 *.pyc
-src/picounits/test.py
-test2.py
-qualities.py
+*.log
+
 /examples/scales
+src/picounits/test.py

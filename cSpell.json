@@ -97,6 +97,8 @@
     "plt",
     "interp",
     "nullset",
-    "BODMAS"
+    "BODMAS",
+    "pypi",
+    "matweb"
   ]
 }

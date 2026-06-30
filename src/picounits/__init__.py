@@ -12,7 +12,7 @@ from picounits.core.quantities.scalars.methods.validators import (
 
 # References for quantities when doing type hinting.
 Q, q = Quantity, Quantity
-
+_ = unit_validator
 
 class UnitError(TypeError):
     """ Exception for Unit Error """

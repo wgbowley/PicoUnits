@@ -9,9 +9,11 @@ disable =
     C0103,                      # doesn't conform to snake_case naming
     redefined-outer-name,       # I think this one is stupid
     E1101,                      # Instance has no member
+
     
 [MASTER]
 ignore-paths=^.*\.pyi$
+
 
 [FORMAT]
 max-line-length=90 # Maximum number of characters on a single line.

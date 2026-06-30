@@ -10,7 +10,7 @@ Description:
 from __future__ import annotations
 from typing import Any
 
-from picounits.extensions.parser_errors import ParserError
+from picounits.extensions.utilities.parser_errors import ParserError
 from picounits.extensions.utilities.tokenizer import Tokenizer
 
 

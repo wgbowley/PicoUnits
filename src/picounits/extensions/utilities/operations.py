@@ -9,7 +9,7 @@ Description:
 from __future__ import annotations
 from enum import Enum, auto
 
-from picounits.extensions.parser_errors import ParserError
+from picounits.extensions.utilities.parser_errors import ParserError
 
 class Operations(Enum):
     """ Map of Mathematical Operations for Units """

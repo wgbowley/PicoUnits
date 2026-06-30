@@ -38,6 +38,7 @@ p = Parser.open(
     derived_units= BASE_DIR / "examples/coilgun/units.ut"
 )
 
+
 # Set calculations
 permeability = 4 * pi * 1e-7 * PERMEABILITY
 average_radius = (p.coil.outer_radius + p.coil.inner_radius) / 2

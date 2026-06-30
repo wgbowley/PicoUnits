@@ -22,7 +22,7 @@ library_units = BASE_DIR / "examples/library/si_metric.ut"
 materials = Parser.open(library, library_units)
 
 # Shows library ontology
-materials.tree("materials.uiv")
+materials.info("materials.uiv")
 print("=== Derived parameters from library ===")
 
 
@@ -46,7 +46,6 @@ n33, n35, = NdFeB.grades.N33, NdFeB.grades.N35
 n33_d, n35_d = _magnet_energy(n33), _magnet_energy(n35)
 
 print(f"Energy Density | N33: {n33_d:.3f}; N35: {n35_d:.3f}")
-
 
 # Calculates the electrical resistivity of copper @ 273 k
 resistivity = 1/materials.copper.electrical.temperature_conductivity[0][1]

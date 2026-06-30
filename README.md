@@ -1,29 +1,35 @@
+<!-- Color palette: #900001, #D7DFE1 -->
 <p align="center">
   <a href="https://github.com/wgbowley/PicoUnits">
     <img src="https://raw.githubusercontent.com/wgbowley/PicoUnits/main/media/picounit_logo.png" 
          alt="PicoUnits">
   </a>
 </p>
-
 <p align="center">A runtime dimensional environment and unit-aware DSL for scientific computing in Python</p>
 
-## PicoUnits: Usage
+---
+> [!note]
+> Picounits is the dimensional environment for `pyfea` and its included material library `pyfea-materials`.  
+
+## Overview
 <!-- NOTE: Python version needs to checked before release, I am not sure the specific version  -->
-![Python Version](https://img.shields.io/badge/python-3.10+-900001)
-![WIP](https://img.shields.io/badge/status-WIP-D7DFE1)
-![License](https://img.shields.io/badge/license-MIT-900001)
+![License](https://img.shields.io/badge/License-MIT-900001?style=flat-square&logoColor)
+![Python Version](https://img.shields.io/badge/Python-3.10%2B-D7DFE1?style=flat-square)
+![WIP](https://img.shields.io/badge/Status-WIP-900001?style=flat-square)
 
-Picounit is a dimensional environment designed for computational science. It serves to make simulation code
-structurally correct and includes:
+Picounits is a runtime dimensional environment and unit-aware DSL for scientific computing in Python. It provides dimensional analysis, runtime unit validation, and structured configuration files for engineering and scientific applications.
 
-- **Pluggable unit systems**:  Define custom base dimensions `(Unit Frames)` for your domain
-- **Configuration format**:  `.uiv` files with embedded, validated units & `.ut` for unit types
-- **Boundary validation**:  `@unit_validator` decorators catch errors at function interfaces
-- **Full numeric support**:  Real, complex, and array-based vectors
+### Features
 
-## What is .uiv & .ut?
+> [!important]
+> - Pluggable unit systems: Define custom base dimensions `(Unit Frames)` for your domain.
+> - Configuration format: `.uiv` files with embedded, validated units & `.ut` for unit types.
+> - Boundary validation: `@unit_validator` decorators catch errors at function interfaces.
+> - Full numeric support: Real, complex, and array-based vectors.
 
-Both are dimensionally aware formats, .ut (unit types) encodes custom base units for your system and .uiv (unit informed values) encodes value, unit pairs:
+## What are .uiv & .ut?
+
+Both are dimensionally aware formats. `.ut (unit types)` encodes custom base units for your system and `.uiv (unit informed values)` encodes value:unit pairs:
 
 ```
 # Coilgun Units - Derived from Base Dimensions (kg, m, s, etc)
@@ -59,7 +65,7 @@ atmospheric_density: 1.225 (ρ)
 
 ## Quick Start
 
-```python
+```py
 from picounits import unit_validator, VOLTAGE, CURRENT, RESISTANCE
 
 @unit_validator(VOLTAGE)
@@ -74,17 +80,17 @@ print(v) # Output: 50.0 (kg·m²·s⁻³·A⁻¹) (Derived units need to be pull
 # ohm_law(10 * VOLTAGE, 5 * RESISTANCE)
 ```
 
-## Documentation 
-Full documentation is available at <a style="color: #861211" href="/docs/">docs</a>, and beginner to advanced examples are available at 
-<a style="color: #861211" href="/examples/">examples</a>
+## Installation 
 
-## Installation
+> [Important]
+> Full documentation is available at [docs](/docs/), and beginner to advanced examples are available at [examples](/examples/)
+
 To install:
 ```bash
 # Recommended for most users
 pip install PicoUnits
 ```
-or use setuptools locally:
+or use `setuptools` locally:
 
 ```bash
 git clone https://github.com/wgbowley/PicoUnits.git

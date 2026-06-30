@@ -14,7 +14,7 @@ from pathlib import Path
 from picounits.extensions.utilities.tokenizer import Tokenizer
 from picounits.extensions.utilities.construction import Construct
 from picounits.extensions.utilities.converter import Converter
-from picounits.extensions.parser_errors import ParserError
+from picounits.extensions.utilities.parser_errors import ParserError
 
 from picounits.configuration.config import get_derived_units
 
