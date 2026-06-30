@@ -82,7 +82,7 @@ print(v) # Output: 50.0 (kg·m²·s⁻³·A⁻¹) (Derived units need to be pull
 
 ## Installation 
 
-> [Important]
+> [!Important]
 > Full documentation is available at [docs](/docs/), and beginner to advanced examples are available at [examples](/examples/)
 
 To install:
