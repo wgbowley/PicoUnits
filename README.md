@@ -41,7 +41,7 @@ format: 0.1.0
 V: kg*m^2*s^-3*A^-1
 ```
 
-All value : unit pairs exist in the form value prefix(unit), for example:
+All `value : unit` pairs exist in the form value `prefix(unit)`, for example:
 
 ```
 [version]
