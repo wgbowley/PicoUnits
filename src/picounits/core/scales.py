@@ -120,9 +120,7 @@ class PrefixedValue:
 
     def __mul__(self, other):
         """ Constructs the quantity with value pair """
-        unit = lazy_import(
-            "picounits.core.unit", "Unit", 'PrefixScale.__rmul__'
-        )
+        unit = lazy_import("picounits.core.unit", "Unit", 'PrefixScale.__rmul__')
         if isinstance(other, unit):
             factory = import_factory('PrefixedValue.__mul__')
             return factory.create(self.value, other, self.prefix)
@@ -142,6 +140,7 @@ class PrefixedValue:
     def __repr__(self):
         """ Returns name for __repr__ dunder method """
         return f"<PrefixedValue: {self.value} @ {self.prefix}>"
+
 
 # Fast mapping for enums and ensure o(1) lookup
 # Scale symbols dictionary only uses ASCII to ensure easy usage in .uiv files
@@ -165,6 +164,7 @@ _SCALE_SYMBOLS = {
     PrefixScale.ZEPTO:  "z",
     PrefixScale.YOCTO:  "y",
 }
+
 
 # Generates a reverse lookup table to ensure o(1) lookup
 _SYMBOLS_TO_SCALE = {symbol: scale for scale, symbol in _SCALE_SYMBOLS.items()}

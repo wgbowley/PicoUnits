@@ -21,7 +21,6 @@ MICRO                   = PrefixScale.MICRO
 NANO                    = PrefixScale.NANO
 PICO                    = PrefixScale.PICO
 
-
 """ =============== Fundamental dimensions =============== """
 
 TIME                    = Unit(Dimension(base=FBase.TIME))
@@ -39,7 +38,6 @@ NULLSET                  = DIMENSIONLESS
 AREA                    = LENGTH ** 2
 VOLUME                  = LENGTH ** 3
 
-
 """ =============== Kinematics =============== """
 
 DISPLACEMENT            = LENGTH
@@ -53,7 +51,6 @@ WAVENUMBER              = DIMENSIONLESS / LENGTH
 ANGULAR_FREQUENCY       = DIMENSIONLESS / TIME
 PHASE                   = DIMENSIONLESS
 
-
 """ =============== Classical mechanics =============== """
 
 FORCE                   = MASS * LENGTH / TIME ** 2
@@ -65,7 +62,6 @@ POWER                   = ENERGY / TIME
 PRESSURE                = FORCE / AREA
 DENSITY                 = MASS / VOLUME
 WEIGHT                  = FORCE
-
 
 """ =============== Thermodynamics =============== """
 
@@ -96,13 +92,11 @@ FLUX_DENSITY            = MASS / (TIME ** 2 * CURRENT)
 COERCIVITY              = CURRENT / LENGTH
 CONDUCTIVITY            = MASS ** -1 * LENGTH ** -3 * TIME ** 3 * CURRENT ** 2
 
-
 """ =============== Waves & radiation =============== """
 
 INTENSITY               = POWER / AREA
 LUMINANCE               = LUMINOSITY / AREA
 RADIANT_FLUX            = POWER
-
 
 """ =============== Dimensionless semantic quantities =============== """
 

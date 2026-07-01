@@ -1,8 +1,7 @@
-<!-- Color palette: #900001, #D7DFE1 -->
+<!-- Color palette: #006d77ff, #d92c2aff -->
 <p align="center">
   <a href="https://github.com/wgbowley/PicoUnits">
-    <img src="https://raw.githubusercontent.com/wgbowley/PicoUnits/main/media/picounit_logo.png" 
-         alt="PicoUnits">
+    <img src="media\picounit_logo.png" alt="PicoUnits logo">
   </a>
 </p>
 <p align="center">A runtime dimensional environment and unit-aware DSL for scientific computing in Python</p>
@@ -13,9 +12,9 @@
 
 ## Overview
 <!-- NOTE: Python version needs to checked before release, I am not sure the specific version  -->
-![License](https://img.shields.io/badge/License-MIT-900001?style=flat-square&logoColor)
-![Python Version](https://img.shields.io/badge/Python-3.10%2B-D7DFE1?style=flat-square)
-![WIP](https://img.shields.io/badge/Status-WIP-900001?style=flat-square)
+![License](https://img.shields.io/badge/License-MIT-E14F4C?style=flat-square&logoColor)
+![Python Version](https://img.shields.io/badge/Python-3.10%2B-006D77?style=flat-square)
+[![PyPI Downloads](https://img.shields.io/pepy/dt/picounits?label=downloads&style=flat-square&color=E14F4C)](https://pepy.tech/projects/picounits)
 
 Picounits is a runtime dimensional environment and unit-aware DSL for scientific computing in Python. It provides dimensional analysis, runtime unit validation, and structured configuration files for engineering and scientific applications.
 

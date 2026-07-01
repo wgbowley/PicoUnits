@@ -38,7 +38,6 @@ p = Parser.open(
     derived_units= BASE_DIR / "examples/coilgun/units.ut"
 )
 
-
 # Set calculations
 permeability = 4 * pi * 1e-7 * PERMEABILITY
 average_radius = (p.coil.outer_radius + p.coil.inner_radius) / 2
@@ -46,15 +45,14 @@ turns = estimate_turns(
     p.coil.axial_length, p.coil.inner_radius, p.coil.outer_radius,
     p.coil.wire_diameter, p.coil.fill_factor
 )
+
 turns_per_meter = turns / p.coil.axial_length
-resistance = cal_resistance(
-    turns, average_radius, p.coil.wire_diameter, p.coil.resistivity
-)
-inductance = cal_inductance(
-    turns, p.coil.axial_length, average_radius, permeability
-)
+inductance = cal_inductance(turns, p.coil.axial_length, average_radius, permeability)
 mass = projectile_mass(
     p.projectile.axial_length, p.projectile.radius, p.projectile.density
+)
+resistance = cal_resistance(
+    turns, average_radius, p.coil.wire_diameter, p.coil.resistivity
 )
 
 # Prints calculated parameters such as projectile mass, inductance, resistance
