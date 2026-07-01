@@ -49,15 +49,11 @@ class ArrayPacket(VectorPacket):
             msg = f"Prefix must be of type PrefixScale, not {type(prefix)}"
             raise TypeError(msg)
 
-        # Mutates prefix to PrefixScale.BASE and scales value
-        factor = 1
-        if prefix != PrefixScale.BASE:
-            prefix_difference = prefix.value - PrefixScale.BASE.value
-            exponent_sum = sum(dim.exponent for dim in self.unit.dimensions)
-            if exponent_sum == 0: 
-                exponent_sum = 1
+        # Ex.  Kilo (3) - BASE (0) = 3 Hence scaling of 10^3
+        prefix_difference = prefix.value - PrefixScale.BASE.value
+        exponent_sum = self.exponent_sum
+        factor = self.get_factor(prefix_difference, exponent_sum)
 
-            factor = 10 ** (prefix_difference * exponent_sum)
         # Converts the input to a non-scaled ndarry
         self._quantity_conversion(factor)
 

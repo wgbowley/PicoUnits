@@ -110,6 +110,14 @@ class Packet(ABC):
         raise ValueError(msg)
 
     @staticmethod
+    def get_factor(difference: int, exponent_sum: int) -> int:
+        """ Calculates teh scaling factor """
+        if abs(exponent_sum) > 1:
+            return 10 ** (difference * exponent_sum)
+
+        return 10 ** difference
+
+    @staticmethod
     def _get_other_packet(other: Any) -> Packet:
         """ Takes non-packet, checks and converts if possible """
         if isinstance(other, Unit):
@@ -128,6 +136,16 @@ class Packet(ABC):
     def stripped(self) -> Any:
         """ Strips the unit object away, returns non-scaled value """
         return self.value
+
+    @property
+    def exponent_sum(self) -> Any:
+        """ sums the exponents up within a unit """
+        exponent_sum = 0
+        if len(self.unit.dimensions) == 1:
+            for dim in self.unit.dimensions:
+                exponent_sum += dim.exponent
+
+        return exponent_sum
 
     def __hash__(self):
         """ Defines behavior for hashing the packet """

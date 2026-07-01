@@ -53,14 +53,9 @@ class ComplexPacket(ScalarPacket):
 
         # Ex.  Kilo (3) - BASE (0) = 3 Hence scaling of 10^3
         prefix_difference = prefix.value - PrefixScale.BASE.value
-        exponent_sum = sum(
-            dim.exponent for dim in self.unit.dimensions if len(self.unit.dimensions) == 1
-        )
-        if exponent_sum == 0: 
-            exponent_sum = 1
+        exponent_sum = self.exponent_sum
 
-        factor = 10 ** (prefix_difference * exponent_sum)
-        self.value *= factor
+        self.value *= self.get_factor(prefix_difference, exponent_sum)
 
     @property
     def name(self) -> str:
