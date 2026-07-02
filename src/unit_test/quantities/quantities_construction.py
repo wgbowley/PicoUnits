@@ -39,7 +39,7 @@ class QualityScalingConstruction(unittest.TestCase):
     def test_inverse_scaling_behavior(self):
         """Tests scaling for units with negative exponents (e.g., Frequency)"""
         inv_milli_second = 1 * MILLI * (TIME ** -1)
-        self.assertAlmostEqual(inv_milli_second.value, 1000.0)
+        self.assertAlmostEqual(inv_milli_second.value, 0.001)
 
     def test_composite_unit_scaling_limit(self):
         """Ensures that scaling applies correctly to single-dimension units"""

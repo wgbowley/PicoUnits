@@ -1,8 +1,7 @@
-from picounits import FREQUENCY, KILO
+from picounits import LENGTH, MILLI
 
 
-scale = 10 * KILO 
-value = scale * FREQUENCY
-
-print(f"Scale: {scale}")
-print(f"Value: {value:.3f}")
+print(1 * (LENGTH ** 1))
+print(1 * (LENGTH ** 2))
+print(1 * MILLI * LENGTH)
+print(1 * MILLI * LENGTH ** 2)
