@@ -1,6 +1,5 @@
 """
 Filename: dimensions.py
-Clear: N
 
 Description:
     Defines the Dimension dataclass,

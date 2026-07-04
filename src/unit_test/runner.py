@@ -5,6 +5,10 @@ Description:
     Main script to run all unit test modules within
     the picounits library. This includes unit modelling, 
     parser, dynamic-loader and configurations.
+    
+    NOTE: Reference commands:
+    coverage run src\unit_test\runner.py
+    coverage report -m
 """
 
 import unittest

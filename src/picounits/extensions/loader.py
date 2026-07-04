@@ -30,7 +30,7 @@ class Loader:
         """ Recursively prints the structure of the loader as a tree. """
         if self._name is not None:
             name = self._name
-        
+
         connector = "└── " if is_last else "├── "
         print(f"{indent}{connector}{name}")
 

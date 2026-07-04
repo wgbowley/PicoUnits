@@ -1,6 +1,5 @@
 """
 Filename: scales.py
-Clear: Y
 
 Description
     The prefix scale 'PrefixScale' is encoded as a enum
@@ -120,6 +119,7 @@ class PrefixedScalar:
         self.prefix = prefix
 
     def __mul__(self, other: Any):
+        """ Defines behavior for the forward multiplication (*) """
         unit = lazy_import("picounits.core.unit", "Unit", "PrefixScale.__rmul__")
 
         # Primary: Quantity construction with prefix binds to value
@@ -127,25 +127,21 @@ class PrefixedScalar:
             factory = import_factory("PrefixedScalar.__mul__")
             return factory.create(self.value, other, self.prefix)
 
-        # Secondary: Chaining Prefixed Scalars
-        if isinstance(other, PrefixedScalar):
-            new_prefix = PrefixScale.from_value(self.prefix.value + other.prefix.value)
-            return PrefixedScalar(self.value * other.value, new_prefix)
-
-        # Tertiary: Numerical Scaling
         if isinstance(other, (int, float)):
             return PrefixedScalar(self.value * other, self.prefix)
 
         return NotImplemented
 
     def __rmul__(self, other: Any):
+        """ Defines behavior for the reverse multiplication """
         if isinstance(other, (int, float)):
             return PrefixedScalar(other * self.value, self.prefix)
 
         return NotImplemented
 
     def __repr__(self):
-        return f"<PrefixedScalar: {self.value} @ {self.prefix}>"
+        """ Displays the `value` and the `prefix scale` """
+        return f"{self.value} {self.prefix}()"
 
 
 # Fast mapping for enums and ensure o(1) lookup

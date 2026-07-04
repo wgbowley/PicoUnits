@@ -1,6 +1,5 @@
 """
 Filename: units.py
-Clear: Y
 
 Description:
     Defines the Unit class which is comprised
