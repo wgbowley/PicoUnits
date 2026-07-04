@@ -60,7 +60,7 @@ def ref_divider_resistance(
 ) -> tuple[q]:
     """ Calculates the resistance of the high_side and low_side resistors """
     high_side = FEEDBACK * SUPPLY / (v_in_max * ideal_gain - V_OUT_MAX)
-    low_side = divider * high_side / (high_side - divider)
+    low_side = divider * high_side / (high_side - divider)  
     return high_side, low_side
 
 

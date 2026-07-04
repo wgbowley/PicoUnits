@@ -26,6 +26,7 @@ from picounits.core.quantities.vectors.vector import VectorPacket
 from picounits.lazy_imports import import_factory
 from picounits.configuration.picounits import STANDARD_DISPLAY
 
+
 @dataclass(slots=True, repr=False, unsafe_hash=True)
 class ArrayPacket(VectorPacket):
     """
@@ -51,8 +52,7 @@ class ArrayPacket(VectorPacket):
 
         # Ex.  Kilo (3) - BASE (0) = 3 Hence scaling of 10^3
         prefix_difference = prefix.value - PrefixScale.BASE.value
-        exponent_sum = self.exponent_sum
-        factor = self.get_factor(prefix_difference, exponent_sum)
+        factor = self._get_factor(prefix_difference)
 
         # Converts the input to a non-scaled ndarry
         self._quantity_conversion(factor)

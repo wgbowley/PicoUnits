@@ -107,39 +107,45 @@ class PrefixScale(Enum):
         Example: 10 * kilo * LENGTH => Quantity(10, LENGTH, kilo)
         """
         if not isinstance(other, Callable):
-            return PrefixedValue(other, self)
+            return PrefixedScalar(other, self)
 
         return NotImplemented
 
 
-class PrefixedValue:
-    """ Carries prefix information """
-    def __init__(self, value: int | float, prefix: PrefixScale) -> None:
+class PrefixedScalar:
+    """Carries prefix information before quantity construction"""
+    def __init__(self, value: Any, prefix: PrefixScale) -> None:
+        """ Initialize the PrefixedScalar """
         self.value = value
         self.prefix = prefix
 
-    def __mul__(self, other):
-        """ Constructs the quantity with value pair """
-        unit = lazy_import("picounits.core.unit", "Unit", 'PrefixScale.__rmul__')
+    def __mul__(self, other: Any):
+        unit = lazy_import("picounits.core.unit", "Unit", "PrefixScale.__rmul__")
+
+        # Primary: Quantity construction with prefix binds to value
         if isinstance(other, unit):
-            factory = import_factory('PrefixedValue.__mul__')
+            factory = import_factory("PrefixedScalar.__mul__")
             return factory.create(self.value, other, self.prefix)
 
-        if not isinstance(other, Callable):
-            return PrefixedValue(self.value * other, self.prefix)
+        # Secondary: Chaining Prefixed Scalars
+        if isinstance(other, PrefixedScalar):
+            new_prefix = PrefixScale.from_value(self.prefix.value + other.prefix.value)
+            return PrefixedScalar(self.value * other.value, new_prefix)
+
+        # Tertiary: Numerical Scaling
+        if isinstance(other, (int, float)):
+            return PrefixedScalar(self.value * other, self.prefix)
 
         return NotImplemented
 
-    def __rmul__(self, other):
-        """ Syntactic bridge 10 * kilo """
-        if not isinstance(other, Callable):
-            return PrefixedValue(other * self.value, self.prefix)
+    def __rmul__(self, other: Any):
+        if isinstance(other, (int, float)):
+            return PrefixedScalar(other * self.value, self.prefix)
 
         return NotImplemented
 
     def __repr__(self):
-        """ Returns name for __repr__ dunder method """
-        return f"<PrefixedValue: {self.value} @ {self.prefix}>"
+        return f"<PrefixedScalar: {self.value} @ {self.prefix}>"
 
 
 # Fast mapping for enums and ensure o(1) lookup

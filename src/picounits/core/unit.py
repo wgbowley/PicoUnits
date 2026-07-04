@@ -140,6 +140,16 @@ class Unit:
         """ Number of distinct dimension bases (e.g., kg·m·s⁻² has length 3) """
         return len(self.dimensions)
 
+    @property
+    def exponent_sum(self) -> Any:
+        """ sums the exponents up within a unit """
+        exponent_sum = 0
+        if len(self.dimensions) == 1:
+            for dim in self.dimensions:
+                exponent_sum += dim.exponent
+
+        return exponent_sum
+
     @classmethod
     def dimensionless(cls) -> Dimension:
         """Factory method for dimensionless. """

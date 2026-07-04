@@ -16,15 +16,26 @@
 ![Python Version](https://img.shields.io/badge/Python-3.10%2B-006D77?style=flat-square)
 [![PyPI Downloads](https://img.shields.io/pepy/dt/picounits?label=downloads&style=flat-square&color=E14F4C)](https://pepy.tech/projects/picounits)
 
-Picounits is a runtime dimensional environment and unit-aware DSL for scientific computing in Python. It provides dimensional analysis, runtime unit validation, and structured configuration files for engineering and scientific applications.
+PicoUnits is a dimensional correctness system for simulation pipelines. It enforces algebraic consistency at runtime within a fixed unit frame,
+eliminating implicit conversion errors and cross-domain ambiguity in numerical models.
+  
+Unlike general-purpose unit libraries (e.g. Pint), PicoUnits separates:
+- dimensional structure (units)
+- scalar scaling (prefixes)
+- numerical simulation semantics
+
+This design prioritizes deterministic behaviour in numerical solvers and simulation pipelines over strict SI-algebra equivalence.
+As a result, prefixes are resolved at construction time and do not participate in unit algebra or exponentiation.
 
 ### Features
 
 > [!important]
-> - Pluggable unit systems: Define custom base dimensions `(Unit Frames)` for your domain.
-> - Configuration format: `.uiv` files with embedded, validated units & `.ut` for unit types.
-> - Boundary validation: `@unit_validator` decorators catch errors at function interfaces.
-> - Full numeric support: Real, complex, and array-based vectors.
+> - Pluggable unit systems via Unit Frames (domain-specific base dimensions)
+> - Algebra-first unit system: no implicit or explicit unit conversion
+> - Prefixes are representational and do not participate in unit algebra
+> - Configuration format: `.uiv` and `.ut` with embedded validation
+> - Boundary validation via `@unit_validator`
+> - Full numeric support: real, complex, and vector quantities
 
 ## What are .uiv & .ut?
 

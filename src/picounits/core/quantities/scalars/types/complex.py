@@ -24,6 +24,7 @@ from picounits.core.quantities.scalars.scalar import ScalarPacket
 from picounits.lazy_imports import import_factory
 from picounits.configuration.picounits import STANDARD_DISPLAY
 
+
 @dataclass(slots=True, repr=False, unsafe_hash=True)
 class ComplexPacket(ScalarPacket):
     """
@@ -53,9 +54,7 @@ class ComplexPacket(ScalarPacket):
 
         # Ex.  Kilo (3) - BASE (0) = 3 Hence scaling of 10^3
         prefix_difference = prefix.value - PrefixScale.BASE.value
-        exponent_sum = self.exponent_sum
-
-        self.value *= self.get_factor(prefix_difference, exponent_sum)
+        self.value *= self._get_factor(prefix_difference)
 
     @property
     def name(self) -> str:
