@@ -16,11 +16,19 @@ reload_config()
 Q, q = Quantity, Quantity
 _ = unit_validator
 
+# Parser & Loader import
+_ = Parser
+_ = DynamicLoader
+
+
 class UnitError(TypeError):
     """ Exception for Unit Error """
-    def __init__(self, error: str):
+    def __init__(self, error: str, messenger: str |  None = None):
         """ Returns a custom error message """
-        msg = f"raised error: {error}. "
+        if messenger:
+            msg = f"{messenger!r} raised error: {error}."
+        else:
+            msg = f"Unit error occurred: {error}."
         super().__init__(msg)
 
 

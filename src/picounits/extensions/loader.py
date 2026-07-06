@@ -2,15 +2,37 @@
 Filename: loader.py
 
 Description:
-    Defines the `Loader` & `DynamicLoader` for 
-    `.uiv` (unit-informed values) files.
+    Defines the `Loader` & `DynamicLoader` 
+    for `.uiv` (unit-informed values) files.
 """
 
-from typing import Any
+from __future__ import annotations
 
-from picounits.extensions.utilities.parser_errors import (
-    AttributeNotFound, InjectionError
-)
+from typing import Any
+from dataclasses import dataclass
+
+from picounits.extensions.utilities.parser_errors import AttributeNotFound, InjectionError
+
+
+@dataclass(frozen=True, slots=True)
+class LoaderContext:
+    """ Stores the context of the loader structure """
+    indent: str = ""
+    in_last: bool = True
+    inline: int = 4
+
+    def next_level(self) -> LoaderContext:
+        """ Creates context for the next level of nesting """
+        new_indent = self.indent + ("    " if self.in_last else "│   ")
+        return LoaderContext(new_indent, True, self.inline)
+
+    def with_last(self, is_last: bool) -> LoaderContext:
+        """ Creates context with updated last flag """
+        return LoaderContext(self.indent, is_last, self.inline)
+
+    def connector(self) -> str:
+        """ Returns the tree connector character """
+        return "└── " if self.in_last else "├── "
 
 
 class Loader:
@@ -24,42 +46,56 @@ class Loader:
             path_items = key.split('.')
             self._set_path(path_items, value)
 
-    def info(
-        self, name="Root", indent="", is_last=True, inline_limit: int = 4
-    ) -> None:
+    def info(self, name: str = "root", inline: int = 4, context: LoaderContext = None) -> None:
         """ Recursively prints the structure of the loader as a tree. """
+        if context is None:
+            # Initialize context if not provided
+            context = LoaderContext(inline=inline)
+
         if self._name is not None:
+            # Use class name if available
             name = self._name
 
-        connector = "└── " if is_last else "├── "
-        print(f"{indent}{connector}{name}")
+        # Print the current node within the tree
+        connector = context.connector()
+        print(f"{context.indent}{connector}{name}")
 
-        new_indent = indent + ("    " if is_last else "│   ")
-        attrs = self._attributes()
-        items = list(attrs.items())
+        # Begins routing for next node within the tree
+        child_context = context.next_level()
+        items = list(self._attributes().items())
         for index, (key, value) in enumerate(items):
             last_item = index == len(items) - 1
-            leaf_connector = "└── " if last_item else "├── "
+            self._print_child(key, value, child_context.with_last(last_item))
 
-            if isinstance(value, self.__class__):
-                # Continues the recursion via entering the next loader structure
-                value.info(key, new_indent, last_item)
+    def _print_child(self, key: str, value, context: LoaderContext) -> None:
+        """ Prints a child node based on its type. """ 
+        if isinstance(value, self.__class__):
+            # Recursively print nested object
+            value.info(key, inline=context.inline, context=context)
+            return
 
-            elif isinstance(value, (list, tuple)):
-                if len(value) <= inline_limit:
-                    # Print inline result
-                    print(f"{new_indent}{leaf_connector}{key}: {value}")
+        if isinstance(value, (list, tuple)):
+            self._print_collection(key, value, context)
+            return
 
-                else:
-                    # Print result vertically according to inline limit
-                    print(f"{new_indent}{leaf_connector}{key}: [")
-                    for i, v in enumerate(value):
-                        item_connector = "└── " if i == len(value) - 1 else "├── "
-                        print(f"{new_indent}    {item_connector}{v}")
-                    print(f"{new_indent}    ]")
+        leaf_connector = context.connector()
+        print(f"{context.indent}{leaf_connector}{key}: {value}")
 
-            else:
-                print(f"{new_indent}{leaf_connector}{key}: {value}")
+    def _print_collection(self, key: str, collection, context: LoaderContext) -> None:
+        """Prints a collection (list or tuple) with proper formatting."""
+        leaf_connector = context.connector()
+        # Print array in-line if within limit
+        if len(collection) <= context.inline:
+            print(f"{context.indent}{leaf_connector}{key}: {collection}")
+            return
+
+        # Prints arrays as multi-line objects
+        print(f"{context.indent}{leaf_connector}{key}: [")
+        for i, item in enumerate(collection):
+            item_connector = "└── " if i == len(collection) - 1 else "├── "
+            print(f"{context.indent}    {item_connector}{item}")
+
+        print(f"{context.indent}    ]")
 
     def _set_path(self, path_items: Any, value: Any) -> None:
         """ Loads values via attribute injection """

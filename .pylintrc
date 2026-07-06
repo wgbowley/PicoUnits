@@ -12,8 +12,9 @@ disable =
     R0914,                      # Too many local variables
     
 [MASTER]
-ignore-paths=^.*\.pyi$
-ignore-paths=examples\introduction.py           # Introduction follows non standard rules.
+ignore-paths=
+    ^.*\.pyi$,
+    examples/introduction\.py
 
 [FORMAT]
-max-line-length=90              # Maximum number of characters on a single line.
+max-line-length=100             # Maximum number of characters on a single line.

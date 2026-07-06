@@ -24,17 +24,17 @@ from picounits.core.unit import Unit
 
 class Parser:
     """ Parser for .uiv (unit informed values) file format """
-
     @classmethod
     def _back_compatibility(cls, status: bool, filepath: str) -> None:
         """ Displays a back compatibility message to the user """
         if status:
             return
 
-        print(
+        msg = (
             f"Tip: {Path(filepath).name} lacks 'format' key; "
             "use 'version.format: 0.1.0' for better compatibility."
         )
+        print(msg)
 
     @classmethod
     def _unit_frame_compatibility(cls, status: bool, filepath: str) -> None:
@@ -42,10 +42,11 @@ class Parser:
         if status:
             return
 
-        print(
-            f"Tip: {Path(filepath).name} lacks 'unit_frame' key; "
-            "use 'version.unit_frame: '(your_derived_units).ut' for better compatibility."
+        msg = (
+            f"Tip: {Path(filepath).name} missing 'unit_frame'. Use 'version.unit_frame"
+            " = (your_derived_units).ut' for better compatibility."
         )
+        print(msg)
 
     @classmethod
     def _is_section(cls, line: str) -> tuple[bool, str | None]:
@@ -253,34 +254,36 @@ class Parser:
         if loader_class is None:
             loader_class = DynamicLoader
 
-        # Loads .ut derived units
+        # Loads .ut if derived units are available
         if derived_units:
             _, derived_file = get_derived_units(Path(derived_units))
         else:
             _, derived_file = get_derived_units()
 
-        # If it's a file-like object, read lines directly
-        if hasattr(filepath_or_file, "read"):
+        # Reads file-like object if `readlines` is available
+        if hasattr(filepath_or_file, "readlines"):
             lines = filepath_or_file.readlines()
             return loader_class(cls._parse_lines(lines, filepath_or_file, derived_file))
 
-        else:
-            with open(filepath_or_file, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
-                return loader_class(cls._parse_lines(lines, filepath_or_file, derived_file))
+        # Defaults to reading directly from path
+        with open(filepath_or_file, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+            return loader_class(cls._parse_lines(lines, filepath_or_file, derived_file))
 
     @classmethod
-    def open_derived(cls, filepath) -> dict[str, Unit]:
+    def import_derived(cls, filepath) -> dict[str, Unit]:
         """ Parses a units.uiv file into a symbol -> Unit registry """
         with open(filepath, 'r', encoding='utf-8') as f:
             lines = f.readlines()
 
+        # Constructs a registry of derived units
         status = False
         registry = {}
         for line in lines:
             if cls._should_skip(line):
                 continue
 
+            # Splits the key and the value pair into two strings
             result = Tokenizer.split_key_value_pairs(line.strip())
             if not result:
                 continue
@@ -291,6 +294,7 @@ class Parser:
                 status = True
                 continue
 
+            # Tokenizes and than constructs the unit 
             registry[symbol] = Construct.tokenize_unit(unit_str)
 
         cls._back_compatibility(status, filepath)

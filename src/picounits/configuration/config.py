@@ -58,7 +58,7 @@ def get_derived_units(derived_file: Path | None = None):
                 "picounits.extensions.parser", "Parser", "get_derived_units"
             )
 
-            data = Parser.open_derived(derived_file)
+            data = Parser.import_derived(derived_file)
             _effective_derived.update(data)
     
     return _effective_derived, _derived_unit_file_name
