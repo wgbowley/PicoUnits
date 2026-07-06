@@ -18,11 +18,9 @@ class QualityScalingConstruction(unittest.TestCase):
             test_val = 1.0
             quality = test_val * MILLI * (LENGTH ** exp)
 
-            expected_value = (test_val * 10 ** -3)
+            expected_value = test_val * 10 ** -3
             self.assertAlmostEqual(
-                quality.value,
-                expected_value,
-                msg=f"Failed scaling at exponent: {exp}"
+                quality.value,expected_value, msg=f"Failed scaling at exponent: {exp}"
             )
 
     def test_squared_prefix_scaling(self):

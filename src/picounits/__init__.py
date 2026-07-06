@@ -6,9 +6,11 @@ from picounits.extensions.parser import Parser
 from picounits.extensions.loader import DynamicLoader
 
 from picounits.constants import *
-from picounits.core.quantities.scalars.methods.validators import (
-    unit_validator, Quantity
-)
+from picounits.core.quantities.scalars.methods.validators import unit_validator, Quantity
+from picounits.configuration.config import reload_config
+
+# Reloads the users .picounits configuration file.
+reload_config()
 
 # References for quantities when doing type hinting.
 Q, q = Quantity, Quantity

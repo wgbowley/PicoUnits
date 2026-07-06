@@ -7,7 +7,7 @@ Description:
     parser, dynamic-loader and configurations.
     
     NOTE: Reference commands:
-    coverage run src\unit_test\runner.py
+    coverage run src unit_test runner.py
     coverage report -m
 """
 
