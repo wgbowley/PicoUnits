@@ -14,7 +14,7 @@ disable =
 [MASTER]
 ignore-paths=
     ^.*\.pyi$,
-    examples/introduction\.py
+    examples/introduction\.py$
 
 [FORMAT]
 max-line-length=100             # Maximum number of characters on a single line.
