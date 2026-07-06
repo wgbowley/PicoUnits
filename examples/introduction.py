@@ -19,6 +19,7 @@ next_step("0: How to set a value:unit pair")
 # Import the dimension & prefix you want to use
 from picounits import LENGTH, MILLI
 
+
 # Define a value:unit pair as (value, prefix, length)
 william_height_m = 1.75 * LENGTH
 william_height_mm = 1750 * MILLI * LENGTH
@@ -32,6 +33,7 @@ next_step("1: Math Operations with value:units")
 
 # Import the dimension & prefix you want to use
 from picounits import MASS, FORCE, KILO
+
 
 tommy_mass = 60 * MASS
 car_mass = 1.5 * KILO * MASS
@@ -50,6 +52,7 @@ next_step("2: Validates the output is the correct dimension")
 
 # Import the quantity for type hinting, the validator for checking and dimensions to use
 from picounits import Q, unit_validator, CURRENT, VOLTAGE, RESISTANCE
+
 
 @unit_validator(RESISTANCE)
 def calculate_voltage(current: Q, resistance: Q) -> Q:
@@ -71,6 +74,7 @@ next_step("3: Physics with Complex Numbers (SUVAT)")
 
 from picounits import Q, unit_validator, VELOCITY, TIME
 
+
 @unit_validator(VELOCITY)
 def suvat(initial_velocity: Q, acceleration: Q, distance: Q) -> Q:
     """" Calculates the velocity after accelerating for a specific distance """
@@ -90,6 +94,7 @@ next_step("4: Scaling Lists/Arrays with Units")
 
 from picounits import VOLTAGE, KILO, VOLTAGE
 
+
 # You can scale a list of values directly by a unit
 voltages = [1, 2, 3] * VOLTAGE
 high_voltages = [10, 20, 30] * KILO * VOLTAGE
@@ -101,6 +106,7 @@ print(f"High Voltages (kV scaled): {high_voltages}")
 next_step("5: Derived Energy Calculation")
 
 from picounits import Q, unit_validator, ENERGY
+
 
 @unit_validator(ENERGY)
 def kinetic_energy(mass: Q, velocity: Q) -> Q:
@@ -114,10 +120,12 @@ print(f"Final Kinetic Energy: {energy:.3f} J")
 # ============ Example 6: Parser (introduction.uiv) ============
 next_step("6: Parser (introduction.uiv)")
 
+
 from math import pi
 from pathlib import Path
 
 from picounits.extensions import Parser
+
 
 BASE_DIR = Path(__file__).parent
 library = BASE_DIR / "introduction.uiv"
