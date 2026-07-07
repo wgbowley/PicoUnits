@@ -1,9 +1,5 @@
 *.pyc
 *.log
 
-/examples/scales
-src/picounits/test.py
-
-examples/test_reciprocal.py
 .coverage
 .picounits

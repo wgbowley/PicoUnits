@@ -10,6 +10,7 @@ from picounits.core.unit import Unit
 from picounits.core.dimensions import FBase, Dimension
 from picounits.core.scales import PrefixScale
 
+
 """ =============== Predefined scales for quantities =============== """
 
 GIGA                    = PrefixScale.GIGA
@@ -20,6 +21,7 @@ MILLI                   = PrefixScale.MILLI
 MICRO                   = PrefixScale.MICRO
 NANO                    = PrefixScale.NANO
 PICO                    = PrefixScale.PICO
+
 
 """ =============== Fundamental dimensions =============== """
 
@@ -33,10 +35,12 @@ LUMINOSITY              = Unit(Dimension(base=FBase.LUMINOSITY))
 DIMENSIONLESS           = Unit(Dimension(base=FBase.DIMENSIONLESS))
 NULLSET                  = DIMENSIONLESS
 
+
 """ =============== Geometric quantities =============== """
 
 AREA                    = LENGTH ** 2
 VOLUME                  = LENGTH ** 3
+
 
 """ =============== Kinematics =============== """
 
@@ -51,6 +55,7 @@ WAVENUMBER              = DIMENSIONLESS / LENGTH
 ANGULAR_FREQUENCY       = DIMENSIONLESS / TIME
 PHASE                   = DIMENSIONLESS
 
+
 """ =============== Classical mechanics =============== """
 
 FORCE                   = MASS * LENGTH / TIME ** 2
@@ -63,6 +68,7 @@ PRESSURE                = FORCE / AREA
 DENSITY                 = MASS / VOLUME
 WEIGHT                  = FORCE
 
+
 """ =============== Thermodynamics =============== """
 
 ENTROPY                     = ENERGY / TEMPERATURE
@@ -73,6 +79,7 @@ CONVECTION_COEFFICIENT      = POWER / (LENGTH**2 * TEMPERATURE)
 VOLUMETRIC_HEAT_CAPACITY    = HEAT_CAPACITY / VOLUME
 VOLUMETRIC_HEATING          = POWER / LENGTH ** 3
 DIFFUSIVITY                 = LENGTH**2 * TIME**-1
+
 
 """ =============== Electromagnetism =============== """
 
@@ -92,11 +99,13 @@ FLUX_DENSITY            = MASS / (TIME ** 2 * CURRENT)
 COERCIVITY              = CURRENT / LENGTH
 CONDUCTIVITY            = MASS ** -1 * LENGTH ** -3 * TIME ** 3 * CURRENT ** 2
 
+
 """ =============== Waves & radiation =============== """
 
 INTENSITY               = POWER / AREA
 LUMINANCE               = LUMINOSITY / AREA
 RADIANT_FLUX            = POWER
+
 
 """ =============== Dimensionless semantic quantities =============== """
 

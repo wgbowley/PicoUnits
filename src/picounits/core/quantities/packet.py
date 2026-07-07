@@ -19,6 +19,7 @@ from picounits.core.unit import Unit
 
 from picounits.lazy_imports import import_factory
 
+
 @dataclass
 class Packet(ABC):
     """

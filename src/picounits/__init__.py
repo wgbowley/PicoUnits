@@ -1,4 +1,5 @@
-""" picounits/__init__.py """
+# pylint: skip-file
+# picounits/__init__.py
 
 from typing import Any
 
@@ -6,7 +7,7 @@ from picounits.extensions.parser import Parser
 from picounits.extensions.loader import DynamicLoader
 
 from picounits.constants import *
-from picounits.core.quantities.scalars.methods.validators import unit_validator, Quantity
+from picounits.core.quantities.validators import unit_validator, Quantity
 from picounits.configuration.config import reload_config
 
 # Reloads the users .picounits configuration file.

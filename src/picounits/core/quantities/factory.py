@@ -14,6 +14,7 @@ from picounits.core.quantities.packet import Packet
 
 from picounits.lazy_imports import lazy_import
 
+
 class Factory:
     """
     Packet type casing factory for usage in agnostic functional methods

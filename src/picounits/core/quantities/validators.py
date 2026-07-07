@@ -44,9 +44,7 @@ def _check_forecasted(u1: Unit, u2: Unit, func: str) -> None:
 
 
 def unit_validator(forecasted: Unit) -> Callable:
-    """
-    A decorator; it checks a function unit output, if different raises an error
-    """
+    """ A decorator; it checks a function unit output """
     def decorator(func) -> Callable:
         def wrapper(*args, **kwargs) -> Callable:
             result = func(*args, **kwargs)
