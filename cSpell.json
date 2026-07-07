@@ -102,6 +102,8 @@
     "matweb",
     "behaviour",
     "pylintrc",
-    "isort"
+    "isort",
+    "pyfea",
+    "tokei"
   ]
 }
