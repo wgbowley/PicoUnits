@@ -1,6 +1,5 @@
 """
 Filename: real.py
-Clear: X
 
 Description:
     Defines the Real Packet Class which is
@@ -19,7 +18,7 @@ from picounits.core.quantities.packet import Packet
 from picounits.core.quantities.scalars.scalar import ScalarPacket
 
 from picounits.lazy_imports import import_factory
-from picounits.configuration.picounits import STANDARD_DISPLAY
+from picounits.configuration.picounits import DEFAULT_SIGNIFICANT_FIGURES
 
 # Import transcendental logic functions
 from picounits.core.quantities.scalars.methods import transcendental as tlops
@@ -56,7 +55,9 @@ class RealPacket(ScalarPacket):
     def name(self) -> str:
         """ Returns the packet name as value + prefix(unit) """
         value, prefix = self._normalize()
-        return f"{round(value, STANDARD_DISPLAY)} {prefix}({self.unit.name})"
+        rounded_value = round(value, DEFAULT_SIGNIFICANT_FIGURES)
+
+        return f"{rounded_value} {prefix}({self.unit.name})"
 
     @property
     def magnitude(self) -> int | float:
@@ -98,8 +99,12 @@ class RealPacket(ScalarPacket):
     def __format__(self, format_spec: str) -> str:
         """ Formats the string based on user input through 'format_spec'"""
         value, prefix = self._normalize()
-        formatted_value = format(value, format_spec)
 
+        if not format_spec:
+            # Fall-back if no formatting is provided in the f-string
+            format_spec = f".{DEFAULT_SIGNIFICANT_FIGURES}f"
+
+        formatted_value = format(value, format_spec)
         return f"{formatted_value} {prefix}({self.unit.name})"
 
     def __ceil__(self) -> Packet:
@@ -178,9 +183,9 @@ class RealPacket(ScalarPacket):
         """ Displays the packet name """
         return str(self.name)
 
-    """
-    ================ TRANSCENDENTAL METHODS ================
-    """
+
+    # TRANSCENDENTAL METHODS
+
 
     def to_radians(self) -> Packet:
         """ If dimensionless, converts the Packet to radians """
@@ -244,81 +249,51 @@ class RealPacket(ScalarPacket):
         return tlops.acot_logic(self)
 
     def sinh(self) -> Packet:
-        """
-        If dimensionless, performs the hyperbolic sine operation on self
-        """
+        """ If dimensionless, performs the hyperbolic sine operation on self """
         return tlops.sinh_logic(self)
 
     def cosh(self) -> Packet:
-        """
-        If dimensionless, performs the hyperbolic cosine operation on self
-        """
+        """ If dimensionless, performs the hyperbolic cosine operation on self """
         return tlops.cosh_logic(self)
 
     def tanh(self) -> Packet:
-        """
-        If dimensionless, performs the hyperbolic tangent operation on self
-        """
+        """ If dimensionless, performs the hyperbolic tangent operation on self """
         return tlops.tanh_logic(self)
 
     def csch(self) -> Packet:
-        """
-        If dimensionless, performs the hyperbolic cosecant operation on self
-        """
+        """ If dimensionless, performs the hyperbolic cosecant operation on self """
         return tlops.csch_logic(self)
 
     def sech(self) -> Packet:
-        """
-        If dimensionless, performs the hyperbolic secant operation on self
-        """
+        """ If dimensionless, performs the hyperbolic secant operation on self """
         return tlops.sech_logic(self)
 
     def coth(self) -> Packet:
-        """
-        If dimensionless, performs the hyperbolic cotangent operation on self
-        """
+        """ If dimensionless, performs the hyperbolic cotangent operation on self """
         return tlops.coth_logic(self)
 
     def asinh(self) -> Packet:
-        """
-        If dimensionless, performs the inverse hyperbolic sine operation on
-        self
-        """
+        """ If dimensionless, performs the inverse hyperbolic sine operation on self """
         return tlops.asinh_logic(self)
 
     def acosh(self) -> Packet:
-        """
-        If dimensionless, performs the inverse hyperbolic cosine operation on
-        self
-        """
+        """ If dimensionless, performs the inverse hyperbolic cosine operation on self """
         return tlops.acosh_logic(self)
 
     def atanh(self) -> Packet:
-        """
-        If dimensionless, performs the inverse hyperbolic tangent operation on
-        self
-        """
+        """ If dimensionless, performs the inverse hyperbolic tangent operation on self """
         return tlops.atanh_logic(self)
 
     def acsch(self) -> Packet:
-        """
-        If dimensionless, performs the inverse hyperbolic cosecant operation on
-        self
-        """
+        """ If dimensionless, performs the inverse hyperbolic cosecant operation on self """
         return tlops.acsch_logic(self)
 
     def asech(self) -> Packet:
-        """
-        If dimensionless, performs the inverse hyperbolic secant operation on
-        self
-        """
+        """ If dimensionless, performs the inverse hyperbolic secant operation on self """
         return tlops.asech_logic(self)
 
     def acoth(self) -> Packet:
-        """
-        If dimensionless, performs the inverse hyperbolic cotangent operation
-        on self
-        """
+        """ If dimensionless, performs the inverse hyperbolic cotangent operation on self """
         return tlops.acoth_logic(self)
 
     def exp(self) -> Packet:

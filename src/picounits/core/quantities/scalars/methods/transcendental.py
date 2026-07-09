@@ -68,7 +68,7 @@ def _valid_input_for_logarithms(
         raise ValueError(msg)
 
 
-""" ANGLE CONVERSION """
+# ANGLE CONVERSION
 
 
 def to_radians_logic(q: Packet) -> Packet:
@@ -87,7 +87,7 @@ def to_degrees_logic(q: Packet) -> Packet:
     return Factory.create(new_magnitude, q.unit)
 
 
-""" BASIC TRIGONOMETRIC FUNCTIONS """
+# BASIC TRIGONOMETRIC FUNCTIONS
 
 
 def sin_logic(q: Packet) -> Packet:
@@ -146,7 +146,7 @@ def cot_logic(q: Packet) -> Packet:
     return Factory.create(new_magnitude, q.unit)
 
 
-""" INVERSE TRIGONOMETRIC FUNCTIONS """
+# INVERSE TRIGONOMETRIC FUNCTIONS
 
 
 def asin_logic(q: Packet) -> Packet:
@@ -235,7 +235,7 @@ def acot_logic(q: Packet) -> Packet:
     return Factory.create(new_magnitude, q.unit)
 
 
-""" HYPERBOLIC FUNCTIONS """
+# HYPERBOLIC FUNCTIONS
 
 
 def sinh_logic(q: Packet) -> Packet:
@@ -286,7 +286,7 @@ def coth_logic(q: Packet) -> Packet:
     return Factory.create(new_magnitude, q.unit)
 
 
-""" INVERSE HYPERBOLIC FUNCTIONS """
+# INVERSE HYPERBOLIC FUNCTIONS
 
 
 def asinh_logic(q: Packet) -> Packet:
@@ -393,7 +393,7 @@ def acoth_logic(q: Packet) -> Packet:
     return Factory.create(new_magnitude, q.unit)
 
 
-""" EXPONENTIAL AND LOGARITHMIC FUNCTIONS """
+# EXPONENTIAL AND LOGARITHMIC FUNCTIONS
 
 
 def exp_logic(q: Packet) -> Packet:

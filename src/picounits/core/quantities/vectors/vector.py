@@ -1,6 +1,5 @@
 """
 Filename: vectors.py
-Clear: X
 
 Description:
     Defines the semi-abstract VectorPacket Class

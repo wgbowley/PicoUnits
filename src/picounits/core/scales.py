@@ -112,7 +112,7 @@ class PrefixScale(Enum):
 
 
 class PrefixedScalar:
-    """Carries prefix information before quantity construction"""
+    """ Carries prefix information before quantity construction """
     def __init__(self, value: Any, prefix: PrefixScale) -> None:
         """ Initialize the PrefixedScalar """
         self.value = value

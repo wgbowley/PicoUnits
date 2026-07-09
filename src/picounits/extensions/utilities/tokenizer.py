@@ -10,6 +10,7 @@ Description:
 from __future__ import annotations
 from picounits.extensions.utilities.parser_errors import ParserError
 
+
 class Tokenizer:
     """ Stateless tokenization utilities for parsing """
 

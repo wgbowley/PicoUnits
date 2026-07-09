@@ -16,7 +16,7 @@ from picounits.extensions.utilities.construction import Construct
 from picounits.extensions.utilities.converter import Converter
 from picounits.extensions.utilities.parser_errors import ParserError
 
-from picounits.configuration.config import get_derived_units
+from picounits.configuration.management import get_derived_units
 
 from picounits.extensions.loader import DynamicLoader
 from picounits.core.unit import Unit

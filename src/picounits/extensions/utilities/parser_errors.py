@@ -8,6 +8,7 @@ Description:
 
 from typing import Any
 
+
 class ParserError(ValueError):
     """ Exception for parser errors when parsing """
     def __init__(self, caller: str, error: str):

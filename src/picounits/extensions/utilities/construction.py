@@ -19,7 +19,8 @@ from picounits.core.quantities.factory import Factory
 from picounits.extensions.utilities.parser_errors import ParserError
 from picounits.extensions.utilities.operations import Operations
 
-from picounits.configuration.config import get_derived_units
+from picounits.configuration.management import get_derived_units
+
 
 class Construct:
     """ Stateless construction utility for unit and quantity construction """

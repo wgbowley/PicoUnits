@@ -1,6 +1,5 @@
 """
 Filename: array.py
-Clear: X
 
 Description:
     Defines the Array Packet Class which is
@@ -24,7 +23,7 @@ from picounits.core.quantities.packet import Packet
 from picounits.core.quantities.vectors.vector import VectorPacket
 
 from picounits.lazy_imports import import_factory
-from picounits.configuration.picounits import STANDARD_DISPLAY
+from picounits.configuration.picounits import DEFAULT_SIGNIFICANT_FIGURES
 
 
 @dataclass(slots=True, repr=False, unsafe_hash=True)
@@ -82,7 +81,9 @@ class ArrayPacket(VectorPacket):
     def name(self) -> str:
         """ Returns the packet name as value + prefix(unit) """
         value, prefix = self._normalize()
-        return f"{np_round(value, STANDARD_DISPLAY)} {prefix}({self.unit.name})"
+        rounded_value = np_round(value, DEFAULT_SIGNIFICANT_FIGURES)
+
+        return f"{rounded_value} {prefix}({self.unit.name})"
 
     @property
     def magnitude(self) -> float:
@@ -125,10 +126,8 @@ class ArrayPacket(VectorPacket):
 
     def __format__(self, format_spec: str) -> str:
         """ Formats the string based on user input through 'format_spec'"""
-        value, prefix = self._normalize()
-        formatted_value = format(value, format_spec)
-
-        return f"{formatted_value} {prefix}({self.unit.name})"
+        _ = format_spec
+        return self.name
 
     def __ceil__(self) -> Packet:
         """ Defines the behavior for ceiling method """

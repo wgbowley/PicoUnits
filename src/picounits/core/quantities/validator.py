@@ -1,6 +1,5 @@
 """
-Filename: validators.py
-Clear: X
+Filename: validator.py
 
 Description:
     Defines the methods for the unit validator
@@ -11,9 +10,6 @@ from typing import Callable
 
 from picounits.core.unit import Unit
 from picounits.core.quantities.packet import Packet
-
-# Easy reference for users
-Quantity = Packet
 
 
 class DimensionError(ValueError):
@@ -43,7 +39,7 @@ def _check_forecasted(u1: Unit, u2: Unit, func: str) -> None:
     raise DimensionError(func, msg)
 
 
-def unit_validator(forecasted: Unit) -> Callable:
+def expects(forecasted: Unit) -> Callable:
     """ A decorator; it checks a function unit output """
     def decorator(func) -> Callable:
         def wrapper(*args, **kwargs) -> Callable:
@@ -58,9 +54,7 @@ def unit_validator(forecasted: Unit) -> Callable:
             if isinstance(result, (tuple, list)):
                 for item in result:
                     _check_packet(item, func.__name__)
-                    _check_forecasted(
-                        item.unit, forecasted, func.__name__
-                    )
+                    _check_forecasted(item.unit, forecasted, func.__name__)
                 return result
 
             msg = (
@@ -71,3 +65,7 @@ def unit_validator(forecasted: Unit) -> Callable:
 
         return wrapper
     return decorator
+
+
+# LEGACY API - keep the old name for backward compatibility before 1.0.6
+unit_validator = expects

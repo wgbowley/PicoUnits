@@ -1,6 +1,5 @@
 """
 Filename: factory.py
-Clear: X
 
 Description:
     Defines the Quantity Factory Class, acts

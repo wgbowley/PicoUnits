@@ -34,7 +34,7 @@ As a result, prefixes are resolved at construction time and do not participate i
 > - Algebra-first unit system: no implicit or explicit unit conversion
 > - Prefixes are representational and do not participate in unit algebra
 > - Configuration format: `.uiv` and `.ut` with embedded validation
-> - Boundary validation via `@unit_validator`
+> - Boundary validation via `@expects`
 > - Full numeric support: real, complex, and vector quantities
 
 ## What are .uiv & .ut?
@@ -76,9 +76,9 @@ atmospheric_density: 1.225 (ρ)
 ## Quick Start
 
 ```py
-from picounits import unit_validator, VOLTAGE, CURRENT, RESISTANCE
+from picounits import expects, VOLTAGE, CURRENT, RESISTANCE
 
-@unit_validator(VOLTAGE)
+@expects(VOLTAGE)
 def ohm_law(i, r):
     return i * r
 

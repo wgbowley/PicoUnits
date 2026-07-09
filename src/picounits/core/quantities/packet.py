@@ -1,6 +1,5 @@
 """
 Filename: packet.py
-Clear: X
 
 Description:
     Defines the abstract base class packet,

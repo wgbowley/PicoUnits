@@ -105,7 +105,7 @@ class Unit:
         """ Returns the units name as dimensions """
         if self._name_cache is None:
             get_derived_units = lazy_import(
-                "picounits.configuration.config", "get_derived_units", "Unit.name"
+                "picounits.configuration.management", "get_derived_units", "Unit.name"
             )
             derived, _ = get_derived_units()
 

@@ -7,15 +7,18 @@ from picounits.extensions.parser import Parser
 from picounits.extensions.loader import DynamicLoader
 
 from picounits.constants import *
-from picounits.core.quantities.validators import unit_validator, Quantity
-from picounits.configuration.config import reload_config
+from picounits.core.quantities.validator import expects
+from picounits.core.quantities.packet import Packet as Quantity
+from picounits.configuration.management import reload_config
 
 # Reloads the users .picounits configuration file.
 reload_config()
 
 # References for quantities when doing type hinting.
-Q, q = Quantity, Quantity
-_ = unit_validator
+Q = Quantity
+q = Quantity
+
+_ = expects
 
 # Parser & Loader import
 _ = Parser
@@ -59,3 +62,18 @@ def strip_quantity(quantity: Quantity, reference: Quantity) -> Any:
     check_quantity(quantity, reference)
 
     return quantity.value
+
+
+# API Promises
+# NOTE: this also concludes all constructed quantities constants in constants.py
+__all__ = [
+    "UnitError",
+    "DynamicLoader",
+    "strip_quantity",
+    "check_quantity",
+    "Parser",
+    "Quantity",
+    "Q",
+    "q",
+    "expects"
+]

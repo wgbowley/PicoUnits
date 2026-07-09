@@ -1,6 +1,5 @@
 """
 Filename: complex.py
-Clear: X
 
 Description:
     Defines the Complex Packet Class which is
@@ -22,7 +21,7 @@ from picounits.core.quantities.packet import Packet
 from picounits.core.quantities.scalars.scalar import ScalarPacket
 
 from picounits.lazy_imports import import_factory
-from picounits.configuration.picounits import STANDARD_DISPLAY
+from picounits.configuration.picounits import DEFAULT_SIGNIFICANT_FIGURES
 
 
 @dataclass(slots=True, repr=False, unsafe_hash=True)
@@ -59,13 +58,15 @@ class ComplexPacket(ScalarPacket):
     @property
     def name(self) -> str:
         """ Returns the packet name as value + prefix(unit) """
-        value, prefix = self._normalize()
+        value, prefix = self._normalize() 
+
         if isinstance(value, complex):
-            real = round(value.real, STANDARD_DISPLAY)
-            imag = round(value.imag, STANDARD_DISPLAY)
+            # Rounds imaginary & real parts if complex
+            real = round(value.real, DEFAULT_SIGNIFICANT_FIGURES)
+            imag = round(value.imag, DEFAULT_SIGNIFICANT_FIGURES)
             value = complex(real, imag)
         else:
-            value = round(value, STANDARD_DISPLAY)
+            value = round(value, DEFAULT_SIGNIFICANT_FIGURES)
 
         return f"{value} {prefix}({self.unit.name})"
 
@@ -151,8 +152,12 @@ class ComplexPacket(ScalarPacket):
     def __format__(self, format_spec: str) -> str:
         """ Formats the string based on user input through 'format_spec'"""
         value, prefix = self._normalize()
-        formatted_value = format(value, format_spec)
 
+        if not format_spec:
+            # Fall-back if no formatting is provided in the f-string
+            format_spec = f".{DEFAULT_SIGNIFICANT_FIGURES}f"
+
+        formatted_value = format(value, format_spec)
         return f"{formatted_value} {prefix}({self.unit.name})"
 
     def __ceil__(self) -> Packet:
@@ -213,7 +218,7 @@ class ComplexPacket(ScalarPacket):
             "Complex numbers have no natural ordering. "
             "Use abs() to compare magnitudes."
         )
-        raise TypeError(msg)
+        raise TypeError(msg) from None
 
     def __lt__(self, other: Any) -> bool:
         """ Defines the behavior for less than comparison """

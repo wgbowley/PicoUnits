@@ -1,4 +1,7 @@
-# Example usage of .uiv for introduction.py
+[version]
+format: 0.1.0
+notes: "# Example usage of .uiv for introduction.py"
+
 [coil]
 axial_length: 50 m(m)
 outer_radius: 17.5 m(m)
