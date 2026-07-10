@@ -51,8 +51,8 @@ class Construct:
                 pending_unit = _effective_derived[token]
                 continue
 
-            # Not a base symbol -> try operation
             try:
+                # Not a base symbol -> try operation
                 operation = Operations.from_symbol(token)
             except ParserError:
                 try:
@@ -79,7 +79,7 @@ class Construct:
                 raise ParserError(cls.__name__, msg) from None
 
             if operation is Operations.POWER:
-                # (power will be consumed in the next iteration)
+                # Power will be consumed in the next iteration
                 continue
 
             # Apply pending unit before changing operator

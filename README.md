@@ -4,7 +4,7 @@
     <img src="media\picounit_logo.png" alt="PicoUnits logo">
   </a>
 </p>
-<p align="center">A runtime dimensional environment and unit-aware DSL for scientific computing in Python</p>
+<p align="center">A dimensional constraint system for engineering design synthesis in Python</p>
 
 ---
 > [!note]
