@@ -107,7 +107,7 @@ class Unit:
             get_derived_units = lazy_import(
                 "picounits.configuration.management", "get_derived_units", "Unit.name"
             )
-            derived, _ = get_derived_units()
+            derived = get_derived_units()
 
             # Primary: Check exact match first
             for symbol, unit in derived.items():
