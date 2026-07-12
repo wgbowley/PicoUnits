@@ -17,14 +17,13 @@ class ParserError(ValueError):
         msg = f"'{caller}' raised error: {error}. "
         super().__init__(msg)
 
-
-class DeserializationError(ValueError):
-    """ Exception for Deserializer errors when parsing """
-    def __init__(self, caller: str, error: str):
-        """ Returns a custom error message """
-        msg = f"'{caller}' raised error: {error}. "
+        
+class ParseListFailure(ValueError):
+    """ Exception for failure of parsing lists """
+    def __init__(self, caller: Any, msg: str):
+        """ Returns a failed casting error """
+        msg = f"'{caller}' raised error: {msg}. "
         super().__init__(msg)
-
 
 
 # Specific errors
@@ -49,12 +48,4 @@ class FailedCasting(ValueError):
     def __init__(self, text: Any, error: str):
         """ Returns a failed casting error """
         msg = f"Failed to cast {text!r} as python primitive, error: {error!r}"
-        super().__init__(msg)
-
-
-class ParseListFailure(ValueError):
-    """ Exception for failure of parsing lists """
-    def __init__(self, text: Any, msg: str):
-        """ Returns a failed casting error """
-        msg = f"Failed to parse {text!r} as list, {msg}"
         super().__init__(msg)

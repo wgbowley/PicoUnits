@@ -11,8 +11,7 @@ Description:
 
 from __future__ import annotations
 
-from ast import literal_eval
-from picounits.extensions.utilities.errors import FailedCasting, DeserializationError, ParseListFailure
+from picounits.extensions.utilities.errors import FailedCasting, ParseListFailure
 
 
 class Deserialize:
@@ -78,142 +77,133 @@ class Deserialize:
 
         return text
 
-
-class ParseListStructure:
-    """ Parse embedded list structure """
     @classmethod
     def parse_list(cls, text: str) -> list:
         """ Parse list notation Ex. "[1, 2, 3]" -> [1, 2, 3] """
         text = text.strip()
-        _valid_list(text)
+        ParseListStructure.valid_list(text)
 
         # Removes brackets & returns if empty
         text_content = text[1:-1].strip()
         if not text_content: return []
 
         # Constructs list & returns
-        return _construct_list(text_content)
+        return ParseListStructure.construct_list(text_content)
 
 
-def _valid_list(text: str) -> None:
-    """ Checks if text is bounded like `[content]` """
-    if text.startswith("["):
-        if text.endswith("]"):
-            return
+class ParseListStructure:
+    """ Parse embedded list structure """
+    @classmethod
+    def valid_list(cls, text: str) -> None:
+        """ Checks if text is bounded like `[content]` """
+        if text.startswith("["):
+            if text.endswith("]"):
+                return
 
-        msg = f"Malformed nested list (missing closing ']'): {text!r}"
-        raise ParseListFailure(text, msg)
+            msg = f"Malformed nested list (missing closing ']'): {text!r}"
+            raise ParseListFailure(cls.__name__, msg)
 
-    msg = f"Expected [item_1,...item_n], got: {text!r}"
-    raise ParseListFailure(text, msg)
+        msg = f"Expected [item_1,...item_n], got: {text!r}"
+        raise ParseListFailure(cls.__name__, msg)
 
+    @classmethod
+    def construct_list(cls, content: str) -> list:
+        """ Construct list from content via recursively appending lists structures """
+        result = []
 
-def _construct_list(content: str) -> list:
-    """ Construct list from content via recursively appending lists structures """
-    result = []
+        # Loop variables
+        length = len(content)
+        index = 0
 
-    # Loop variables
-    length = len(content)
-    index = 0
-    depth = 0
-    while index < length:
-        _skip_whitespaces(content, index, length)
+        while index < length:
+            index = cls._skip_whitespaces(content, index, length)
 
-        # Finds and extract valid section of content
-        start = index
-        index, depth, quoted_char = _list_section(content, index, length)
-        item_str = content[start:index].strip()
+            # Finds and extract valid section of content
+            start = index
+            index = cls.valid_section(content, index, length)
+            item_str = content[start:index].strip()
 
-        if not item_str and index < length and content[index-1] == ",":
-            # Ignores if last item is empty
-            continue
+            if not item_str and index < length and content[index-1] == ",":
+                # Ignores if last item is empty
+                continue
 
-        if not item_str:
-            msg = f"Empty element found in list {item_str!r}"
-            fix = "(possible stray common or malformed idea)"
-            raise ParseListFailure(content, f"{msg} | {fix}")
+            if not item_str:
+                msg = f"Empty element found in list {item_str!r}"
+                fix = "(possible stray common or malformed idea)"
+                raise ParseListFailure(cls.__name__, f"{msg}, {fix}")
 
-        # Recursive descent for nested lists
-        result.append(_recursive_descent(item_str))
+            # Recursive descent for nested lists
+            result.append(cls._recursive_descent(item_str))
 
-        if index < length and content[index] == ',':
-            # Skip the comma if stopped on
+            if index < length and content[index] == ',':
+                # Skip the comma if stopped on
+                index += 1
+
+        return result
+
+    @classmethod
+    def _skip_whitespaces(cls, content: str, index: int, length: int) -> int:
+        """ Iterates over whitespaces and returns new index """
+        while index < length and content[index].isspace():
             index += 1
 
-    if depth != 0:
-        msg = f"Unbalanced brackets in {content!r}"
-        raise ParseListFailure(content, msg)
+        return index
 
-    if quoted_char is not None:
-        msg = f"Unterminated string in {content!r}"
-        raise ParseListFailure(content, msg)
+    @classmethod
+    def valid_section(cls, content: str, index: int, length: int) -> int:
+        """ Finds end of valid section and returns depth & quoted_char """
+        depth = 0
+        quote_char = None
 
-    return result
+        while index < length:
+            character = content[index]
 
+            if quote_char is None:
+                if character in '"\'':
+                    quote_char = character
+                elif character == '[':
+                    depth += 1
+                elif character == ']':
+                    depth -= 1
+                    if depth < 0:
+                        msg = f"Unbalanced brackets in {content!r}"
+                        raise ParseListFailure(cls.__name__, msg)
 
-def _skip_whitespaces(content: str, index: int, length: int) -> int:
-    """ Iterates over whitespaces and returns new index """
-    while index < length and content[index].isspace():
-        index += 1
+                elif character == ',' and depth == 0:
+                    break
+            else:
+                if character == '\\':
+                    # Python encodes "\" as "\\" in source code
+                    # Ignores any special meaning of the next character.
+                    index += 1
+                    if index >= length:
+                        msg = f"unterminated escape in {content!r}"
+                        raise ParseListFailure(cls.__name__, msg)
 
-    return index
+                elif character == quote_char:
+                    quote_char = None
 
+            index += 1
 
-def _list_section(content: str, index: int, length: int) -> tuple[int, int, str]:
-    """ Finds end of valid section and returns depth & quoted_char """
-    depth = 0
-    quote_char = None
+        # Validate at the end of the string
+        if quote_char is not None:
+            msg = f"Unterminated string in {content!r}"
+            raise ParseListFailure(cls.__name__, msg)
 
-    while index < length:
-        character = content[index]
+        if depth != 0:
+            msg = f"Unbalanced brackets in {content!r}"
+            raise ParseListFailure(cls.__name__, msg)
 
-        if quote_char is None:
-            depth, quote_char = _list_depth(character, quote_char, depth)
+        return index
 
-            if depth < 0:
-                msg = f"Unbalanced brackets in {content!r}"
-                raise DeserializationError("list_slicer", msg)
+    @classmethod
+    def _recursive_descent(cls, content: str) -> list:
+        """ Recursive descent for nested lists """
+        if content.startswith('['):
+            if content.endswith(']'):
+                return cls.construct_list(content[1:-1])
 
-            if character == ',' and depth == 0:
-                break
+            msg = f"Malformed nested list (missing closing ']'): {content!r}"
+            raise ParseListFailure(cls.__name__, msg)
 
-        else:
-            if character == '\\':
-                # Python encodes "\" as "\\" in source code
-                # Ignores any special meaning of the next character.
-                index += 1
-                if index >= length:
-                    msg = f"unterminated escape in {content!r}"
-                    raise ParseListFailure(content, msg)
-
-            elif character == quote_char:
-                quote_char = None
-
-        index += 1
-
-    return index, depth, quote_char
-
-
-def _list_depth(char: str, quote_char: str, depth: int) -> tuple[int, str]:
-    """ Evaluates the depth of the current list structure """
-    # If the character is either a double or single quote
-    if char == '"' or char == "'": quote_char = char
-
-    # If the character is a open bracket, increase depth
-    if char == '[': depth += 1
-
-    # If the charger is a close bracket, decrease depth
-    if char == ']': depth -= 1
-    return depth, quote_char
-
-
-def _recursive_descent(content: str) -> list:
-    """ Recursive descent for nested lists """
-    if content.startswith('['):
-        if content.endswith(']'):
-            return _construct_list(content)
-
-        msg = f"Malformed nested list (missing closing ']'): {content!r}"
-        raise ParseListFailure(content, msg)
-
-    return Deserialize.cast(content)
+        return Deserialize.cast(content)
