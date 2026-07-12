@@ -17,7 +17,7 @@ class ParserError(ValueError):
         msg = f"'{caller}' raised error: {error}. "
         super().__init__(msg)
 
-        
+
 class ParseListFailure(ValueError):
     """ Exception for failure of parsing lists """
     def __init__(self, caller: Any, msg: str):

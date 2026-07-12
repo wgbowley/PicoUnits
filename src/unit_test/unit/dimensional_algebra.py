@@ -1,3 +1,4 @@
+# pylint: skip-file
 """
 Filename: dimensional_algebra.py
 
@@ -142,6 +143,7 @@ class DimensionAlgebra(unittest.TestCase):
         """ Tests backwards power between a number and a unit """
         with self.assertRaises(TypeError):
             _ = 1 ** Unit(_TEMPERATURE)
+    
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

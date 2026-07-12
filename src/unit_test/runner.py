@@ -1,3 +1,4 @@
+# pylint: skip-file
 """
 File: runner.py
 
@@ -7,7 +8,7 @@ Description:
     parser, dynamic-loader and configurations.
     
     NOTE: Reference commands:
-    coverage run src unit_test runner.py
+    coverage run src/unit_test/runner.py
     coverage report -m
 """
 
@@ -17,12 +18,19 @@ from unit_test.unit.dimensional_algebra import DimensionAlgebra
 from unit_test.unit.dimensional_construction import DimensionConstruction
 from unit_test.quantities.quantities_construction import QualityScalingConstruction
 
+from unit_test.parser.core import TestParseList, Deserialize
+
 loader = unittest.TestLoader()
 suite = unittest.TestSuite()
 
+# Core
 suite.addTests(loader.loadTestsFromTestCase(DimensionConstruction))
 suite.addTests(loader.loadTestsFromTestCase(DimensionAlgebra))
 suite.addTests(loader.loadTestsFromTestCase(QualityScalingConstruction))
+
+# Extensions
+suite.addTests(loader.loadTestsFromTestCase(TestParseList))
+suite.addTests(loader.loadTestsFromTestCase(Deserialize))
 
 runner = unittest.TextTestRunner(verbosity=2)
 

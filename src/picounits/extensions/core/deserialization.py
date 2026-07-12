@@ -78,8 +78,8 @@ class Deserialize:
         return text
 
     @classmethod
-    def parse_list(cls, text: str) -> list:
-        """ Parse list notation Ex. "[1, 2, 3]" -> [1, 2, 3] """
+    def case_list(cls, text: str) -> list:
+        """ case list notation Ex. "[1, 2, 3]" -> [1, 2, 3] """
         text = text.strip()
         ParseListStructure.valid_list(text)
 
@@ -120,7 +120,7 @@ class ParseListStructure:
 
             # Finds and extract valid section of content
             start = index
-            index = cls.valid_section(content, index, length)
+            index = cls.tokenizer(content, index, length)
             item_str = content[start:index].strip()
 
             if not item_str and index < length and content[index-1] == ",":
@@ -150,7 +150,7 @@ class ParseListStructure:
         return index
 
     @classmethod
-    def valid_section(cls, content: str, index: int, length: int) -> int:
+    def tokenizer(cls, content: str, index: int, length: int) -> int:
         """ Finds end of valid section and returns depth & quoted_char """
         depth = 0
         quote_char = None
@@ -168,7 +168,6 @@ class ParseListStructure:
                     if depth < 0:
                         msg = f"Unbalanced brackets in {content!r}"
                         raise ParseListFailure(cls.__name__, msg)
-
                 elif character == ',' and depth == 0:
                     break
             else:

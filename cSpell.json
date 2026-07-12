@@ -104,6 +104,7 @@
     "pylintrc",
     "isort",
     "pyfea",
-    "tokei"
+    "tokei",
+    "sohn"
   ]
 }

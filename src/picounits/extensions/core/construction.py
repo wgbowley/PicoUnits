@@ -1,1 +1,11 @@
-# hi, I am a placeholder. I was created by william bowley to be a placeholder :)
+"""
+Filename: construction.py
+
+Description:
+    Handles unit and quantity construction 
+    via tokenization of the dimensional algebra.
+    
+    This allows for reconstruction of the Unit,
+    which is used to construct the quantity.
+"""
+
