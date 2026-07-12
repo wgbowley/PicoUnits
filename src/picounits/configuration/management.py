@@ -12,7 +12,6 @@ from configparser import ConfigParser
 from pathlib import Path
 from typing import Dict, Any
 
-from picounits.lazy_imports import lazy_import
 from picounits.configuration.picounits import (
     DEFAULT_ORDER, DEFAULT_SYMBOLS
 )
@@ -22,7 +21,6 @@ from picounits.configuration.picounits import (
 _effective_symbols: Dict[str, str] | None = None
 _effective_order: Dict[str, int] | None = None
 _effective_derived: Dict[str, Any] | None = None
-_derived_unit_file_name: Path | None = None
 
 
 def get_base_symbols() -> Dict[str, str]:
@@ -134,44 +132,9 @@ def _import_order(config: dict) -> Dict[str, int]:
     return custom_order
 
 
-def _find_derived_units_file() -> Path | None:
-    """ Search upwards from cwd for units.ut """
-    cwd = Path.cwd()
-    for path in [cwd, *cwd.parents]:
-        # Search for exact filename in subtree
-        exact = path / "units.ut"
-        if exact.is_file():
-            return Path(exact)
-
-        # Iterates over the subtree for any results
-        fallback = next(path.glob("*.ut"), None)
-        if fallback:
-            return Path(fallback)
-
-    return None
-
-
-def get_derived_units(derived_file: Path | None = None):
+def get_derived_units():
     """ Gets the derived unit registry if a .ut file exists. """
     global _effective_derived
-    global _derived_unit_file_name
+    _effective_derived = {}
 
-    if _effective_derived is None:
-        _effective_derived = {}
-
-        if derived_file is None:
-            derived_file = _find_derived_units_file()
-
-        if derived_file:
-            _derived_unit_file_name = derived_file.name
-
-            # Uses dependency inversion to import derived units into parser
-            Parser = lazy_import(
-                "picounits.extensions.parser", "Parser", "get_derived_units"
-            )
-            data = Parser.import_derived(derived_file)
-
-            # Updates the derived unit notation dictionary
-            _effective_derived.update(data)
-
-    return _effective_derived, _derived_unit_file_name
+    return _effective_derived

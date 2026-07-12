@@ -1,5 +1,5 @@
 """
-Filename: loader.py
+Filename: attribute_loader.py
 
 Description:
     Defines the `Loader` & `DynamicLoader` 
@@ -11,7 +11,26 @@ from __future__ import annotations
 from typing import Any
 from dataclasses import dataclass
 
-from picounits.extensions.utilities.parser_errors import AttributeNotFound, InjectionError
+
+class AttributeNotFound(AttributeError):
+    """ Exception for attribute not found error """
+    def __init__(self, attribute: str, path: str):
+        """ Returns a custom error message """
+        self.path = path
+        self.attribute = attribute
+
+        msg = f"'{attribute}' not found at '{path}' within loader tree"
+        super().__init__(msg)
+
+
+class InjectionError(Exception):
+    """Raised when a value cannot be injected into a Loader tree."""
+    def __init__(self, path: str, value: Any):
+        self.path = path
+        self.value = value
+
+        msg = f"Failed to inject '{value}' at '{path}'"
+        super().__init__(msg)
 
 
 @dataclass(frozen=True, slots=True)

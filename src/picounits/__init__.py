@@ -4,7 +4,7 @@
 from typing import Any
 
 from picounits.extensions.parser import Parser
-from picounits.extensions.loader import DynamicLoader
+from picounits.extensions.attribute_loader import DynamicLoader
 
 from picounits.constants import *
 from picounits.core.quantities.validator import expects
