@@ -14,11 +14,11 @@ Description:
 
 import unittest
 
-from unit_test.unit.dimensional_algebra import DimensionAlgebra
-from unit_test.unit.dimensional_construction import DimensionConstruction
-from unit_test.quantities.quantities_construction import QualityScalingConstruction
+from unit.dimensional_algebra import DimensionAlgebra
+from unit.dimensional_construction import DimensionConstruction
+from quantities.quantities_construction import QualityScalingConstruction
 
-from unit_test.parser.core import TestParseList, Deserialize
+from parser.core import TestParseList, TestDeserialize
 
 loader = unittest.TestLoader()
 suite = unittest.TestSuite()
@@ -30,7 +30,7 @@ suite.addTests(loader.loadTestsFromTestCase(QualityScalingConstruction))
 
 # Extensions
 suite.addTests(loader.loadTestsFromTestCase(TestParseList))
-suite.addTests(loader.loadTestsFromTestCase(Deserialize))
+suite.addTests(loader.loadTestsFromTestCase(TestDeserialize))
 
 runner = unittest.TextTestRunner(verbosity=2)
 
