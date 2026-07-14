@@ -21,8 +21,8 @@ class Operations(Enum):
 
     @property
     def symbol(self) -> str:
-        """ Returns the operation symbol via direct lookup """
-        return _LOOKUP_OPERATORS.get(self)[0]
+        """ Returns the value operation symbol via direct lookup """
+        return _LOOKUP_OPERATORS.get(self)
 
     @property
     def _repr_name(self) -> str:
@@ -43,7 +43,7 @@ class Operations(Enum):
     def validate_unicode_usage(cls, tokens: list[str]) -> None:
         """ Ensures non mixing of `^` with unicode superscripts """
         has_caret = "^" in tokens
-        has_unicode = any(t in SUPERSCRIPT_MAP for t in tokens)
+        has_unicode = any(t in _SUPERSCRIPT_MAP for t in tokens)
 
         if has_caret and has_unicode:
             msg = "Mixing `^` and unicode superscripts in unit expression"
@@ -53,7 +53,7 @@ class Operations(Enum):
     def check_unicode_power(cls, power: str) -> int | False:
         """ Returns converted unicode power """
         try:
-            return SUPERSCRIPT_MAP[power]
+            return _SUPERSCRIPT_MAP[power]
 
         except KeyError:
             return False
@@ -95,7 +95,7 @@ _LOOKUP_STRINGS = {
 
 
 # Unicode lookup table
-SUPERSCRIPT_MAP = {
+_SUPERSCRIPT_MAP = {
     "⁰": 0,
     "¹": 1,
     "²": 2,

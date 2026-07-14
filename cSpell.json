@@ -105,6 +105,8 @@
     "isort",
     "pyfea",
     "tokei",
-    "sohn"
+    "sohn",
+    "guten",
+    "nein"
   ]
 }

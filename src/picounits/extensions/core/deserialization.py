@@ -19,6 +19,10 @@ class Deserialize:
     @classmethod
     def cast(cls, text: str) -> int | float | complex | bool | None | str:
         """ Converts text to python primitives """
+        if not isinstance(text, str):
+            err = f"Expected str, got {type(text).__name__}"
+            raise FailedCasting(text, err)
+
         text = text.strip()
         if cls.is_quoted(text):
             # Handles quoted strings first
@@ -45,9 +49,7 @@ class Deserialize:
         if text.lower() in ("null", "none"): return None
 
         # Default to string
-        try: return str(text)
-        except Exception as err:
-            raise FailedCasting(text, err) from err
+        return str(text)
 
     @classmethod
     def is_quoted(cls, text: str) -> bool:
@@ -80,6 +82,10 @@ class Deserialize:
     @classmethod
     def case_list(cls, text: str) -> list:
         """ case list notation Ex. "[1, 2, 3]" -> [1, 2, 3] """
+        if not isinstance(text, str):
+            err = f"Expected str, got {type(text).__name__}"
+            raise FailedCasting(text, err)
+
         text = text.strip()
         ParseListStructure.valid_list(text)
 
@@ -123,14 +129,9 @@ class ParseListStructure:
             index = cls.tokenizer(content, index, length)
             item_str = content[start:index].strip()
 
-            if not item_str and index < length and content[index-1] == ",":
-                # Ignores if last item is empty
-                continue
-
             if not item_str:
-                msg = f"Empty element found in list {item_str!r}"
-                fix = "(possible stray common or malformed idea)"
-                raise ParseListFailure(cls.__name__, f"{msg}, {fix}")
+                msg = f"Empty element found in list (item at position {start})"
+                raise ParseListFailure(cls.__name__, msg)
 
             # Recursive descent for nested lists
             result.append(cls._recursive_descent(item_str))
@@ -151,7 +152,7 @@ class ParseListStructure:
 
     @classmethod
     def tokenizer(cls, content: str, index: int, length: int) -> int:
-        """ Finds end of valid section and returns depth & quoted_char """
+        """ Finds end of valid section and returns end index """
         depth = 0
         quote_char = None
 
@@ -159,7 +160,7 @@ class ParseListStructure:
             character = content[index]
 
             if quote_char is None:
-                if character in '"\'':
+                if character == '"' or character == "'":
                     quote_char = character
                 elif character == '[':
                     depth += 1

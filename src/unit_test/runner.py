@@ -18,19 +18,26 @@ from unit.dimensional_algebra import DimensionAlgebra
 from unit.dimensional_construction import DimensionConstruction
 from quantities.quantities_construction import QualityScalingConstruction
 
-from parser.core import TestParseList, TestDeserialize
+from unit_test.parser.core.deserialization import TestParseList, TestDeserialize
+from unit_test.parser.utilities.operations import TestOperators
 
 loader = unittest.TestLoader()
 suite = unittest.TestSuite()
 
-# Core
+# === Core ===
+
 suite.addTests(loader.loadTestsFromTestCase(DimensionConstruction))
 suite.addTests(loader.loadTestsFromTestCase(DimensionAlgebra))
 suite.addTests(loader.loadTestsFromTestCase(QualityScalingConstruction))
 
-# Extensions
+# === Extensions ===
+
+# Deserialization
 suite.addTests(loader.loadTestsFromTestCase(TestParseList))
 suite.addTests(loader.loadTestsFromTestCase(TestDeserialize))
+
+# Operators
+suite.addTests(loader.loadTestsFromTestCase(TestOperators))
 
 runner = unittest.TextTestRunner(verbosity=2)
 
