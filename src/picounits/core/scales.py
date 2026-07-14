@@ -74,9 +74,7 @@ class PrefixScale(Enum):
 
     @classmethod
     def from_symbol(cls, reference: str) -> PrefixScale | None:
-        """
-        Compares reference symbol with symbol lookup, if not found returns none
-        """
+        """ Compares reference symbol with symbol lookup, if not found returns none """
         if not isinstance(reference, str):
             return None
 
