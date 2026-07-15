@@ -8,7 +8,7 @@
 
 ---
 > [!note]
-> Picounits is the dimensional environment for `pyfea` and its included material library `pyfea-materials`.  
+> Picounits is the dimensional environment for `pyfea` and its material library `PicoMaterials`.  
 
 ## Overview
 <!-- NOTE: Python version needs to checked before release, I am not sure the specific version  -->

@@ -185,7 +185,7 @@ class ConstructUnits:
         state = UnitState()
 
         # Validates unicode usage within the tokens
-        Operations.check_unicode_power(tokens)
+        Operations.validate_unicode_usage(tokens)
         for token in tokens:
             symbol = FBase.from_symbol(token)
             if symbol:
@@ -206,7 +206,7 @@ class ConstructUnits:
 
                 # Special Case: unicode superscript (whole token)
                 exponent = Operations.check_unicode_power(token)
-                if exponent is not None:
+                if exponent:
                     if state.pending_unit is not None:
                         state.pending_unit **= exponent
                     continue
@@ -214,7 +214,7 @@ class ConstructUnits:
                 msg = f"Unknown token {token!r}"
                 raise ParserError(cls.__name__, msg) from None
 
-            if operation in Operations.POWER:
+            if operation is Operations.POWER:
                 # Power operation will occur next iteration
                 continue
 

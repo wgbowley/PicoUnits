@@ -3,8 +3,8 @@
 Filename: deserialization.py
 
 Descriptions:
-    Tests the deserialization classes 
-    within the parser
+    Tests the deserialization classes within the parser
+    NOTE: Classes | TestDeserialize, TestParseList
 """
 
 import unittest
