@@ -26,6 +26,15 @@ from picounits.extensions.utilities.errors import (
 )
 
 
+@dataclass(slots=True)
+class UnitState:
+    """ Stores the state of the unit under construction """
+    result: Unit = Unit.dimensionless()
+    queue_operation: Operations | None = None
+    pending_unit: Unit | None = None
+    pending_power: int | None = None
+
+
 class ConstructQuantity:
     """ Constructs a qualities via unit construction """
     @classmethod
@@ -68,7 +77,7 @@ class ConstructQuantity:
         result = []
         for sublist in value:
             row = []
-            for index, value in enumerate(sublist):
+            for index, row_value in enumerate(sublist):
                 # Finds the prefix for that column data
                 column_prefix = cls._column_prefix(prefix, index)
 
@@ -76,7 +85,7 @@ class ConstructQuantity:
                 column_unit = cls._column_unit(unit, index)
 
                 # Builds the nested array as a array of quantities
-                row.append(cls.quantity(value, column_prefix, column_unit))
+                row.append(cls.quantity(row_value, column_prefix, column_unit))
             result.append(row)
         return result
 
@@ -114,15 +123,6 @@ class ConstructPrefix:
         # Unknown prefix error
         valid_prefixes = PrefixScale.all_symbols()
         raise UnknownPrefix(prefix, valid_prefixes)
-
-
-@dataclass(slots=True)
-class UnitState:
-    """ Stores the state of the unit under construction """
-    result: Unit = Unit.dimensionless()
-    queue_operation: Operations | None = None
-    pending_unit: Unit | None = None
-    pending_power: int | None = None
 
 
 class ConstructUnits:
@@ -225,10 +225,6 @@ class ConstructUnits:
 
         # Last dimension operations
         if state.pending_unit is not None:
-            if state.pending_power is not None:
-                # Raises the pending unit to the pending power
-                state.pending_unit **= state.pending_power
-
             match state.queue_operation:
                 case Operations.MULTIPLICATION:
                     state.result *= state.pending_unit
@@ -249,6 +245,3 @@ class ConstructUnits:
             state.pending_power = None
 
             return state
-
-        msg = f"Stay number found {token!r}"
-        raise ParserError(cls.__name__, msg)

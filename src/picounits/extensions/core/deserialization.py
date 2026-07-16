@@ -2,7 +2,7 @@
 Filename: deserialization.py
 
 Description:
-    Type conversion for .uiv format values.
+    Type conversion for .ut & .uiv format values.
     Handles lists and nested structures recursively.
     
     Converts strings to Python primitives:
@@ -160,7 +160,7 @@ class ParseListStructure:
             character = content[index]
 
             if quote_char is None:
-                if character == '"' or character == "'":
+                if character in ("'", '"'):
                     quote_char = character
                 elif character == '[':
                     depth += 1

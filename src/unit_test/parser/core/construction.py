@@ -110,7 +110,15 @@ class TestConstructUnits(unittest.TestCase):
         for index, item in enumerate(items):
             result = ConstructUnits.construct_unit(item)
             self.assertEqual(result, expected[index])
-
+            
+    def test_division_operations(self):
+        """ Tests division operations in unit construction """
+        items = ["kg/m", "m/s^2", "kg*m/s^2", "kg/m/s"]
+        expected = [MASS / LENGTH, LENGTH / TIME**2, MASS * LENGTH / TIME**2, MASS / LENGTH / TIME]
+        
+        for index, item in enumerate(items):
+            result = ConstructUnits.construct_unit(item)
+            self.assertEqual(result, expected[index])
 
 class TestConstructQuality(unittest.TestCase):
     """ Unit tests for construct qualities class """

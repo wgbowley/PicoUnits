@@ -66,3 +66,11 @@ class UnsupportedType(ValueError):
         """ Returns a column attribute error """
         msg = f"Failed to construct unit due to unsupported type: {value_type!r}"
         super().__init__(msg)
+
+
+class UnbalancedDepth(Exception):
+    """ Exception for unbalanced parentheses or brackets when parsing """
+    def __init__(self, caller: str, line: str, symbol: str):
+        """ Returns a unbalanced depth error """
+        msg = f"'{caller}' attempted to parse {line!r} but depth of {symbol!r} is unbalanced."
+        super().__init__(msg)
