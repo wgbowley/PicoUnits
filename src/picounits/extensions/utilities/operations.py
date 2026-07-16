@@ -10,7 +10,7 @@ Description:
 from __future__ import annotations
 from enum import Enum, auto
 
-from picounits.extensions.utilities.errors import UnknownOperator, AmbiguousPower
+from picounits.extensions.utilities.errors import UnknownOperator
 
 
 class Operations(Enum):
@@ -40,25 +40,6 @@ class Operations(Enum):
         return operator
 
     @classmethod
-    def validate_unicode_usage(cls, tokens: list[str]) -> None:
-        """ Ensures non mixing of `^` with unicode superscripts """
-        has_caret = "^" in tokens
-        has_unicode = any(t in _SUPERSCRIPT_MAP for t in tokens)
-
-        if has_caret and has_unicode:
-            msg = "Mixing `^` and unicode superscripts in unit expression"
-            raise AmbiguousPower(msg)
-
-    @classmethod
-    def check_unicode_power(cls, power: str) -> int | False:
-        """ Returns converted unicode power """
-        try:
-            return _SUPERSCRIPT_MAP[power]
-
-        except KeyError:
-            return False
-
-    @classmethod
     def all_symbols(cls) -> list[str]:
         """ Returns a list of all symbols """
         return list(_LOOKUP_STRINGS.keys())
@@ -81,31 +62,6 @@ _LOOKUP_STRINGS = {
     "/": Operations.DIVIDED,
     "÷": Operations.DIVIDED,
     "^": Operations.POWER,
-    "⁰": Operations.POWER,
-    "¹": Operations.POWER,
-    "²": Operations.POWER,
-    "³": Operations.POWER,
-    "⁴": Operations.POWER,
-    "⁵": Operations.POWER,
-    "⁶": Operations.POWER,
-    "⁷": Operations.POWER,
-    "⁸": Operations.POWER,
-    "⁹": Operations.POWER,
-}
-
-
-# Unicode lookup table
-_SUPERSCRIPT_MAP = {
-    "⁰": 0,
-    "¹": 1,
-    "²": 2,
-    "³": 3,
-    "⁴": 4,
-    "⁵": 5,
-    "⁶": 6,
-    "⁷": 7,
-    "⁸": 8,
-    "⁹": 9,
 }
 
 

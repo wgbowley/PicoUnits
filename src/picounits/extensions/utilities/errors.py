@@ -44,14 +44,6 @@ class UnknownPrefix(ValueError):
         super().__init__(msg)
 
 
-class AmbiguousPower(ValueError):
-    """ Exception for ambiguous power syntax """
-    def __init__(self, error: str):
-        """ Returns an ambiguous power error """
-        msg = f"Ambiguous power syntax: {error!r}"
-        super().__init__(msg)
-
-
 class FailedCasting(ValueError):
     """ Exception for failure during casting """
     def __init__(self, text: Any, error: str):

@@ -85,7 +85,7 @@ class ConstructQuantity:
         """ Finds the prefix for a specific column """
         if isinstance(prefix, list):
             # Applies prefix if available
-            if index < len(prefix):
+            if 0 <= index < len(prefix):
                 return prefix[index]
 
             raise ColumnAttribute(prefix)
@@ -96,7 +96,7 @@ class ConstructQuantity:
     @classmethod
     def _column_unit(cls, unit: list, index: int) -> str:
         """ Finds the unit for a specific column """
-        if index < len(unit):
+        if 0 <= index < len(unit):
             return unit[index]
 
         raise ColumnAttribute(unit)
@@ -184,8 +184,6 @@ class ConstructUnits:
         # Initializes the unit state dataclass
         state = UnitState()
 
-        # Validates unicode usage within the tokens
-        Operations.validate_unicode_usage(tokens)
         for token in tokens:
             symbol = FBase.from_symbol(token)
             if symbol:
@@ -203,13 +201,6 @@ class ConstructUnits:
 
                 except ValueError:
                     pass
-
-                # Special Case: unicode superscript (whole token)
-                exponent = Operations.check_unicode_power(token)
-                if exponent:
-                    if state.pending_unit is not None:
-                        state.pending_unit **= exponent
-                    continue
 
                 msg = f"Unknown token {token!r}"
                 raise ParserError(cls.__name__, msg) from None

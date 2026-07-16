@@ -10,7 +10,7 @@ Descriptions:
 import unittest
 
 from picounits.extensions.utilities.operations import Operations
-from picounits.extensions.utilities.errors import UnknownOperator, AmbiguousPower
+from picounits.extensions.utilities.errors import UnknownOperator
 
 
 class TestOperators(unittest.TestCase):
@@ -18,11 +18,7 @@ class TestOperators(unittest.TestCase):
     def test_symbol(self):
         """ Test symbol direct lookup """
         items = [Operations.POWER, Operations.MULTIPLICATION, Operations.DIVIDED]
-        expected = [
-            ['^', '⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'],
-            ['*', 'x', '·', '∙'], 
-            ['/', '÷'], 
-        ]
+        expected = [['^'], ['*', 'x', '·', '∙'], ['/', '÷']]
         
         for index, item in enumerate(items):
             result = item.symbol
@@ -31,11 +27,7 @@ class TestOperators(unittest.TestCase):
     def test_repr_name(self):
         """ Test the operator object name is correct """
         items = [Operations.POWER, Operations.MULTIPLICATION, Operations.DIVIDED]
-        types = [
-            ['^', '⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'],
-            ['*', 'x', '·', '∙'], 
-            ['/', '÷'], 
-        ]
+        types = [['^'], ['*', 'x', '·', '∙'], ['/', '÷']]
         
         for index, item in enumerate(items):
             result = item._repr_name
@@ -51,7 +43,7 @@ class TestOperators(unittest.TestCase):
     
     def test_from_power_symbol(self):
         """ Test creation of power operator object via symbol lookup """
-        test_items = ['^', '⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹']
+        test_items = ['^']
         expected_operator = Operations.POWER
 
         for item in test_items:
@@ -84,45 +76,9 @@ class TestOperators(unittest.TestCase):
             with self.assertRaises(UnknownOperator):
                  Operations.from_symbol(item)
     
-    def test_validate_unicode_usage(self):
-        """ Ensures non mixing of power symbol & unicode """
-        items = [["^", "1", "0"], ["^", "-", "6"], ['^', '1'], ['¹'], ['²']]
-        
-        for item in items:
-            result = Operations.validate_unicode_usage(item)
-            self.assertIsNone(result)
-    
-    def test_invalidate_unicode_usage(self):
-        """ Ensures invalidate usage of unicode and power symbol raises error """
-        items = [["^", '⁰', '¹'], ["^", "1", "⁰"], ["^", "¹"]]
-
-        for item in items:
-            with self.assertRaises(AmbiguousPower):
-                Operations.validate_unicode_usage(item)
-    
-    def test_check_unicode_power(self):
-        """ Test conversion system for unicode powers to integers """
-        items = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹']
-        expected = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-        
-        for index, item in enumerate(items):
-            result = Operations.check_unicode_power(item)
-            self.assertEqual(result, expected[index])
-    
-    def test_non_unicode_types(self):
-        """ Test non unicode types """
-        items = ["1", "2", "1+2j", "software", "Maxwell is my sprit animal"]
-        
-        for item in items:
-            result = Operations.check_unicode_power(item)
-            self.assertEqual(result, False)
-    
     def test_all_symbols_return(self):
         """ Test return method for all valid symbols """
-        valid = [
-            '*', 'x', '·', '∙', '/', '÷', '^', '⁰', '¹', 
-            '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'
-        ]
+        valid = ['*', 'x', '·', '∙', '/', '÷', '^',]
         
         result = Operations.all_symbols()
         self.assertEqual(result, valid)
