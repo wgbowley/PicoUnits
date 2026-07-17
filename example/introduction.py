@@ -8,14 +8,15 @@ Descriptions:
     NOTE: Assumes your base dimensions are SI metric for (notation)
 """
 
-def next_step(title):
+def next_step(title: str, first: bool = False):
     """ Helper functions for examples (Doesn't relate to library) """
-    print(f"\n{'='*10} {title} {'='*10}")
+    notation = "" if first else "\n"
+    print(f"{notation}{'='*10} {title} {'='*10}")
     input(">>> Press Enter to see this example...")
 
 """ ============ Set a value:unit pair ============ """
 
-next_step("0: How to set a value:unit pair")
+next_step("0: How to set a value:unit pair", True)
 
 # Import the dimension & prefix you want to use
 from picounits import LENGTH, MILLI

@@ -69,9 +69,9 @@ class ExtractPairs:
 class ExtractBrackets:
     """ Extract content between matching brackets """
     @classmethod
-    def extract_content(cls, line: str, initial_index: int = 0) -> tuple[str, int] | None:
+    def extract_content(cls, line: str) -> tuple[str, int] | None:
         """ Extracts content between matching brackets """
-        open_bracket_index = line.find('[', initial_index)
+        open_bracket_index = line.find('[')
 
         if open_bracket_index == -1:
             # Handles when no open_bracket is found inline
@@ -122,7 +122,7 @@ class ExtractParentheses:
         length = len(line)
         while state.index < len(line):
             # Skips non-parenthesized & if index is greater than length, breaks loop
-            state.index = cls._skip_non_parentheses(line, state.index)
+            state.index = cls.skip_non_parentheses(line, state.index)
             if state.index >= length: break
 
             # Resets variables & extract inner content
@@ -139,7 +139,7 @@ class ExtractParentheses:
         return state.content
 
     @classmethod
-    def _skip_non_parentheses(cls, line: str, start: int) -> int:
+    def skip_non_parentheses(cls, line: str, start: int) -> int:
         """ Skips non parenthesized characters """
         position = line.find('(', start)
 

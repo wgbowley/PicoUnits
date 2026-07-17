@@ -137,7 +137,7 @@ class TestExtractParentheses(unittest.TestCase):
         items, excepted = ["(hello)", "test (test)", "test"], [0, 5, 4]
         
         for index, item in enumerate(items):
-            position = ExtractParentheses._skip_non_parentheses(item, 0)
+            position = ExtractParentheses.skip_non_parentheses(item, 0)
             self.assertEqual(position, excepted[index])
 
     def test_extract_parentheses_content(self):
