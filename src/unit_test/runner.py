@@ -31,14 +31,14 @@ from unit_test.unit.dimensional_algebra import DimensionAlgebra
 from unit_test.unit.dimensional_construction import DimensionConstruction
 from unit_test.quantities.quantities_construction import QualityScalingConstruction
 
-from unit_test.parser.core.deserialization import TestParseList, TestDeserialize
-from unit_test.parser.utilities.operations import TestOperators
+from unit_test.extensions.core.deserialization import TestParseList, TestDeserialize
+from unit_test.extensions.utilities.operations import TestOperators
 
-from unit_test.parser.core.construction import (
+from unit_test.extensions.core.construction import (
     TestConstructPrefix, TestConstructUnits, TestConstructQuality
 )
 
-from unit_test.parser.core.syntax import (
+from unit_test.extensions.core.syntax import (
     TestExtractionState, TestExtractPairs, TestExtractBrackets, TestExtractParentheses
 )
 

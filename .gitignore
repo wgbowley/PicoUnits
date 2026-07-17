@@ -1,5 +1,4 @@
 *.pyc
 *.log
+*.coverage
 
-.coverage
-.picounits
