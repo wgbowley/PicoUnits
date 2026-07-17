@@ -7,7 +7,10 @@ Description:
     returned to the user
 """
 
+from abc import ABC, abstractmethod
 from typing import Any
+from pathlib import Path
+
 
 
 # Generic Errors
@@ -74,3 +77,43 @@ class UnbalancedDepth(Exception):
         """ Returns a unbalanced depth error """
         msg = f"'{caller}' attempted to parse {line!r} but depth of {symbol!r} is unbalanced."
         super().__init__(msg)
+
+
+# Notifications / Warning classes
+class ParserNotification(ABC):
+    """ Abstract base class for parser notifications messages """
+    @abstractmethod
+    def __init__(self):
+        """ Initializes the class and sets the message variable """
+        self.message: str = ""
+
+    def display(self) -> None:
+        """ Prints the message """
+        print(self.message)
+
+    def __str__(self) -> str:
+        """ returns the str(message) """
+        return str(self.message)
+
+
+class BackCompatibilityWarning(ParserNotification):
+    """ Warning for missing 'format' key in version """
+    def __init__(self, file_path: str):
+        """ Returns a compatibility warning """
+        filename = Path(file_path).name
+        note = f"Tip: {filename} missing 'format' key."
+        compatibility = "Add 'version.format: 0.1.0' for compatibility."
+
+        # Sets the message for display
+        self.message = f"{note} {compatibility}"
+
+
+class UnitFrameCompatibilityWarning(ParserNotification):
+    """ Warning for missing 'unit_frame' in version """
+    def __init__(self, filepath: str):
+        filename = Path(filepath).name
+        note = f"Tip: {filename} missing 'unit_frame'."
+        improvement = "Add 'version.unit_frame: (your_derived_units).ut'."
+
+        # Sets the message for display
+        self.message = f"{note} {improvement}"
