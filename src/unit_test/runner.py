@@ -32,11 +32,15 @@ from unit_test.unit.dimensional_construction import DimensionConstruction
 from unit_test.quantities.quantities_construction import QualityScalingConstruction
 
 from unit_test.parser.core.deserialization import TestParseList, TestDeserialize
+from unit_test.parser.utilities.operations import TestOperators
+
 from unit_test.parser.core.construction import (
     TestConstructPrefix, TestConstructUnits, TestConstructQuality
 )
 
-from unit_test.parser.utilities.operations import TestOperators
+from unit_test.parser.core.syntax import (
+    TestExtractionState, TestExtractPairs, TestExtractBrackets, TestExtractParentheses
+)
 
 loader = unittest.TestLoader()
 suite = unittest.TestSuite()
@@ -57,6 +61,12 @@ suite.addTests(loader.loadTestsFromTestCase(TestDeserialize))
 suite.addTest(loader.loadTestsFromTestCase(TestConstructPrefix))
 suite.addTest(loader.loadTestsFromTestCase(TestConstructUnits))
 suite.addTest(loader.loadTestsFromTestCase(TestConstructQuality))
+
+# Syntax
+suite.addTest(loader.loadTestsFromTestCase(TestExtractPairs))
+suite.addTest(loader.loadTestsFromTestCase(TestExtractionState))
+suite.addTest(loader.loadTestsFromTestCase(TestExtractBrackets))
+suite.addTest(loader.loadTestsFromTestCase(TestExtractParentheses))
 
 # Operators
 suite.addTests(loader.loadTestsFromTestCase(TestOperators))

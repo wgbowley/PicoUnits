@@ -13,15 +13,14 @@ from dataclasses import dataclass
 
 from picounits.extensions.utilities.errors import UnbalancedDepth
 
-
-@dataclass(slots=True)
+@dataclass
 class ExtractionState:
     """ Stores the state of the extractor during extraction """
     index: int = 0
     break_index: int = 0
     depth: int = 0
     quote_char: str | None = None
-    groups: list[str] = []
+    content: list[str] | None = None
 
     def distinguished_character(self, character: str) -> None:
         """ Distinguishes between inside & outside quotes """
@@ -61,6 +60,7 @@ class ExtractPairs:
 
             if character == ":" and not state.quote_char:
                 # Returns the quality name & quality value strings
+                # Also removes leading/trailing whitespace using .strip()
                 return line[:index].strip(), line[index+1:].strip()
 
         return None
@@ -107,16 +107,17 @@ class ExtractBrackets:
                     # Returns content once end bracket is found
                     return line[open_index+1:index], index
 
-        raise UnbalancedDepth(cls.__name__, line, "{ }")
+        raise UnbalancedDepth(cls.__name__, line, "[ ]")
 
 
 class ExtractParentheses:
-    """ Extract groups between matching parentheses """
+    """ Extract content between matching parentheses """
     @classmethod
-    def extract_groups(cls, line: str) -> list[str]:
-        """ Extracts parenthesized groups from line """
+    def extract_content(cls, line: str) -> list[str]:
+        """ Extracts parenthesized content from line """
         # Initializes the parser state dataclass
         state = ExtractionState()
+        state.content = []
 
         length = len(line)
         while state.index < len(line):
@@ -135,7 +136,7 @@ class ExtractParentheses:
             # Raises unbalanced depth error if missing end parentheses
             if state.depth > 0: raise UnbalancedDepth(cls.__name__, line, "( )")
 
-        return state.groups
+        return state.content
 
     @classmethod
     def _skip_non_parentheses(cls, line: str, start: int) -> int:
@@ -170,7 +171,7 @@ class ExtractParentheses:
                     state.depth -=1
                     if state.depth == 0:
                         # Found matching closing parenthesis
-                        state.groups.append(line[state.break_index:state.index])
+                        state.content.append(line[state.break_index:state.index])
                         state.index += 1
                         return
 
