@@ -31,14 +31,34 @@ class Parser:
         cls, filepath: Path | str | IO | Any, derived: Path | str | IO | Any = None
     ) -> DynamicLoader:
         """ Parses .uiv file into an attribute tree structure """
-        _, _ = filepath, derived
-        return
+        # Imports derived units & reads lines into memory
+        derived = cls.import_derived(derived)
+        lines = cls._read_lines(filepath)
+
+        # Parses lines into dynamic loader
+        data = ParseLines.parse(lines)
+        return DynamicLoader(data)
 
     @classmethod
     def import_derived(cls, filepath: Path | str | IO | Any) -> dict[str, Unit]:
         """ Parses .ut file and interprets unit strings into runtime registry """
         _ = filepath
         return
+
+    @staticmethod
+    def _read_lines(filepath_or_file: Path | str | IO | Any) ->  list[str]:
+        """Read lines from file path or file-like object."""
+        if hasattr(filepath_or_file, 'read') and hasattr(filepath_or_file, 'readlines'):
+            # Check if it's a file-like object
+            return filepath_or_file.readlines()
+
+        # Convert to Path and validate
+        filepath = Path(filepath_or_file)
+        if not filepath.exists():
+            raise FileNotFoundError(f"File not found: {filepath}")
+
+        with filepath.open('r', encoding='utf-8') as f:
+            return f.readlines()
 
 
 class ParseLineState:

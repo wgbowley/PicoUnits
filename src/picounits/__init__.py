@@ -3,7 +3,7 @@
 
 from typing import Any
 
-# from picounits.extensions.parser import Parser
+from picounits.extensions.parser import Parser
 from picounits.extensions.attribute_loader import DynamicLoader
 
 from picounits.constants import *
@@ -21,7 +21,7 @@ q = Quantity
 _ = expects
 
 # Parser & Loader import
-# _ = Parser
+_ = Parser
 _ = DynamicLoader
 
 

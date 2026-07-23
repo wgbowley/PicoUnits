@@ -119,28 +119,28 @@ Projectile_Mass = 12 * MASS
 energy = kinetic_energy(Projectile_Mass, final_v)
 print(f"Final Kinetic Energy: {energy:.3f} J")
 
-# # ============ Example 6: Parser (introduction.uiv) ============
-# next_step("6: Parser (introduction.uiv)")
+# ============ Example 6: Parser (introduction.uiv) ============
+next_step("6: Parser (introduction.uiv)")
 
 
-# from math import pi
-# from pathlib import Path
+from math import pi
+from pathlib import Path
 
-# from picounits.extensions import Parser
+from picounits.extensions import Parser
 
 
-# BASE_DIR = Path(__file__).parent
-# library = BASE_DIR / "introduction.uiv"
+BASE_DIR = Path(__file__).parent
+library = BASE_DIR / "introduction.uiv"
 
-# parameters = Parser.open(library)
-# parameters.info("library")
+parameters = Parser.open(library)
+parameters.info("library")
 
-# axial_length = parameters.pole.axial_length
-# outer_radius = parameters.pole.outer_radius
-# volume = pi * outer_radius ** 2 * axial_length
+axial_length = parameters.pole.axial_length
+outer_radius = parameters.pole.outer_radius
+volume = pi * outer_radius ** 2 * axial_length
 
-# print("Calculating pole volume using parameters")
-# print(f"Pole Volume: {volume:.3f}")
+print("Calculating pole volume using parameters")
+print(f"Pole Volume: {volume:.3f}")
 
-# print("\n" + "="*30)
-# print("Tutorial Complete!")
+print("\n" + "="*30)
+print("Tutorial Complete!")

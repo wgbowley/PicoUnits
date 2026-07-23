@@ -116,7 +116,7 @@ class ConstructPrefix:
     @classmethod
     def construct_prefix(cls, prefix: str) -> PrefixScale:
         """ Constructs a prefix via the o(1) prefix lookup """
-        prefix_scale = PrefixScale.from_symbol(prefix)
+        prefix_scale = PrefixScale.from_symbol(prefix.strip())
         if prefix_scale:
             return prefix_scale
 
