@@ -242,5 +242,5 @@ pip install -e .
 ```
 
 ## Documentation
-> [!IMPORTANT]
+> [!NOTE]
 > Documentation is available in [`docs/`](docs/), with standard introduction example available in [`examples/`](examples/).
