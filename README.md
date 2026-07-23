@@ -12,8 +12,6 @@ Color palette:
 
 <p align="center">A dimensional constraint system for computational engineering.</p>
 
---- 
-
 <p align="center">
   Define the dimensional environment of your application.<br>
   Keep physical meaning attached to computation.
