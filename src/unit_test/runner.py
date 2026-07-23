@@ -39,7 +39,8 @@ from unit_test.extensions.core.construction import (
 )
 
 from unit_test.extensions.core.syntax import (
-    TestExtractionState, TestExtractPairs, TestExtractBrackets, TestExtractParentheses
+    TestExtractionState, TestExtractPairs, TestExtractBrackets, TestExtractParentheses,
+    TestQualityExtraction
 )
 
 loader = unittest.TestLoader()
@@ -67,6 +68,7 @@ suite.addTest(loader.loadTestsFromTestCase(TestExtractPairs))
 suite.addTest(loader.loadTestsFromTestCase(TestExtractionState))
 suite.addTest(loader.loadTestsFromTestCase(TestExtractBrackets))
 suite.addTest(loader.loadTestsFromTestCase(TestExtractParentheses))
+suite.addTest(loader.loadTestsFromTestCase(TestQualityExtraction))
 
 # Operators
 suite.addTests(loader.loadTestsFromTestCase(TestOperators))

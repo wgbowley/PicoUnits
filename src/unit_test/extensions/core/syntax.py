@@ -5,14 +5,15 @@ Filename: syntax.py
 Descriptions:
     Tests the syntax classes within the parser
     NOTE:   Classes | TestExtractionState, TestExtractPairs, 
-            TestExtractBrackets, TestExtractParentheses
+            TestExtractBrackets, TestExtractParentheses,
+            TestQualityExtraction
 """
 
 import unittest
 
-from picounits.extensions.utilities.errors import UnbalancedDepth
+from picounits.extensions.utilities.errors import UnbalancedDepth, ParserError
 from picounits.extensions.core.syntax import (
-    ExtractionState, ExtractPairs, ExtractBrackets, ExtractParentheses
+    ExtractionState, ExtractPairs, ExtractBrackets, ExtractParentheses, QualityExtraction
 )
 
 
@@ -143,7 +144,7 @@ class TestExtractParentheses(unittest.TestCase):
     def test_extract_parentheses_content(self):
         """ Tests extracting parenthesized content """
         items = ["(hello (hello))", "(hello) (hello) (hello)", "hello (hello)"]
-        expected = [['hello (hello)'], ['hello', 'hello', 'hello'], ['hello']]
+        expected = [['hello'], ['hello'], ['hello']]
         
         for index, item in enumerate(items):
             result = ExtractParentheses.extract_content(item)
@@ -151,12 +152,50 @@ class TestExtractParentheses(unittest.TestCase):
 
     def test_extract_parentheses_content_with_escaped_character(self):
         """ Test escaped colon is ignored and returns the correct content """
-        line = r"(item\: value prefix(unit))"
-        exp_content = [r"item\: value prefix(unit)"]
+        line = r"item\: value prefix(unit)"
+        exp_content = ["unit"]
 
         raw_content = ExtractParentheses.extract_content(line)
         self.assertEqual(raw_content, exp_content)
 
 
+class TestQualityExtraction(unittest.TestCase):
+    """ Unit tests for Quantity Extraction From Text """
+    def test_non_string_type(self):
+        """ Tests if error is raised if the input isn't a string """
+        items = [False, 1, 1.021, (1+1j)]
+        
+        for item in items:
+            with self.assertRaises(ParserError):
+                _ = QualityExtraction.extract(item)
+
+    def test_quoted_string(self):
+        """ Test if quoted string returns string value without prefix or unit """
+        items = ["'I am a quoted string'", '"(1+1j) u(m^2)"', "'10.12 (m)'"]
+        expected = ["I am a quoted string", '(1+1j) u(m^2)', "10.12 (m)"]
+
+        for index, item in enumerate(items):
+            result, unit, prefix = QualityExtraction.extract(item)
+            
+            # Checks the result string is right, unit and prefix is none
+            self.assertEqual(result, expected[index])
+            self.assertEqual(prefix, "")
+            self.assertEqual(unit, "")
+    
+    def test_valid_quantity_extraction(self):
+        """ Test if the quantity extraction works """
+        items = ["10 n(kg)", "10 k(kg*m*s^-2)", "(1+1j) (A)"]
+        expected = [(10, 'n', 'kg'), (10, 'k', 'kg*m*s^-2'), ((1+1j), ' ', 'A')]
+
+        for index, item in enumerate(items):
+            result, prefix, unit = QualityExtraction.extract(item)
+            
+            # Checks the result, unit and prefix is correct to expected
+            self.assertEqual(result, expected[index][0])
+            self.assertEqual(prefix, expected[index][1])
+            self.assertEqual(unit, expected[index][2])
+
+
 if __name__ == '__main__':
     unittest.main()
+    
