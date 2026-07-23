@@ -73,13 +73,13 @@ Prefixes are resolved at construction time and do not become part of dimensional
 
 ### Notation and semantics
 
-The symbols used to represent dimensions and derived units belong to the application's **unit frame**.
+The symbols used to represent dimensions and derived units belong to the application's `unit frame`.
 A project can define its own dimensional vocabulary without changing the underlying dimensional system.
-This allows PicoUnits to act as a **dimensional foundation**, rather than imposing a single global notation.
+This allows PicoUnits to act as a `dimensional foundation`, rather than imposing a single global notation.
 
 ## Not a Unit Conversion Library
 
-PicoUnits is intentionally not designed as a universal unit conversion system.
+PicoUnits is not designed as a universal unit conversion system.
 
 It does not attempt to answer:
 
@@ -90,13 +90,13 @@ It does not attempt to answer:
 Instead, it answers questions such as:
 
 ```text
-Does this quantity have the required dimensions?
-Are these two physical quantities algebraically compatible?
-Does this configuration value satisfy the model's dimensional contract?
-Can this solver safely consume this value?
+- Does this quantity have the required dimensions?
+- Are these two physical quantities algebraically compatible?
+- Does this configuration value satisfy the model's dimensional contract?
+- Can this solver safely consume this value?
 ```
 
-PicoUnits operates within a defined **unit frame**.
+PicoUnits operates within a defined `unit frame`.
 
 A unit frame establishes the dimensional basis and notation used by an application. Within that environment, dimensional relationships are explicit and deterministic.
 
@@ -221,6 +221,7 @@ Invalid dimensional inputs raise a `DimensionError` rather than silently produci
 
 ```python
 # Raises DimensionError
+# 'ohm_law' returned kg²·m⁴·s⁻⁶·A⁻³, expected kg·m²·s⁻³·A⁻¹ 
 ohm_law(
     10 * VOLTAGE,
     5 * RESISTANCE
