@@ -5,8 +5,8 @@ Color palette:
 -->
  
 <p align="center">
-  <a href="https://github.com/wgbowley/PicoUnits">
-    <img src="media\picounit_logo.png" alt="PicoUnits logo">
+  <a href="https://raw.githubusercontent.com/wgbowley/PicoUnits/main/media/picounit_logo.png">
+    <img src="https://raw.githubusercontent.com/wgbowley/PicoUnits/main/media/picounit_logo.png" alt="PicoUnits logo">
   </a>
 </p>
 <p align="center">A dimensional constraint system for computational engineering.</p>
@@ -34,15 +34,13 @@ Unlike general-purpose unit libraries, PicoUnits separates:
 - Prefixes represent scale along an existing dimensional axis.
 - The symbols used to represent dimensions and derived units belong to the application's `unit frame`.
 
-### Features
- 
-> [!important]
-> - Pluggable unit systems via `Unit Frames` (domain-specific base dimensions)
-> - Algebra-first unit system: no implicit or explicit unit conversion
-> - Prefixes are representational and do not participate in unit algebra
-> - Configuration format: `.uiv` and `.ut` with embedded validation
-> - Boundary validation via `@expects`
-> - Full numeric support: real, complex, and vector quantities
+### Features:
+- Pluggable unit systems via `Unit Frames` (domain-specific base dimensions)
+- Algebra-first unit system: no implicit or explicit unit conversion
+- Prefixes are representational and do not participate in unit algebra
+- Configuration format: `.uiv` and `.ut` with embedded validation
+- Boundary validation via `@expects`
+- Full numeric support: real, complex, and vector quantities
 
 ## Not a Unit Conversion Library
  
@@ -89,7 +87,7 @@ Both are dimensionally aware formats. `.ut (unit types)` encodes custom base uni
 ### `.ut`
  
 ```
-# Coilgun Units - Derived from Base Dimensions (kg, m, s, etc.)
+# Coilgun Units - Derived from Base Dimensions (kg, m, s, A, etc.)
 [version]
 format: 0.1.0
  
@@ -112,7 +110,7 @@ unit_frame: units.ut
 # Models electrical, magnetic and motional dynamics
  
 [model]
-number_stages: 10
+number_stages: 10 (∅)    # Explicitly dimensionless
  
 # Millimeter -> prefix `m` and unit `m` hence prefix(unit), m(m)
 stage_gap: 10 m(m)
