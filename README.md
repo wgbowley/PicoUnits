@@ -126,8 +126,8 @@ same dimensional infrastructure to be used across different computational domain
 
 PicoUnits provides two domain-specific formats:
 
-* `.ut` — **Unit Types**, defining a project's derived units and dimensional vocabulary.
-* `.uiv` — **Unit-Informed Values**, defining configuration and physical data with dimensional information embedded directly in the data.
+* `.ut` | `Unit Types`, defining a project's derived units and dimensional vocabulary.
+* `.uiv` | `Unit-Informed Values`, defining configuration and physical data with dimensional information embedded directly in the data.
 
 ### `.ut`
 
@@ -141,7 +141,7 @@ format: 0.1.0
 N:  kg*m*s^-2
 J:  kg*m^2*s^-2
 W:  kg*m^2*s^-3
-Pa: kg*m^-1*s^-2
+ρ: kg*m^-3
 
 [Electricity]
 V:   kg*m^2*s^-3*A^-1
@@ -174,7 +174,7 @@ time_steps: 50 u(s)
 atmospheric_density: 1.225 (ρ)
 ```
 
-The result is configuration that is both **human-readable and dimensionally meaningful**.
+The result is configuration that is both `human-readable` and `dimensionally meaningful`.
 
 Instead of:
 
