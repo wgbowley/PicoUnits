@@ -9,9 +9,16 @@ disable =
     C0103,                      # doesn't conform to snake_case naming
     redefined-outer-name,       # I think this one is stupid
     E1101,                      # Instance has no member
-    
+    R0914,                      # Too many local variables
+    C0321,                      # Multiple Statements on same line
+    R0911,                      # Too many return statements
+    R0903,                      # Too few public methods
+
 [MASTER]
-ignore-paths=^.*\.pyi$
+ignore-paths=
+    ^.*\.pyi$,
+    examples/introduction\.py$
+
 
 [FORMAT]
-max-line-length=90 # Maximum number of characters on a single line.
+max-line-length=100             # Maximum number of characters on a single line.

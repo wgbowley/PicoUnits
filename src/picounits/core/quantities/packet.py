@@ -1,6 +1,5 @@
 """
 Filename: packet.py
-Clear: X
 
 Description:
     Defines the abstract base class packet,
@@ -18,6 +17,7 @@ from picounits.core.scales import PrefixScale
 from picounits.core.unit import Unit
 
 from picounits.lazy_imports import import_factory
+
 
 @dataclass
 class Packet(ABC):
@@ -108,6 +108,10 @@ class Packet(ABC):
 
         msg = f"Units are not the same, {self.unit} != {other_unit}"
         raise ValueError(msg)
+
+    def _get_factor(self, difference: int) -> int:
+        """ Calculates the scaling factor for the value """
+        return 10 ** difference
 
     @staticmethod
     def _get_other_packet(other: Any) -> Packet:

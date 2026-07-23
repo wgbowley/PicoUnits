@@ -1,3 +1,4 @@
+# pylint: skip-file
 """
 Filename: Introduction.py
 
@@ -7,17 +8,19 @@ Descriptions:
     NOTE: Assumes your base dimensions are SI metric for (notation)
 """
 
-def next_step(title):
+def next_step(title: str, first: bool = False):
     """ Helper functions for examples (Doesn't relate to library) """
-    print(f"\n{'='*10} {title} {'='*10}")
+    notation = "" if first else "\n"
+    print(f"{notation}{'='*10} {title} {'='*10}")
     input(">>> Press Enter to see this example...")
 
 """ ============ Set a value:unit pair ============ """
 
-next_step("0: How to set a value:unit pair")
+next_step("0: How to set a value:unit pair", True)
 
 # Import the dimension & prefix you want to use
 from picounits import LENGTH, MILLI
+
 
 # Define a value:unit pair as (value, prefix, length)
 william_height_m = 1.75 * LENGTH
@@ -32,6 +35,7 @@ next_step("1: Math Operations with value:units")
 
 # Import the dimension & prefix you want to use
 from picounits import MASS, FORCE, KILO
+
 
 tommy_mass = 60 * MASS
 car_mass = 1.5 * KILO * MASS
@@ -49,9 +53,10 @@ print(f"Car Acceleration:   {car_acceleration:.3f}")
 next_step("2: Validates the output is the correct dimension")
 
 # Import the quantity for type hinting, the validator for checking and dimensions to use
-from picounits import Q, unit_validator, CURRENT, VOLTAGE, RESISTANCE
+from picounits import Q, expects, CURRENT, VOLTAGE, RESISTANCE
 
-@unit_validator(RESISTANCE)
+
+@expects(RESISTANCE)
 def calculate_voltage(current: Q, resistance: Q) -> Q:
     """ Calculates the voltage across an element based on v=ir (ohm's relation) """
     return current * resistance
@@ -61,7 +66,7 @@ try:
     calculate_voltage(10 * CURRENT, 10 * VOLTAGE)
 
 except Exception as err:
-    print(f"`unit_validator` catches dimension errors before they propagate: {err}")
+    print(f"`expects` catches dimension errors before they propagate: {err}")
 
 print("Re-entry with calculate_voltage(10 A, 10 Ω)....")
 print(f"Element voltage: {calculate_voltage(10 * CURRENT, 10 * RESISTANCE)}")
@@ -69,9 +74,10 @@ print(f"Element voltage: {calculate_voltage(10 * CURRENT, 10 * RESISTANCE)}")
 # ============ Example 3: Complex Numbers & SUVAT ============
 next_step("3: Physics with Complex Numbers (SUVAT)")
 
-from picounits import Q, unit_validator, VELOCITY, TIME
+from picounits import Q, expects, VELOCITY, TIME
 
-@unit_validator(VELOCITY)
+
+@expects(VELOCITY)
 def suvat(initial_velocity: Q, acceleration: Q, distance: Q) -> Q:
     """" Calculates the velocity after accelerating for a specific distance """
     square = initial_velocity ** 2 + 2 * acceleration * distance
@@ -90,6 +96,7 @@ next_step("4: Scaling Lists/Arrays with Units")
 
 from picounits import VOLTAGE, KILO, VOLTAGE
 
+
 # You can scale a list of values directly by a unit
 voltages = [1, 2, 3] * VOLTAGE
 high_voltages = [10, 20, 30] * KILO * VOLTAGE
@@ -100,9 +107,10 @@ print(f"High Voltages (kV scaled): {high_voltages}")
 # ============ Example 5: Kinetic Energy ============
 next_step("5: Derived Energy Calculation")
 
-from picounits import Q, unit_validator, ENERGY
+from picounits import Q, expects, ENERGY
 
-@unit_validator(ENERGY)
+
+@expects(ENERGY)
 def kinetic_energy(mass: Q, velocity: Q) -> Q:
     """ Calculates the kinetic energy of the projectile """
     return 0.5 * mass * velocity ** 2
@@ -114,16 +122,18 @@ print(f"Final Kinetic Energy: {energy:.3f} J")
 # ============ Example 6: Parser (introduction.uiv) ============
 next_step("6: Parser (introduction.uiv)")
 
+
 from math import pi
 from pathlib import Path
 
 from picounits.extensions import Parser
 
+
 BASE_DIR = Path(__file__).parent
 library = BASE_DIR / "introduction.uiv"
 
 parameters = Parser.open(library)
-parameters.tree("library")
+parameters.info("library")
 
 axial_length = parameters.pole.axial_length
 outer_radius = parameters.pole.outer_radius

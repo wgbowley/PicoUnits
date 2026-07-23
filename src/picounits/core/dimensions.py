@@ -1,6 +1,5 @@
 """
 Filename: dimensions.py
-Clear: N
 
 Description:
     Defines the Dimension dataclass,
@@ -15,14 +14,13 @@ Description:
 from __future__ import annotations
 
 from enum import Enum, auto
-from functools import lru_cache
 from dataclasses import dataclass, field
 from fractions import Fraction
 
 
 try:
     # Ensures picounits works even with preferences issues
-    from picounits.configuration.config import get_base_symbols, get_base_order
+    from picounits.configuration.management import get_base_symbols, get_base_order
 except ImportError:
     def get_base_symbols() -> dict[str, str]:
         """ placeholder """
@@ -33,14 +31,12 @@ except ImportError:
         return {}
 
 
-@lru_cache(maxsize=1)
-def _symbols() -> dict[str, str]:
+def _symbols(_=None) -> dict[str, str]:
     """ Caches the symbols for FBase """
     return get_base_symbols()
 
 
-@lru_cache(maxsize=1)
-def _order() -> dict[str, int]:
+def _order(_=None) -> dict[str, int]:
     """ Caches the order for FBase """
     return get_base_order()
 
@@ -61,15 +57,26 @@ class FBase(Enum):
     LUMINOSITY  = auto()
     DIMENSIONLESS = auto()
 
+
     @property
     def symbol(self) -> str:
         """ Returns the base unit symbol. """
-        return _symbols().get(self.name, _SIBASE_SYMBOLS[self])
+        symbols = _symbols()
+
+        if self.name in symbols and symbols[self.name]:
+            return symbols[self.name]
+
+        return _SIBASE_SYMBOLS[self]
 
     @property
     def order(self) -> int:
         """ Returns the base units under consistent order for notation """
-        return _order().get(self.name, _ORDER[self])
+        order_map = _order()
+
+        if self.name in order_map:
+            return order_map[self.name]
+
+        return _ORDER[self]
 
     @classmethod
     def all_symbols(cls) -> list[str]:
@@ -82,15 +89,16 @@ class FBase(Enum):
         if not isinstance(reference, str):
             return None
 
+        symbols = _symbols()
         # Primary: Tries preferred symbols
         for member in cls:
-            preferred = _symbols().get(member.name)
+            preferred = symbols.get(member.name)
             # units symbols are case sensitive
             if preferred and preferred == reference:
                 return member
 
         # Fallback: check standard symbols
-        for enum_member, symbol in _SIBASE_SYMBOLS.items():
+        for enum_member, symbol in symbols.items():
             # units symbols are case sensitive
             if symbol == reference:
                 return enum_member

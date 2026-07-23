@@ -1,6 +1,5 @@
 """
 Filename: scalar.py
-Clear: X
 
 Description:
     Defines the semi-abstract ScalarPacket Class

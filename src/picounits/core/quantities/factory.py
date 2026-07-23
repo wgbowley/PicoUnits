@@ -1,6 +1,5 @@
 """
 Filename: factory.py
-Clear: X
 
 Description:
     Defines the Quantity Factory Class, acts
@@ -13,6 +12,7 @@ from numpy import ndarray, integer, floating, complexfloating
 from picounits.core.quantities.packet import Packet
 
 from picounits.lazy_imports import lazy_import
+
 
 class Factory:
     """

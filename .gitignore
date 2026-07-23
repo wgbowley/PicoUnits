@@ -1,5 +1,3 @@
 *.pyc
-src/picounits/test.py
-test2.py
-qualities.py
-/examples/scales
+*.log
+*.coverage

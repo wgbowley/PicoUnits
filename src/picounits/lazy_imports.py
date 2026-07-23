@@ -38,9 +38,7 @@ def import_factory(caller_name: str) -> Any:
 def lazy_import(
     module_path: str, method_name: str, caller_name: str
 ) -> Any:
-    """ 
-    Caches/returns the module_path.module_name for lazy imports 
-    """
+    """ Caches/returns the module_path.module_name for lazy imports  """
     try:
         mod = __import__(module_path, fromlist=[method_name])
         return getattr(mod, method_name)

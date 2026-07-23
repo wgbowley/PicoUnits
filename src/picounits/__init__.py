@@ -1,4 +1,5 @@
-""" picounits/__init__.py """
+# pylint: skip-file
+# picounits/__init__.py
 
 from typing import Any
 
@@ -6,19 +7,35 @@ from picounits.extensions.parser import Parser
 from picounits.extensions.loader import DynamicLoader
 
 from picounits.constants import *
-from picounits.core.quantities.scalars.methods.validators import (
-    unit_validator, Quantity
-)
+from picounits.core.quantities.validator import expects
+from picounits.core.quantities.packet import Packet as Quantity
+from picounits.configuration.management import reload_config
+
+# Reloads the users .picounits configuration file.
+reload_config()
 
 # References for quantities when doing type hinting.
-Q, q = Quantity, Quantity
+Q = Quantity
+q = Quantity
+
+_ = expects 
+
+# LEGACY API - keep the old name for backward compatibility before 1.0.6
+unit_validator = expects
+
+# Parser & Loader import
+_ = Parser
+_ = DynamicLoader
 
 
 class UnitError(TypeError):
     """ Exception for Unit Error """
-    def __init__(self, error: str):
+    def __init__(self, error: str, messenger: str |  None = None):
         """ Returns a custom error message """
-        msg = f"raised error: {error}. "
+        if messenger:
+            msg = f"{messenger!r} raised error: {error}."
+        else:
+            msg = f"Unit error occurred: {error}."
         super().__init__(msg)
 
 
@@ -48,3 +65,18 @@ def strip_quantity(quantity: Quantity, reference: Quantity) -> Any:
     check_quantity(quantity, reference)
 
     return quantity.value
+
+
+# API Promises
+# NOTE: this also concludes all constructed quantities constants in constants.py
+__all__ = [
+    "UnitError",
+    "DynamicLoader",
+    "strip_quantity",
+    "check_quantity",
+    "Parser",
+    "Quantity",
+    "Q",
+    "q",
+    "expects"
+]

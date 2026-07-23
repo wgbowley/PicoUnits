@@ -9,9 +9,11 @@
    id="svg1"
    sodipodi:docname="logo_file.svg"
    inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
-   inkscape:export-filename="PicoUnits\media\picounit_logo.png"
-   inkscape:export-xdpi="96"
-   inkscape:export-ydpi="96"
+   inkscape:export-filename="C:\Users\WBowl\Documents\Work\PicoUnits\media\picounit_logo.png"
+   inkscape:export-xdpi="128"
+   inkscape:export-ydpi="128"
+   inkscape:export-batch-path="C:\Users\WBowl\Documents\Work\PicoUnits\media"
+   inkscape:export-batch-name="logo_file"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -19,27 +21,28 @@
    xmlns:svg="http://www.w3.org/2000/svg">
   <sodipodi:namedview
      id="namedview1"
-     pagecolor="#0d1117"
+     pagecolor="#ffffff"
      bordercolor="#000000"
      borderopacity="0.27058824"
      inkscape:showpageshadow="2"
      inkscape:pageopacity="0.0"
-     inkscape:pagecheckerboard="0"
+     inkscape:pagecheckerboard="true"
      inkscape:deskcolor="#ffffff"
      inkscape:document-units="px"
      showguides="false"
      showborder="true"
      inkscape:antialias-rendering="true"
      showgrid="true"
-     inkscape:zoom="0.99105737"
-     inkscape:cx="601.88241"
-     inkscape:cy="86.271494"
+     inkscape:zoom="1"
+     inkscape:cx="527.5"
+     inkscape:cy="180.5"
      inkscape:window-width="1920"
      inkscape:window-height="1009"
-     inkscape:window-x="1912"
+     inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1" />
+     inkscape:current-layer="layer1"
+     inkscape:export-bgcolor="#ffffff00" />
   <defs
      id="defs1">
     <rect
@@ -89,28 +92,28 @@
      style="display:inline">
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:50.6923px;font-family:Romantic;-inkscape-font-specification:Romantic;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#e8e8e8;fill-opacity:1;stroke:#005f73;stroke-width:1.23454;stroke-dasharray:none;stroke-opacity:1"
-       x="39.132545"
-       y="63.306129"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:49.922px;font-family:Romantic;-inkscape-font-specification:Romantic;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#e8e8e8;fill-opacity:1;stroke:#005f73;stroke-width:1.21578;stroke-dasharray:none;stroke-opacity:1"
+       x="33.323559"
+       y="63.155224"
        id="text3"
-       transform="scale(1.0601447,0.94326744)"><tspan
+       transform="scale(1.0775781,0.92800698)"><tspan
          sodipodi:role="line"
          id="tspan3"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:50.6923px;font-family:Romantic;-inkscape-font-specification:Romantic;fill:#d7dfe1;fill-opacity:1;stroke:none;stroke-width:1.23454"
-         x="39.132545"
-         y="63.306129">Pico</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:49.922px;font-family:Romantic;-inkscape-font-specification:'Romantic Bold';fill:#006d77;fill-opacity:1;stroke:none;stroke-width:1.21578"
+         x="33.323559"
+         y="63.155224">Pico</tspan></text>
     <text
        xml:space="preserve"
-       style="font-weight:bold;font-size:48.4779px;font-family:Romantic;-inkscape-font-specification:'Romantic Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#900001;stroke-width:2.43248;stroke-opacity:0.509804;fill-opacity:1"
-       x="136.21082"
-       y="62.647133"
+       style="font-weight:bold;font-size:48.4779px;font-family:Romantic;-inkscape-font-specification:'Romantic Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#d00000;fill-opacity:1;stroke-width:2.43248;stroke-opacity:0.509804"
+       x="138.7394"
+       y="62.923958"
        id="text1"
-       transform="scale(1.046407,0.9556511)"><tspan
-         sodipodi:role="line"
+       transform="scale(1.0464064,0.95565165)"><tspan
          id="tspan1"
-         style="font-size:48.4779px;stroke-width:2.43248;fill:#900001;fill-opacity:1"
-         x="136.21082"
-         y="62.647133">Units</tspan></text>
+         style="font-size:48.4779px;fill:#d92c2a;fill-opacity:1;stroke-width:2.43248"
+         x="138.7394"
+         y="62.923958"
+         sodipodi:role="line">Units</tspan></text>
     <text
        xml:space="preserve"
        style="font-weight:bold;font-size:28.2223px;font-family:Romantic;-inkscape-font-specification:'Romantic Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#861211;stroke-width:2.549;stroke-opacity:0.509804"

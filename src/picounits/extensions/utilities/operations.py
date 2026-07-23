@@ -2,14 +2,16 @@
 Filename: operations.py
 
 Description:
-    Defines the mathematical operators for
-    usage by the converter when parsing .uiv format.
+    Defines the mathematical operators 
+    for usage during construction of units
+    when parsing .ut & .uiv dsl formats.
 """
 
 from __future__ import annotations
 from enum import Enum, auto
 
-from picounits.extensions.parser_errors import ParserError
+from picounits.extensions.utilities.errors import UnknownOperator
+
 
 class Operations(Enum):
     """ Map of Mathematical Operations for Units """
@@ -19,8 +21,8 @@ class Operations(Enum):
 
     @property
     def symbol(self) -> str:
-        """ Returns the operation symbol via direct lookup """
-        return _LOOKUP_OPERATORS.get(self)[0]
+        """ Returns the value operation symbol via direct lookup """
+        return _LOOKUP_OPERATORS.get(self)
 
     @property
     def _repr_name(self) -> str:
@@ -33,30 +35,9 @@ class Operations(Enum):
         operator = _LOOKUP_STRINGS.get(char)
         if operator is None:
             ops = list(_LOOKUP_STRINGS.keys())
-            msg = f"'{char}' is an unknown operator. Supported operators are {ops}"
-            raise ParserError(cls.__name__, msg)
+            raise UnknownOperator(char, ops)
 
         return operator
-
-    @classmethod
-    def check_unicode_power(cls, power: str) -> int | False:
-        """ Returns converted unicode power """
-        try:
-            return SUPERSCRIPT_MAP[power]
-        except KeyError:
-            return False
-
-    @classmethod
-    def validate_unicode_usage(cls, tokens: list[str]) -> None:
-        """ Ensures non mixing of ^ with unicode superscripts """
-        for index, token in enumerate(tokens):
-            if token == "^" and index + 1 < len(tokens):
-                if tokens[index+1] in SUPERSCRIPT_MAP:
-                    msg = (
-                        f"Ambiguous power syntax: '^' followed by unicode "
-                        f"'{tokens[index+1]}'"
-                    )
-                    raise ParserError(cls.__name__, msg)
 
     @classmethod
     def all_symbols(cls) -> list[str]:
@@ -81,33 +62,13 @@ _LOOKUP_STRINGS = {
     "/": Operations.DIVIDED,
     "÷": Operations.DIVIDED,
     "^": Operations.POWER,
-    "⁰": Operations.POWER,
-    "¹": Operations.POWER,
-    "²": Operations.POWER,
-    "³": Operations.POWER,
-    "⁴": Operations.POWER,
-    "⁵": Operations.POWER,
-    "⁶": Operations.POWER,
-    "⁷": Operations.POWER,
-    "⁸": Operations.POWER,
-    "⁹": Operations.POWER,
 }
 
-# Unicode lookup table
-SUPERSCRIPT_MAP = {
-    "⁰": 0,
-    "¹": 1,
-    "²": 2,
-    "³": 3,
-    "⁴": 4,
-    "⁵": 5,
-    "⁶": 6,
-    "⁷": 7,
-    "⁸": 8,
-    "⁹": 9,
-}
 
 # Direct lookup table for operator enum to string notation
-_LOOKUP_OPERATORS = {}
-for symbol, op in _LOOKUP_STRINGS.items():
-    _LOOKUP_OPERATORS.setdefault(op, []).append(symbol)
+_LOOKUP_OPERATORS: dict[Operations, list[str]] = {}
+for symbol, operation in _LOOKUP_STRINGS.items():
+    if operation not in _LOOKUP_OPERATORS:
+        _LOOKUP_OPERATORS[operation] = []
+
+    _LOOKUP_OPERATORS[operation].append(symbol)

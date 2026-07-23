@@ -1,10 +1,13 @@
-# Example usage of .uiv for introduction.py
+[version]
+format: 0.1.0
+notes: "Example usage of .uiv for introduction.py"
+
 [coil]
 axial_length: 50 m(m)
 outer_radius: 17.5 m(m)
 inner_radius: 6.25 m(m)
 wire_diameter: 1.25 m(m)
-fill_factor: 0.7
+fill_factor: 0.7  (∅)
 
 [pole]
 axial_length: 10 m(m)

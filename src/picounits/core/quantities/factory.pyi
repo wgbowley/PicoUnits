@@ -1,3 +1,4 @@
+# pylint: skip-file
 """
 Filename: factory.pyi
 Clear: X
@@ -6,6 +7,7 @@ Description:
     The factory is type caster for quantities and
     dispatcher for mathematical methods
 """
+
 from numpy import ndarray, integer, floating, complexfloating
 from typing import Callable, overload, TypeVar, Type
 from typing import Self

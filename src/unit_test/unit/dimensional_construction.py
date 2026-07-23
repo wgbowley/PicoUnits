@@ -1,3 +1,4 @@
+# pylint: skip-file
 """
 Filename: dimensional_construction.py
 
@@ -74,6 +75,7 @@ class DimensionConstruction(unittest.TestCase):
         """ Factory method for dimensionless outputs """
         dim = Dimension.dimensionless()
         self.assertEqual(dim, Dimension(FBase.DIMENSIONLESS, 1))
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

@@ -1,6 +1,5 @@
 """
 Filename: units.py
-Clear: Y
 
 Description:
     Defines the Unit class which is comprised
@@ -12,7 +11,9 @@ from __future__ import annotations
 from typing import Any
 
 from picounits.core.dimensions import Dimension
-from picounits.lazy_imports import import_factory, lazy_import
+from picounits.lazy_imports import import_factory
+
+from picounits.configuration.management import get_derived_units
 
 
 class Unit:
@@ -105,10 +106,7 @@ class Unit:
     def name(self) -> str:
         """ Returns the units name as dimensions """
         if self._name_cache is None:
-            get_derived_units = lazy_import(
-                "picounits.configuration.config", "get_derived_units", "Unit.name"
-            )
-            derived, _ = get_derived_units()
+            derived = get_derived_units()
 
             # Primary: Check exact match first
             for symbol, unit in derived.items():
@@ -139,6 +137,16 @@ class Unit:
     def length(self) -> int:
         """ Number of distinct dimension bases (e.g., kg·m·s⁻² has length 3) """
         return len(self.dimensions)
+
+    @property
+    def exponent_sum(self) -> Any:
+        """ sums the exponents up within a unit """
+        exponent_sum = 0
+        if len(self.dimensions) == 1:
+            for dim in self.dimensions:
+                exponent_sum += dim.exponent
+
+        return exponent_sum
 
     @classmethod
     def dimensionless(cls) -> Dimension:

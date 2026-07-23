@@ -1,6 +1,5 @@
 """
 Filename: scales.py
-Clear: Y
 
 Description
     The prefix scale 'PrefixScale' is encoded as a enum
@@ -75,9 +74,7 @@ class PrefixScale(Enum):
 
     @classmethod
     def from_symbol(cls, reference: str) -> PrefixScale | None:
-        """
-        Compares reference symbol with symbol lookup, if not found returns none
-        """
+        """ Compares reference symbol with symbol lookup, if not found returns none """
         if not isinstance(reference, str):
             return None
 
@@ -107,41 +104,43 @@ class PrefixScale(Enum):
         Example: 10 * kilo * LENGTH => Quantity(10, LENGTH, kilo)
         """
         if not isinstance(other, Callable):
-            return PrefixedValue(other, self)
+            return PrefixedScalar(other, self)
 
         return NotImplemented
 
 
-class PrefixedValue:
-    """ Carries prefix information """
-    def __init__(self, value: int | float, prefix: PrefixScale) -> None:
+class PrefixedScalar:
+    """ Carries prefix information before quantity construction """
+    def __init__(self, value: Any, prefix: PrefixScale) -> None:
+        """ Initialize the PrefixedScalar """
         self.value = value
         self.prefix = prefix
 
-    def __mul__(self, other):
-        """ Constructs the quantity with value pair """
-        unit = lazy_import(
-            "picounits.core.unit", "Unit", 'PrefixScale.__rmul__'
-        )
+    def __mul__(self, other: Any):
+        """ Defines behavior for the forward multiplication (*) """
+        unit = lazy_import("picounits.core.unit", "Unit", "PrefixScale.__rmul__")
+
+        # Primary: Quantity construction with prefix binds to value
         if isinstance(other, unit):
-            factory = import_factory('PrefixedValue.__mul__')
+            factory = import_factory("PrefixedScalar.__mul__")
             return factory.create(self.value, other, self.prefix)
 
-        if not isinstance(other, Callable):
-            return PrefixedValue(self.value * other, self.prefix)
+        if isinstance(other, (int, float)):
+            return PrefixedScalar(self.value * other, self.prefix)
 
         return NotImplemented
 
-    def __rmul__(self, other):
-        """ Syntactic bridge 10 * kilo """
-        if not isinstance(other, Callable):
-            return PrefixedValue(other * self.value, self.prefix)
+    def __rmul__(self, other: Any):
+        """ Defines behavior for the reverse multiplication """
+        if isinstance(other, (int, float)):
+            return PrefixedScalar(other * self.value, self.prefix)
 
         return NotImplemented
 
     def __repr__(self):
-        """ Returns name for __repr__ dunder method """
-        return f"<PrefixedValue: {self.value} @ {self.prefix}>"
+        """ Displays the `value` and the `prefix scale` """
+        return f"{self.value} {self.prefix}()"
+
 
 # Fast mapping for enums and ensure o(1) lookup
 # Scale symbols dictionary only uses ASCII to ensure easy usage in .uiv files
@@ -165,6 +164,7 @@ _SCALE_SYMBOLS = {
     PrefixScale.ZEPTO:  "z",
     PrefixScale.YOCTO:  "y",
 }
+
 
 # Generates a reverse lookup table to ensure o(1) lookup
 _SYMBOLS_TO_SCALE = {symbol: scale for scale, symbol in _SCALE_SYMBOLS.items()}
