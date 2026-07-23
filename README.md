@@ -29,58 +29,19 @@ Color palette:
 ## Overview
 
 PicoUnits is a dimensional constraint system for computational engineering.
+  
+Unlike general-purpose unit libraries, PicoUnits separates:
 
-It provides the infrastructure to define, represent, validate and enforce physical dimensions throughout computational pipelines.
-Rather than treating units as metadata attached to numerical values, PicoUnits treats dimensional structure as part of the computational model.
+- The underlying algebraic structure of a physical quantity.
+- Prefixes represent scale along an existing dimensional axis.
+- The symbols used to represent dimensions and derived units belong to the application's `unit frame`.
 
-```
-Physical Model
-        ↓
-Dimensional Structure
-        ↓
-Unit Frame & Notation
-        ↓
-Dimensionally-Aware Data
-        ↓
-Solver / Simulation Pipeline
-        ↓
-Validated Physical Output
-```
-
-PicoUnits is intended for engineering software where physical quantities move between models, configuration files, solvers, and other subsystems.
-
-## The Idea
-
-PicoUnits separates three concepts that are often coupled together computationally:
-
-### Dimensional structure
-The underlying algebraic structure of a physical quantity.
-
-```text
-Force = mass · length · time⁻²
-```
-
-### Scalar scaling
-
-Prefixes represent scale along an existing dimensional axis.
-
-```text
-m(m)   → millimetre
-u(s)   → microsecond
-M(S_m) → megasiemens per metre
-```
-
-Prefixes are resolved at construction time and do not become part of dimensional algebra.
-
-### Notation and semantics
-
-The symbols used to represent dimensions and derived units belong to the application's `unit frame`.
-A project can define its own dimensional vocabulary without changing the underlying dimensional system.
-This allows PicoUnits to act as a `dimensional foundation`, rather than imposing a single global notation.
+This design prioritizes deterministic behaviour in simulation pipelines over strict SI-algebra equivalence.
+As a result, prefixes are resolved at construction time and do not participate in unit algebra or exponentiation.
 
 ## Not a Unit Conversion Library
 
-PicoUnits is not designed as a universal unit conversion system.
+PicoUnits was never intended nor designed as a universal unit conversion system.
 
 It does not attempt to answer:
 
@@ -93,15 +54,20 @@ Instead, it answers questions such as:
 ```text
 - Does this quantity have the required dimensions?
 - Are these two physical quantities algebraically compatible?
-- Does this configuration value satisfy the model's dimensional contract?
 - Can this solver safely consume this value?
 ```
 
-PicoUnits operates within a defined `unit frame`.
+### Features
 
-A unit frame establishes the dimensional basis and notation used by an application. Within that environment, dimensional relationships are explicit and deterministic.
+> [!important]
+> - Pluggable unit systems via `Unit Frames` (domain-specific base dimensions)
+> - Algebra-first unit system: no implicit or explicit unit conversion
+> - Prefixes are representational and do not participate in unit algebra
+> - Configuration format: `.uiv` and `.ut` with embedded validation
+> - Boundary validation via `@expects`
+> - Full numeric support: real, complex, and vector quantities
 
-## Unit Frames
+## What is a unit frame?
 
 A unit frame defines the dimensional environment used by an application.
 
@@ -119,123 +85,75 @@ luminosity: cd
 dimensionless: ∅
 ```
 
-The underlying dimensional basis is independent of how it is represented. The notation is a semantic layer. This allows the
-same dimensional infrastructure to be used across different computational domain while keeping the notation domain specific.
+The underlying dimensional basis independent of the notation used to represent it. The notation is simply a semantic layer applied over the same mathematical rules.
 
+## What are .uiv & .ut?
 
-## Dimensionally Aware Configuration
-
-PicoUnits provides two domain-specific formats:
-
-* `.ut` | `Unit Types`, defining a project's derived units and dimensional vocabulary.
-* `.uiv` | `Unit-Informed Values`, defining configuration and physical data with dimensional information embedded directly in the data.
+Both are dimensionally aware formats. `.ut (unit types)` encodes custom base units for your system and `.uiv (unit informed values)` encodes value:unit pairs:
 
 ### `.ut`
 
-A `.ut` file defines derived units for a project:
-
-```text
+```
+# Coilgun Units - Derived from Base Dimensions (kg, m, s, etc)
 [version]
 format: 0.1.0
 
-[Mechanics]
-N:  kg*m*s^-2
-J:  kg*m^2*s^-2
-W:  kg*m^2*s^-3
-ρ: kg*m^-3
-
-[Electricity]
-V:   kg*m^2*s^-3*A^-1
-S_m: kg^-1*m^-3*s^3*A^2
-
-[magnetic]
-T:   kg*s^-2*A^-1
-Wb:  kg*m^2*s^-2*A^-1
-A_m: A*m^-1
+[units]
+ρ: kg/m^3
+V: kg*m^2*s^-3*A^-1
 ```
-
-The dimensional definition is explicit and machine-readable.
 
 ### `.uiv`
 
-A `.uiv` file embeds physical meaning directly into application data:
+All `value : unit` pairs exist in the form value `prefix(unit)`, for example:
 
-```text
+```
 [version]
 format: 0.1.0
 unit_frame: units.ut
 
+[notes]
+# Analytical model for a multi-stage coil-gun
+# Models electrical, magnetic and motional dynamics
+
 [model]
 number_stages: 10
 
+# Millimeter -> prefix `m` and unit `m` hence prefix(unit), m(m)
 stage_gap: 10 m(m)
-voltage: 18 (V)
-current_limit: 40 (A)
+
+# Value without prefix (volts - empty prefix)
+voltage: 18 (V)         # Equivalent to ""(V)
+current_limit: 40 (A) 
 time_steps: 50 u(s)
 atmospheric_density: 1.225 (ρ)
 ```
 
-The result is configuration that is both `human-readable` and `dimensionally meaningful`.
+## Quick Start
 
-Instead of:
-
-```python
-density = 1.225
-voltage = 18
-time_step = 0.00005
-```
-
-the physical meaning is represented directly:
-
-```text
-atmospheric_density: 1.225 (ρ)
-voltage: 18 (V)
-time_steps: 50 u(s)
-```
-
-The units are not comments documenting the data.
-
-**They are part of the data contract.**
-
-## Runtime Dimensional Constraints
-
-Dimensional requirements can be enforced at computational boundaries using `@expects`.
-
-```python
+```py
 from picounits import expects, VOLTAGE, CURRENT, RESISTANCE
 
 @expects(VOLTAGE)
 def ohm_law(i, r):
     return i * r
-```
 
-Valid dimensional inputs satisfy the contract:
+# Correct usage
+v = ohm_law(10 * CURRENT, 5 * RESISTANCE) 
+print(v) # Output: 50.0 (kg·m²·s⁻³·A⁻¹) (Derived units need to be pulled in via .ut)
 
-```python
-v = ohm_law(
-    10 * CURRENT,
-    5 * RESISTANCE
-)
-```
-
-Invalid dimensional inputs raise a `DimensionError` rather than silently producing a physically meaningless result:
-
-```python
-# Raises DimensionError
+# This would raise a DimensionError:
 # 'ohm_law' returned kg²·m⁴·s⁻⁶·A⁻³, expected kg·m²·s⁻³·A⁻¹ 
-ohm_law(
-    10 * VOLTAGE,
-    5 * RESISTANCE
-)
 ```
 
-## Installation
+## Installation 
 
+To install:
 ```bash
+# Recommended for most users
 pip install PicoUnits
 ```
-
-Or install locally from source:
+or use `setuptools` locally:
 
 ```bash
 git clone https://github.com/wgbowley/PicoUnits.git
@@ -244,5 +162,6 @@ pip install -e .
 ```
 
 ## Documentation
+
 > [!NOTE]
 > Documentation is available in [`docs/`](docs/), with standard introduction example available in [`examples/`](examples/).
