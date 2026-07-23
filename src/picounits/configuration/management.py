@@ -95,17 +95,21 @@ def _load_from_file(filepath: Path) -> tuple[Dict[str, str], Dict[str, int]]:
 
 
 def _import_symbols(config: dict) -> Dict[str, str]:
-    """ Loads the symbol dictionary """
+    """Loads the symbol dictionary from configuration."""
     symbols: Dict[str, str] = {}
-    if "symbols" in config:
-        symbols: Dict[str, str] = {}
 
+    if "symbols" in config:
         for key, value in config["symbols"].items():
             clean_key = key.strip().upper()
             clean_value = value.strip()
 
             # Skips empty lines
             if clean_key:
+                # Check for conflicting dimension names
+                if clean_key in symbols:
+                    msg = f"Duplicate dimension '{clean_key}' found in symbols configuration"
+                    raise ValueError(msg)
+
                 symbols[clean_key] = clean_value
 
         return symbols
