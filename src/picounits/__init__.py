@@ -18,7 +18,10 @@ reload_config()
 Q = Quantity
 q = Quantity
 
-_ = expects
+_ = expects 
+
+# LEGACY API - keep the old name for backward compatibility before 1.0.6
+unit_validator = expects
 
 # Parser & Loader import
 _ = Parser
