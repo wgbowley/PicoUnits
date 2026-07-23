@@ -28,7 +28,7 @@ Color palette:
 
 ## Overview
 
-PicoUnits is a dimensional constraint system for computational engineering.
+PicoUnits is a `dimensional constraint system for computational engineering.`
 
 It provides the infrastructure to define, represent, validate, serialize, and enforce physical dimensions throughout engineering software and simulation pipelines.
 
