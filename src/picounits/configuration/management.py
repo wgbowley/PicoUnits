@@ -20,7 +20,7 @@ from picounits.configuration.picounits import (
 # Effective preferences after first load
 _effective_symbols: Dict[str, str] | None = None
 _effective_order: Dict[str, int] | None = None
-_effective_derived: Dict[str, Any] | None = None
+_effective_derived: Dict[str, Any] = {}
 
 
 def get_base_symbols() -> Dict[str, str]:
@@ -37,6 +37,10 @@ def get_base_order() -> Dict[str, int]:
         _load_config()
 
     return _effective_order
+
+def get_derived_units() -> Dict[str, Any]:
+    """ Gets the derived units from config.  """
+    return _effective_derived
 
 
 def reload_config() -> None:
@@ -132,9 +136,20 @@ def _import_order(config: dict) -> Dict[str, int]:
     return custom_order
 
 
-def get_derived_units():
-    """ Gets the derived unit registry if a .ut file exists. """
+def add_derived_units(registry: Dict[str, Any]) -> None:
+    """Gets the derived unit registry if a .ut file exists."""
     global _effective_derived
-    _effective_derived = {}
+    if _effective_derived:
+        msg = (
+            "Only one .ut file can be imported at once. "
+            f"Already contains {len(_effective_derived)} units."
+        )
+        raise RuntimeError(msg)
 
-    return _effective_derived
+    if not registry:
+        # Return if registry is empty
+        _effective_derived = {}
+        return
+
+    # Adds registry to the derived units dictionary
+    _effective_derived = registry.copy()
