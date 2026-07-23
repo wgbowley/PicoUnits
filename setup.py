@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="PicoUnits",
-    version="1.0.6",
+    version="1.0.8",
     description="Explicit Units and Dimensional Analysis for Scientific Python",
     author="William Bowley",
     author_email="wgrantbowley@gmail.com",

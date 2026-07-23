@@ -34,13 +34,13 @@ Unlike general-purpose unit libraries, PicoUnits separates:
 - Prefixes represent scale along an existing dimensional axis.
 - The symbols used to represent dimensions and derived units belong to the application's `unit frame`.
 
-### Features:
-- Pluggable unit systems via `Unit Frames` (domain-specific base dimensions)
-- Algebra-first unit system: no implicit or explicit unit conversion
-- Prefixes are representational and do not participate in unit algebra
-- Configuration format: `.uiv` and `.ut` with embedded validation
-- Boundary validation via `@expects`
-- Full numeric support: real, complex, and vector quantities
+> [!important]
+> - Pluggable unit systems via `Unit Frames` (domain-specific base dimensions)
+> - Algebra-first unit system: no implicit or explicit unit conversion
+> - Prefixes are representational and do not participate in unit algebra
+> - Configuration format: `.uiv` and `.ut` with embedded validation
+> - Boundary validation via `@expects`
+> - Full numeric support: real, complex, and vector quantities
 
 ## Not a Unit Conversion Library
  
@@ -157,4 +157,4 @@ pip install -e .
 ## Documentation
  
 > [!NOTE]
-> Documentation is available in [`docs/`](docs/), with a standard introduction example available in [`examples/`](examples/).
+> Documentation is available in [`docs/`](https://github.com/wgbowley/PicoUnits/tree/main/docs), with a standard introduction example available in [`example/`](https://github.com/wgbowley/PicoUnits/tree/main/example).
