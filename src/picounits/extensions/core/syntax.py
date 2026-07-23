@@ -52,6 +52,11 @@ class ExtractPairs:
         # Initializes the extractor state
         state = ExtractionState()
 
+        # Remove inline comments first
+        for comment_char in ('#', ';'):
+            if comment_char in line:
+                line = line[:line.index(comment_char)].rstrip()
+
         for index, character in enumerate(line):
             state.index = index
 
@@ -145,7 +150,7 @@ class ExtractParentheses:
     @classmethod
     def skip_non_parentheses(cls, line: str, start: int) -> int:
         """ Skips non parenthesized characters """
-        position = line.rfind('(', start)
+        position = line.find('(', start)
 
         # Handles when no open parentheses is found inline
         if position == -1: return len(line)
@@ -220,7 +225,7 @@ class QualityExtraction:
 
         # Splits content and end index
         content, end_index = bracket_content
-        list_result = Deserialize.case_list(content)
+        list_result = Deserialize.case_list(f"[{content}]")
 
         # Extracts unit strings and removes leading/trailing whitespaces
         unit_strings = text[end_index + 1:].strip()
@@ -264,7 +269,8 @@ class QualityExtraction:
             # if before is not none and last item is alphabetic
             if before and before[-1].isalpha():
                 # Removes the trailing whitespaces
-                remainder = before[:-1].rstrip
+                remainder = before[:-1].rstrip()
+
                 if not remainder or remainder[-1] in ',)':
                     return before[-1]
 

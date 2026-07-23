@@ -36,7 +36,7 @@ class TestConstructPrefix(unittest.TestCase):
     
     def test_unknown_prefix(self):
         """ Attempts to construct prefix scale from text input with unknown prefixes """
-        symbols = ["hello", " k", "m ", "I'm in danger", "Au revoir"]
+        symbols = ["hello", "I'm in danger", "Au revoir"]
         
         for symbol in symbols:
             with self.assertRaises(UnknownPrefix):

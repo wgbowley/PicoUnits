@@ -139,6 +139,11 @@ def _import_order(config: dict) -> Dict[str, int]:
 def add_derived_units(registry: Dict[str, Any]) -> None:
     """Gets the derived unit registry if a .ut file exists."""
     global _effective_derived
+
+    if registry == _effective_derived:
+        # Attempt to import the same derived unit file
+        return
+
     if _effective_derived:
         msg = (
             "Only one .ut file can be imported at once. "

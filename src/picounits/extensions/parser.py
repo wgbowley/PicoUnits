@@ -17,7 +17,7 @@ from typing import IO, Any
 
 from picounits.configuration.management import add_derived_units
 
-from picounits.extensions.attribute_loader import DynamicLoader
+from picounits.extensions.loader import DynamicLoader
 from picounits.extensions.core.syntax import ExtractPairs, QualityExtraction
 from picounits.extensions.core.construction import ConstructQuantity, ConstructUnits
 

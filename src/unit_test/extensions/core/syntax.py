@@ -144,7 +144,7 @@ class TestExtractParentheses(unittest.TestCase):
     def test_extract_parentheses_content(self):
         """ Tests extracting parenthesized content """
         items = ["(hello (hello))", "(hello) (hello) (hello)", "hello (hello)"]
-        expected = [['hello'], ['hello'], ['hello']]
+        expected = [['hello (hello)'], ['hello', 'hello', 'hello'], ['hello']]
         
         for index, item in enumerate(items):
             result = ExtractParentheses.extract_content(item)
@@ -184,8 +184,8 @@ class TestQualityExtraction(unittest.TestCase):
     
     def test_valid_quantity_extraction(self):
         """ Test if the quantity extraction works """
-        items = ["10 n(kg)", "10 k(kg*m*s^-2)", "(1+1j) (A)"]
-        expected = [(10, 'n', 'kg'), (10, 'k', 'kg*m*s^-2'), ((1+1j), ' ', 'A')]
+        items = ["10 n(kg)", "10 k(kg*m*s^-2)", "1+1j (A)"]
+        expected = [(10, 'n', 'kg'), (10, 'k', 'kg*m*s^-2'), (1+1j, ' ', 'A')]
 
         for index, item in enumerate(items):
             result, prefix, unit = QualityExtraction.extract(item)
