@@ -25,6 +25,8 @@ from picounits.extensions.utilities.errors import (
     ParserError, UnknownPrefix, ColumnAttribute, UnsupportedType, UnknownOperator
 )
 
+from picounits.configuration.management import get_derived_units
+
 
 @dataclass(slots=True)
 class UnitState:
@@ -149,9 +151,9 @@ class ConstructUnits:
             # Handles case of a single dimensions within the unit
             dimension = FBase.from_symbol(tokens[0])
 
-            if not dimension:
+            if dimension is None:
                 # Attempts to handle using derived units
-                cls._derived_unit(tokens[0])
+                return cls._derived_unit(tokens[0])
 
             return Unit(Dimension(dimension))
 
@@ -171,11 +173,12 @@ class ConstructUnits:
     def _derived_unit(cls, token: str) -> Unit | None:
         """ Attempts to handles case of a single dimension within the unit """
         try:
-            return None # === placeholder for derived units ===
+            derived_units = get_derived_units()
+            return derived_units[token]
 
         except KeyError:
             symbols = FBase.all_symbols()
-            msg = f"{token!r} is fan unknown dimension. Supported dimensions are {symbols!r}"
+            msg = f"{token!r} is an unknown dimension. Supported dimensions are {symbols!r}"
             raise ParserError(cls.__name__, msg) from None
 
     @classmethod
@@ -184,11 +187,19 @@ class ConstructUnits:
         # Initializes the unit state dataclass
         state = UnitState()
 
+        # Imports derived units
+        derived_units = get_derived_units()
+
         for token in tokens:
             symbol = FBase.from_symbol(token)
             if symbol:
                 # Constructs pending unit for future operation
                 state.pending_unit = Unit(Dimension(symbol))
+                continue
+
+            # Uses a lookup table for custom unit types.
+            if token in derived_units:
+                state.pending_unit = derived_units[token]
                 continue
 
             try:
